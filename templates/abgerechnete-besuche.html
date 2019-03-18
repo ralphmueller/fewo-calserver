@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+<-- 
+	partial für Abgerechnete Besuche pro Jahr / Monat / Apartment
+-->
+
+{% block content %}
+
+	<h2>Abgerechnete Besuche pro Jahr / Monat / Apartment</h2> 
+
+	<table class="table table-bordered table-condensed table-hover 60percent">
+		<tbody>
+		<tr>
+			<th class="col40">Zeitraum<th class="col40">Apt<th class="col40">Besuche<th class="col40">Miete</th>
+		</tr>
+		{% set lastmonth = [0] %}
+	    {% for item in data %}	   		
+	    	{% set compare = ( lastmonth[0] != item.month ) %}
+	    	{% if compare %}
+		    	{% set color_code = "bg-yellow" %}
+		    	{% set _ = lastmonth.pop() %}
+		    	{% set _ = lastmonth.append(item.month) %}
+		    {% else %}
+		    	{% set color_code = "bg-white" %}
+		    {% endif %}
+		    <tr>
+		        <td class="col40 {{color_code}}" >{{ item.year  }} / {{ item.month }}</td>
+		    	<td class="col40 {{color_code}}">{{item.Apartment  }} </td>
+		    	<td class="col40 {{color_code}}">{{ item.count  }} </td>
+		    	<td class="col40 {{color_code}}">{{ "{:.2f}".format(item.rent) }} € </td>
+		     </tr>
+		 {% endfor %}
+	    </tbody>
+    </table>
+{% endblock %}

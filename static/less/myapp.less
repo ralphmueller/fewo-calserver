@@ -1,0 +1,107 @@
+@frei: #ffffff; 
+@weekend: #ADD8E6;
+@belegt: green;
+@anreise-abreise: lightblue;
+@wechsel-am-selben-tag: red;
+
+body {
+	
+	.light-blue {
+	    background-color: blue;
+	}
+
+	.top-70 {
+	  margin-top: 70px;
+	}
+	
+	h2 {
+		margin-bottom: 40px;
+		text-align: center;
+		text-color: red;
+	}
+
+	ul {
+		padding-left: 0px;
+	}
+	li {
+	    list-style-type: none;
+		&.id-label {
+			width: 3em;
+			display: inline-block;
+			text-align:right;
+			padding-right:0.4em;
+		}
+	}
+ 
+	#map {
+	  width: 750px;
+	  height: 500px;
+	  padding:0,0,0,0;
+	  margin:0,0,0,0;
+	}
+	
+	#message {
+		color: green;
+		margin-bottom:30px;
+	}
+
+	table {
+		&.60percent {
+		width: 60%;
+		}
+		td {
+			text-align: center;
+			font-size: 1em;
+			height: 1.1em;
+			&.col20 {
+				width:20px;
+			}
+			&.col40 {
+				width:40px;
+			}
+			&.bg-white {
+				background-color: white;
+			}
+			&.bg-yellow {
+				background-color: yellow;
+			}
+		}
+	}
+		
+
+	table#calendar {
+		tr {
+			&.color-code {
+				background-color: @belegt; 
+			}
+		}
+		th {
+			font-size: 1.2em;
+		}
+		td {
+			text-align: center;
+			font-size: 1em;
+			height: 1.1em;
+			width: 15px;
+			margin:0;
+			padding:0;
+		
+			&.belegung_0 {
+				background-color: @frei;
+			}
+			&.belegung_1 {
+				background-color: @belegt;
+			}
+			&.belegung_2 {
+				background-color: @anreise-abreise;
+			}
+			&.belegung_4 {
+				background-color: @wechsel-am-selben-tag;
+			}
+			&.background_Sa, &.background_So  {
+				background-color: @weekend;
+			}
+		}
+	}
+
+}

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/node_modules/bootstrap/dist/css/bootstrap.css">
+	<link rel="stylesheet" href="/static/css/myapp.css">	
+	
+	<script src="/static/node_modules/jquery/dist/jquery.js"></script>
+	<script src="/static/node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
+	<script src="/static/node_modules/chart.js/dist/Chart.js"></script>
+	<script src="/static/js/chart_functions.js"></script>
+	
+    <title>FewoApp Extensions</title>
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	  <a class="navbar-brand" href="/">MyApp</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+	    <span class="navbar-toggler-icon"></span>
+	  </button>
+	
+	  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+	    <ul class="navbar-nav mr-auto">
+	      <li class="nav-item active">
+	        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+	      </li>
+	      <li class="nav-item">
+	        <a class="nav-link" href="/calendar">Kalender</a>
+	      </li>
+	      <li class="nav-item">
+	        <a class="nav-link" href="/abrechnung">Abrechnung</a>
+	      </li>
+	      <li class="nav-item">
+	        <a class="nav-link" href="/resetinvoice">Rechnung zurücksetzen</a>
+	      </li>
+	      <li class="nav-item dropdown">
+	        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	          Reports
+	        </a>
+	        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+	          <a class="dropdown-item" href="/stats/income_and_commission">Einnahmen Überblick</a>
+	          <a class="dropdown-item" href="/stats/income_apartments">Einnahmen Wohnungen</a>
+	          <div class="dropdown-divider"></div>
+	          <a class="dropdown-item" href="/stats/rechnungen">Rechnungen (alle)</a>
+	          <a class="dropdown-item" href="/stats/rechnungen-aktuell">Rechnungen Jahr</a>
+	        </div>
+	      </li>
+	    </ul>
+	    <span class="my-2 my-lg-0">Runmode: {{run_mode}}</span>
+	  </div>
+	</nav>
+	
+	<!-- Seiteninhalt -->	
+	<div class="container .container-fluid">
+	
+		<h2>{{title}}</h2>
+		{% with messages = get_flashed_messages() %}
+		  {% if messages %}
+		    <div id="message">
+		  	<h3>Messages</h3>
+		    <ul class=flashes>
+		    {% for message in messages %}
+		      <li>{{message}}</li>
+		    {% endfor %}
+		    </ul>
+		    </div>
+		  {% endif %}		  
+		{% endwith %}
+
+		<div id="content">{% block content %}{% endblock %}</div>
+
+	</div> <!-- container Seiteninhalt-->
+	
+</body>
+</html>

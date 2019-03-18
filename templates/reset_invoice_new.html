@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+<!-- 
+	partial für resetting an invoice to state 'booked'
+-->
+
+{% block content %}
+<div class="row">
+	<h2>Rechnung ändern</h2>
+</div>
+
+<div class="row">
+	<div class="col-md-6">
+	  	<form role="form">
+	    	<div class="form-group">
+	      		<label for="textInput">Enter (min) first 3 letters for last name</label>
+	      		<input type="text" id="textInput" class="form-control" placeholder="Enter Query...">
+	    	</div>
+	  	</form>
+		<h3>Abgerechnete Buchungen</h3>
+		<table class="table table-bordered table-condensed table-hover 80percent">
+			<tbody id="results"/>
+		</table>
+	</div>
+	<div class="col-md-1">
+	</div>
+	<div id="buchung-form" class="col-md-5">
+		<label id="id-and-name"></label>
+		<form>
+			<table class="table table-bordered table-condensed table-hover 80percent">
+				<tbody>
+					<tr><td><label>Anreise</label></td><td><input type="date" name="anreise" id="buchung-anreise"></td></tr>
+					<tr><td><label>Anreise</label></td><td><input type="date" name="abreise" id="buchung-abreise"></td>
+						<td><label>Nächte</label></td><td><input type="number" name="naechte" id="buchung-naechte" readonly></td></tr>
+					<tr><td><label>Miete/Nacht</label></td><td><input type="number" name="preis-nacht" id="buchung-preis-nacht"></td>
+						<td><label>Miete</label></td><td><input type="number" name="miete" id="buchung-miete" readonly></td></tr>
+					<tr><td><label>Kurtaxe-Voll</label></td><td><input type="number" name="kurtaxe-voll" id="buchung-kurtaxe-voll"></td></tr>
+					<tr><td><label>Kurtaxe-Halb</label></td><td><input type="number" name="kurtaxe-halb" id="buchung-kurtaxe-halb"></td></tr>
+					<tr><td><label>Kurtaxe-Kinder</label></td><td><input type="number" name="kurtaxe-kinder" id="buchung-kurtaxe-kinder"></td></tr>
+					<tr><td><label>Kurtaxe-NZ</label></td><td><input type="number" name="kurtaxe-nz" id="buchung-kurtaxe-nz"></td>
+						<td><label>Kurtaxe</label></td><td><input type="number" name="kurtaxe" id="buchung-kurtaxe" readonly></td></tr>
+					<tr><td><td><td><label>Summe</label></td><td><input type="number" name="summe" id="buchung-summe" readonly></td></tr>
+					<tr><td><label>Vorauszahlung</label></td><td><input type="number" name="voraus" id="buchung-voraus"></td></tr>
+					<tr><td><label>Restbetrag</label></td><td><input type="number" name="restbetrag" id="buchung-restbetrag" readonly></td></tr>
+				</tbody>
+			</table>
+		</form>
+	</div>
+</div>
+	
+  <script src="/static/node_modules/rx/dist/rx.lite.compat.js"></script>
+  <script src="/static/js/lookup_invoice.js"></script>
+
+{% endblock %}

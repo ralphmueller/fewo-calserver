@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+
+<-- 
+	Einkommen Jahr über alle Apartments (Plan)
+-->
+
+{% block content %}
+
+<div class="row">
+	<h2>Einkommen Jahr über alle Apartments (Plan) </h2>
+</div>
+<div class="row">	
+	<div class="col-md-8">
+				<canvas id="myChart"></canvas>
+	</div>
+
+	<div class="col-md-4">
+ 	
+		<table class="table table-bordered table-condensed table-hover 60percent">
+			<tbody>
+			<tr>
+				<th class="col20">Apartment<th class="col20">Income<th class="col20">Bookings<th class="col20">Avg/Day</th>
+			</tr>
+		    {% for item in data %}	   		
+				<tr>
+					<td>{{item[0]}}</td><td>{{"{:.2f}".format(item[1])}}€</td><td>{{item[2]}}</td><td>{{ "{:.2f}".format(item[3])}}€</td>
+				</tr>
+			 {% endfor %}
+			 
+		    </tbody>
+	</div>
+</div>
+	    
+	    <script>
+	    	function some_func(data){
+	    		var ctx = document.getElementById('myChart').getContext('2d');
+	    		
+	    		var dataset=  [{
+					label: 'Einkommen/Jahr',
+					// backgroundColor: window.chartColors.red,
+					// borderColor: window.chartColors.red,
+					data: [
+						data[0][3],
+						data[1][3],
+						data[2][3],
+						data[3][3],
+						data[4][3],
+						data[5][3],
+					],
+					fill: false,
+				}];
+				
+				console.log(dataset);
+
+				var myChart = new Chart(ctx, {
+	  				type: 'bar',
+	  				data: {
+	    			labels: ['M1', 'M2', 'F1', 'F2', 'F5', 'G2'],
+	    			datasets: dataset
+	  			}
+				});
+	    	}
+	    	
+	    	$.getJSON("{{rest_url}}, some_func);
+	    	
+		</script>
+    </table>
+{% endblock %}
