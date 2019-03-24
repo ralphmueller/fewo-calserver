@@ -26,3 +26,5 @@ def rechnungen_besucher(besucher_name):
         a.append(model_to_dict(r))
     return json.dumps(a, ensure_ascii=False, default=str)
 
+
+

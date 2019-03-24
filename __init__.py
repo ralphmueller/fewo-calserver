@@ -31,6 +31,9 @@ if __name__ == "__main__":
     
     CORS(app)
     app.secret_key = 'google hupf schmeckt gut'
+    
+    import besucher
+    app.register_blueprint(besucher.bp)
 
     import rest
     app.register_blueprint(rest.bp)
