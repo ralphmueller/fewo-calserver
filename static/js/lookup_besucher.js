@@ -1,11 +1,12 @@
 function getBuchungenForBesucher(t, h3Text, stat){
+	
 	Rx.Observable.fromPromise(fetch('/rest/buchungen/besucher/' + t + '?status=' + stat).then(res => res.json()))
 	.subscribe(data => {
+		var results = $("#besucher-" + stat);
+		results.empty();
 		if (data.length > 0) {			// show rechnungen
-			$results = $("#besucher-" + stat);
-			$results.show();
-			$results
-				.empty()
+			results
+				.show()
 				.append($('<h3>').text(h3Text))
             	.append ($.map(data, function (v) {return $('<p>').html(
   			  		`<span class="badge badge-dark">${v.id}</span>  ${v.apartment.name} ${v.anreise} ${v.abreise} ${v.miete} ${v.kurtaxe} ${v.summe}` 
@@ -16,15 +17,18 @@ function getBuchungenForBesucher(t, h3Text, stat){
 }
 
 function getBesucherDetails(t) {
-	console.log('t = ', t);
 	Rx.Observable.fromPromise(fetch('/rest/besucher/' + t).then(res => res.json()))
 	.subscribe(data => {
-		results = $("#besucher-details");
+		var results = $("#besucher-details");
 		results.show();		
 		results
 			.empty()
 			.append($('<h3>').text('Besucher Details'))
-			.append($('<p>').text(`${data.id}: ${data.name}, ${data.vorname}`));
+			.append($('<div class="d-flex flex-column bd-highlight mb-3">')
+				.html($('<div id="1" class="d-inline p-2 bg-light border">').html(`<span class="badge badge-dark">${data.id}</span> ${data.anrede} ${data.name}, ${data.vorname}`))
+				.append($('<div id="2" class="d-inline p-2 bg-light border">').text(`${data.strasse}, ${data.stadt}, ${data.land}-${data.plz}`))
+				.append($('<div id="2" class="d-inline p-2 bg-light border">').text(`${data.email}, ${data.tel}`))
+			)
 	});
 	
 	getBuchungenForBesucher(t, 'Rechnungen', 'abgerechnet');
@@ -37,8 +41,9 @@ function getBesucherDetails(t) {
 	
 	var rest_besucher_get = '/rest/besucher_by_name/'; // with attribute name fragement, returns a list of users
 	$("#besucher-details").hide();		// hide details 
-	$("#besucher-rechnungen").hide();
-	$("#besucher-buchungen").hide();
+	$("#besucher-abgerechnet").hide();
+	$("#besucher-gebucht").hide();
+	$("#besucher-storno").hide();
 
   // Besucher
   function getBesucher (term) {
@@ -81,16 +86,14 @@ function getBesucherDetails(t) {
 
     searcher.subscribe(
       function (data) {
-		  console.log(data);
         $results
           .empty()
-		  .append('<tr><th>ID</th><th>Name</th><th>Vorname</th><th>Strasse</th><th>Stadt</th></tr>')
+		  .append('<tr><th>ID</th><th>Name</th><th>Vorname</th><th>Strasse</th></tr>')
           .append ($.map(data, function (v) {return $(`<tr id=${v.id} onclick=getBesucherDetails(${v.id})>`).html(
 			  	`<td>${v.id}</td>` +
 			    `<td>${v.name}</td>`+
 			    `<td>${v.vorname}</td>` +
-			    `<td>${v.strasse}</td>`+
-			    `<td>${v.stadt}</td>` 
+			    `<td>${v.strasse}, ${v.stadt}</td>` 
 			  );
 		  }))
       },
