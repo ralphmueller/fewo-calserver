@@ -9,7 +9,7 @@ function getBuchungenForBesucher(t, h3Text, stat){
 				.show()
 				.append($('<h3>').text(h3Text))
             	.append ($.map(data, function (v) {return $('<p>').html(
-  			  		`<span class="badge badge-dark">${v.id}</span>  ${v.apartment.name} ${v.anreise} ${v.abreise} ${v.miete} ${v.kurtaxe} ${v.summe}` 
+  			  		`<span class="badge badge-dark">${v.id}</span>  ${v.apartment.name} ${new Date(v.anreise).toLocaleDateString()}-${new Date(v.abreise).toLocaleDateString()} ${v.miete} ${v.kurtaxe} ${v.summe}` 
   			  	);
   		  	}))
 		}
