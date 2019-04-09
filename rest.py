@@ -48,7 +48,6 @@ def rest_besucherliste_select(besucher_name):
     return list of invoices for given visitor
         used in lookup_invoice.js
     '''
-    print(request.args)
     reg = '^' + besucher_name
     res = (Buchung.
         select().
@@ -71,4 +70,18 @@ def rest_buchungen_for_besucher(besucher_id):
         order_by(Buchung.anreise.desc())
         )
     return json.dumps([model_to_dict(r) for r in res], ensure_ascii=False, default=str)
+
+@bp.route('/buchungen/besucher/html')
+def test_buchungen_html():
+    res = (Buchung.
+        select().
+        join(Besucher).
+        where(Besucher.name == 'Müller' & (Buchung.status == "abgerechnet")).
+        order_by(Buchung.anreise.desc())
+        )
+    str = '<ul>'
+    for r in res:
+        str += '<li>' + r.status + '</li>'
+    str += '</ul>'
+    return str
         
