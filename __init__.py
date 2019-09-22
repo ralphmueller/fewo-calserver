@@ -35,6 +35,9 @@ if __name__ == "__main__":
     import besucher
     app.register_blueprint(besucher.bp)
 
+    import buchung
+    app.register_blueprint(buchung.bp)
+    
     import rest
     app.register_blueprint(rest.bp)
     

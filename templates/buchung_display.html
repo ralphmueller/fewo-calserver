@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+
+<-- 
+	partial für Anzeige Buchung
+-->
+
+{% block content %}
+
+<div class="row">
+
+	<div class="col-12">
+		<h3>Buchung {{buchung.id}}</h3>
+		
+		<p>{{buchung.besucher.vorname}} {{buchung.besucher.name}} <br/>{{buchung.besucher.strasse}} {{buchung.besucher.plz}} {{buchung.besucher.stadt}}</p>
+		  
+		<form method="post">
+			<div class="form-row">		
+		    	<div class="col form-group col-sm-2">  	
+	      			<label for="apartment" class="col-form-label">Wohnung</label>		
+					<input class="form-control  col-sm-8" name="Apartment" id="apartment"
+	      				value="{{ request.form['apartment'] or buchung.apartment.name }}" required> <br/> 
+				</div> 			
+				<div class="col form-group col-sm-2">
+					<label for="anreise" class="col-form-label">Anreise</label>
+					<input class="form-control col-sm-8" name="Anreise" id="anreise"
+		      			value="{{ request.form['anreise'] or buchung.anreise}}" required>
+		      	</div>
+			    <div class="col form-group col-sm-2">
+		      		<label for="abreise" class="col-form-label">Abreise</label>
+		      		<input class="form-control  col-sm-8" name="Abreise" id="abreise"
+		      			value="{{ request.form['abreise'] or buchung.abreise}}" required>
+		      	</div>
+		    	<div class="col form-group col-sm-2">  	
+	      			<label for="preis_nacht" class="col-form-label">Preis/Nacht</label>		
+					<input class="form-control col-sm-8" name="preis_nacht" id="preis_nacht"
+	      				value="{{ request.form['preis_nacht'] or buchung.preis_nacht }}" required> <br/> 
+				</div>  		      	
+		 	</div>
+			<div class="form-row">
+			    <div class="form-group col-md-3">
+		      		<label for="kurtaxe_vz" class="col-sm-2 col-form-label">VZ</label>
+		      		<input class="col-xs-2" name="kurtaxe_vz" id="kurtaxe_vz"
+		      			value="{{ request.form['kurtaxe_vz'] or buchung.kurtaxe_vz}}" required>
+		      	</div>
+			    <div class="form-group col-md-3">
+		      		<label for="kurtaxe_hz" class="col-sm-2 col-form-label">HZ</label>
+		      		<input class="col-xs-2" name="kurtaxe_hz" id="kurtaxe_hz"
+		      			value="{{ request.form['kurtaxe_hz'] or buchung.kurtaxe_hz}}" required>
+		      	</div>
+			    <div class="form-group col-md-3">
+		      		<label for="kurtaxe_nz" class="col-sm-2 col-form-label">NZ</label>
+		      		<input class="col-xs-2" name="kurtaxe_nz" id="kurtaxe_nz"
+		      			value="{{ request.form['kurtaxe_nz'] or buchung.kurtaxe_nz}}" required>
+		      	</div>
+			    <div class="form-group col-md-3">
+		      		<label for="kurtaxe_kinder" class="col-sm-2 col-form-label">KD</label>
+		      		<input class="col-xs-2" name="kurtaxe_kinder" id="kurtaxe_kinder"
+		      			value="{{ request.form['kurtaxe_kinder'] or buchung.kurtaxe_kinder}}" required>
+		      	</div>		      			      			      		      			      	
+		 	</div>
+		 	<div class="form-row">
+		 		<div class="form-group col-md-1">
+		 			<input name="abbruch" class="btn btn-primary btn-sm" type="reset" value="Reset">
+		 		</div>
+		 		<div class="form-group col-md-1">
+		 			<input name="submit" class="btn btn-primary btn-sm" type="submit" value="Submit">
+		 		</div>
+		 	</div>
+		</form>
+	</div>
+	<!-- 
+	<div class="col-6">
+		<a class="btn btn-primary" href="#" role="button">Ändern</a>
+		<a class="btn btn-primary" href="#" role="button">Stornieren</a>
+		<a class="btn btn-primary" href="#" role="button">Neu</a>
+	</div>
+	-->
+</div> 
+{% endblock %}
