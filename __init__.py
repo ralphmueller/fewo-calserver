@@ -14,8 +14,11 @@ from flask_cors import CORS
 
 sys.path.append('../libs') # to include file fewo_reporting
 
+for f in sys.path:
+    print(f)
+
 import bkormlib
-bkormlib.envir = 'test'
+bkormlib.envir = 'production'
     
 if __name__ == "__main__":
     
@@ -27,7 +30,7 @@ if __name__ == "__main__":
      
     @app.route("/resetinvoice/")
     def reset_invoice_new():
-        return render_template('reset_invoice_new.html', run_mode=bkormlib.envir)
+        return render_template('reset_invoice_new.html', run_mode=bkormlib.envir) 
     
     CORS(app)
     app.secret_key = 'google hupf schmeckt gut'

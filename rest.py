@@ -4,7 +4,7 @@ Created on 10 Mar 2019
 @author: ralph
 '''
 import json
-from flask import Blueprint, request, render_template
+from flask import Blueprint, request
 from playhouse.shortcuts import model_to_dict
 
 from bkormlib import envir
@@ -22,7 +22,7 @@ def rest_booking_get(buchung_id):
     return json.dumps(model_to_dict(booking), ensure_ascii=False, default=str)
 
 @bp.route('/besucher/<besucher_id>')
-def rest_besuchet_get(besucher_id):
+def rest_besucher_get(besucher_id):
     besucher = (Besucher.
                select().
                where(Besucher.id == besucher_id).
@@ -71,17 +71,5 @@ def rest_buchungen_for_besucher(besucher_id):
         )
     return json.dumps([model_to_dict(r) for r in res], ensure_ascii=False, default=str)
 
-@bp.route('/buchungen/besucher/html')
-def test_buchungen_html():
-    res = (Buchung.
-        select().
-        join(Besucher).
-        where(Besucher.name == 'Müller' & (Buchung.status == "abgerechnet")).
-        order_by(Buchung.anreise.desc())
-        )
-    str = '<ul>'
-    for r in res:
-        str += '<li>' + r.status + '</li>'
-    str += '</ul>'
-    return str
+    
         

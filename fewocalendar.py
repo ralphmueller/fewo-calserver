@@ -11,7 +11,7 @@ import calendar
 from bkormlib import envir
 from bkormlib.schema import Apartment
 
-bp = Blueprint('calendar', __name__, url_prefix='/')
+bp = Blueprint('calendar', __name__, url_prefix='')
 
 @bp.route("/calendar")
 def routecalendar():

@@ -15,7 +15,7 @@ from bkormlib.schema import Apartment
 
 from fewo_reporting import aggregate_byMonth_byApartment, calc_income_and_commission_for_years, calc_apartment_income_and_commission_for_years, calc_income_all_apartments_for_years, calc_income_apartment
 
-YEARS = [2015, 2016, 2017, 2018, 2019]
+YEARS = [2015, 2016, 2017, 2018, 2019, 2020, 2021]
 APTS = [a.name for a in Apartment.select().order_by(Apartment.name)]
 
 bp = Blueprint('stats', __name__, url_prefix='/stats')

@@ -2,6 +2,6 @@
 	"runmode": "production",
 	"dbsettings": {
 		"test": {"host": "localhost", "database":"testrechnungen", "user": "root", "passwd": ""},
-		"production": {"host": "195.42.114.62", "database":"usr_web2299_13", "user": "web2299_13", "passwd": "tip=!toe"}
+		"production": {"host": "84.38.79.65", "database":"usr_web2299_11", "user": "web2299_11", "passwd": "tip=!toe"}
 	}
 }

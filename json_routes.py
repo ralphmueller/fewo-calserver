@@ -21,10 +21,7 @@ def rechnungen_besucher(besucher_name):
         where(Besucher.name.regexp(reg) & (Buchung.status == "abgerechnet")).
         order_by(Buchung.anreise.desc())
         )
-    a = []
-    for r in res:
-        a.append(model_to_dict(r))
-    return json.dumps(a, ensure_ascii=False, default=str)
+    return json.dumps([model_to_dict(r) for r in res], ensure_ascii=False, default=str)
 
 
 
