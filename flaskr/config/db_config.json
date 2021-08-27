@@ -1,7 +1,7 @@
 {
-	"runmode": "production",
+	"runmode": "development",
 	"dbsettings": {
-		"test": {"host": "localhost", "database":"testrechnungen", "user": "root", "passwd": ""},
+		"development": {"host": "localhost", "database":"testrechnungen", "user": "root", "passwd": ""},
 		"production": {"host": "84.38.79.65", "database":"usr_web2299_11", "user": "web2299_11", "passwd": "tip=!toe"}
 	}
 }

@@ -13,16 +13,13 @@ from flask import Flask, render_template
 from flask_cors import CORS
 
 sys.path.append('../libs') # to include file fewo_reporting
-
-for f in sys.path:
-    print(f)
-
-import bkormlib
-bkormlib.envir = 'production'
     
 if __name__ == "__main__":
     
     app = Flask(__name__)
+
+    import bkormlib
+    bkormlib.envir = 'development'
 
     @app.route("/")
     def home():
@@ -35,8 +32,8 @@ if __name__ == "__main__":
     CORS(app)
     app.secret_key = 'google hupf schmeckt gut'
     
-    import auth
-    app.register_blueprint(auth.bp)
+    # import auth
+    # app.register_blueprint(auth.bp)
     
     import besucher
     app.register_blueprint(besucher.bp)
