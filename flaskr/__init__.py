@@ -41,8 +41,8 @@ app.register_blueprint(buchung.bp)
 from . import rest
 app.register_blueprint(rest.bp)
 
-# from . import stats
-# app.register_blueprint(stats.bp)
+from . import stats
+app.register_blueprint(stats.bp)
 
 from . import fewocalendar
 app.register_blueprint(fewocalendar.bp)
