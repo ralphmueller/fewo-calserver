@@ -11,7 +11,8 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from fewo-calserver.models import User
+from bkormlib.schema import User
+from peewee import DoesNotExist
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -43,18 +44,18 @@ def login():
         username = request.form['username']
         password = request.form['password']
         error = None
-
-        user = User.get(User.username == username)
-
-        if user is None:
+        try:
+            user  = User.get(User.username == username)
+            if not check_password_hash(user.password, password):
+                error = 'Incorrect password.'
+        except DoesNotExist:
             error = 'Incorrect username.'
-        elif not check_password_hash(user.password, password):
-            error = 'Incorrect password.'
+            session.clear()
 
         if error is None:
             session.clear()
             session['user_id'] = user.id
-            return redirect(url_for('index'))
+            return redirect(url_for('home.index'))
 
         flash(error)
 

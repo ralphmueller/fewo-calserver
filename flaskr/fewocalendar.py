@@ -10,10 +10,12 @@ import calendar
 
 from bkormlib import envir
 from bkormlib.schema import Apartment
+from flaskr.auth import login_required
 
 bp = Blueprint('calendar', __name__, url_prefix='')
 
 @bp.route("/calendar")
+@login_required
 def routecalendar():
     today = datetime.date.today()
     year = int(request.args.get('year') or today.year)
