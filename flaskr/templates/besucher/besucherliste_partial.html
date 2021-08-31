@@ -1,0 +1,25 @@
+<!-- 
+	partial für Besucherliste / rows
+-->
+<div class="table-responsive">
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Anrede</th><th>Name</th><th>Strasse</th><th>Stadt</th><th>Land</th><th>Email</th>
+			</tr>
+		</thead>
+		<tbody>	
+	    {% for besucher in data %}	  
+			<tbody>		
+		    <tr>
+		        <td>{{besucher.anrede}}</td>
+		        <td><a href="/besucher/{{besucher.id}}/update">{{besucher.name}}, {{besucher.vorname}}</a></td>
+		        <td>{{besucher.strasse}}</td>
+		        <td>{{besucher.stadt}}</td>
+		        <td>{{besucher.land}}</td>
+		        <td>{{besucher.email}}</td>
+		     </tr>
+		 {% endfor %}
+		 </tbody>
+	</table>
+</div>

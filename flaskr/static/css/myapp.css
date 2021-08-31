@@ -1,22 +1,13 @@
-div[class^="form-row"] {
-    outline: 1px dotted rgba(0, 255, 0, 0.7);
-}
-
-div[class^="form-group"] {
-    outline: 1px dotted rgba(255, 0, 0, 0.7);
-}
-
 body .light-blue {
   background-color: blue;
 }
 body .top-70 {
   margin-top: 70px;
 }
-
 body h2 {
   margin-bottom: 40px;
   text-align: center;
-  text-color: red;
+  color: black;
 }
 body ul {
   padding-left: 0px;
@@ -44,7 +35,7 @@ body table.60percent {
   width: 60%;
 }
 body table td {
-  text-align: center;
+  text-align: left;
   font-size: 1em;
   height: 1.1em;
 }

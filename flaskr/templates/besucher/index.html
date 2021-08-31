@@ -1,12 +1,17 @@
+{% extends "layout.html" %}
+
 <!-- 
-	partial for listing visitors
+	List all visitors
 -->
 
 {% block content %}
 
 <div class="row">
 	<div class="col-12">
-		<h3>Besucherliste</h3>
+
+		{% include 'besucher/besucherliste_partial.html' %}
+
+	</div>
 </div>
 
 {% endblock %}

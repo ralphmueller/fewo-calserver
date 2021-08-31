@@ -20,16 +20,16 @@ from flaskr.auth import login_required
     
 app = Flask(__name__, instance_relative_config=True)
 
+CORS(app)
+app.secret_key = 'google hupf schmeckt gut'
+
 from . import home
 app.register_blueprint(home.bp)
- 
+
 @app.route("/resetinvoice/")
 @login_required
 def reset_invoice_new():
     return render_template('reset_invoice_new.html', run_mode=bkormlib.envir) 
-
-CORS(app)
-app.secret_key = 'google hupf schmeckt gut'
 
 from . import auth
 app.register_blueprint(auth.bp)
