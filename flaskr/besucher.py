@@ -8,7 +8,7 @@ find or create besucher
 '''
 from flask import Blueprint, render_template, flash, redirect, url_for, request
 
-from bkormlib import envir, Besucher
+from bkormlib import envir, Besucher, Buchung, Apartment
 
 from flaskr.auth import login_required
 
@@ -60,6 +60,12 @@ def update(id):
 
     besucher = Besucher.get(Besucher.id == id)
 
+    buchungen = (Buchung
+        .select(Buchung, Apartment)
+        .join(Apartment)
+        .where(Buchung.besucher == besucher).order_by(Buchung.anreise.desc())
+    )
+
     if request.method == 'POST':
         name = request.form['name']
         vorname = request.form['vorname']
@@ -83,4 +89,4 @@ def update(id):
                 flash('{}, {} wurde nicht geändert!'.format(besucher.name, besucher.vorname))
             return redirect(url_for('home.index'))
 
-    return render_template('besucher/update.html', besucher=besucher, title='{}, {}'.format(besucher.name, besucher.vorname))
+    return render_template('besucher/update.html', besucher=besucher, title='{}, {}'.format(besucher.name, besucher.vorname), buchungen=buchungen)

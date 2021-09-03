@@ -5,11 +5,7 @@
 -->
 
 {% block content %}
-
 <div class="row">
-
-	<div class="col-12">
- 
 		<form method="post">
             <div class="row g-3">		
 		    	<div class="col-md-1">  	
@@ -39,37 +35,36 @@
                 </div> 		
             </div>	
             <div class="row g-3">		
-		    	<div class="col-md-1">  	
+		    	<div class="col-md-3">  	
 	      			<label for="strasse" class="col-form-label">Strasse</label>	
                     <input name="strasse" type="text" class="form-control" placeholder="Strasse" id="strasse"
                         value="{{ request.form['strasse'] or besucher.strasse }}" required>
 				</div> 	                
-                <div class="col-md-2">  	
+                <div class="col-md-1">  	
                     <label for="plz" class="col-form-label">PLZ</label>	
                     <input name="plz"  type="text" class="form-control" placeholder="PLZ" id="PLZ"
                         value="{{ request.form['plz'] or besucher.plz }}" required>
                 </div> 	
-                <div class="col-md-3">  	
+                <div class="col-md-4">  	
                     <label for="stadt" class="col-form-label">Stadt</label>	
                     <input name="stadt" type="text" class="form-control" placeholder="Stadt" id="stadt"
                         value="{{ request.form['stadt'] or besucher.stadt }}" required>
                 </div> 
-                <div class="col-md-3">  	
+                <div class="col-md-1">  	
                     <label for="land" class="col-form-label">Land</label>	
                     <input name="land" type="land" class="form-control" placeholder="DE" id="land"
                         value="{{ request.form['land'] or besucher.land }}" required>
                 </div>                 	
             </div>	            
-		 	<div class="form-row">
-		 		<div class="form-group col-md-1">
-		 			<input name="abbruch" class="btn btn-primary btn-sm" type="reset" value="Reset">
-		 		</div>
-		 		<div class="form-group col-md-1">
-		 			<input name="submit" class="btn btn-primary btn-sm" type="submit" value="Submit">
+		 	<div class="row g-3">
+                <div class="col-md-10"></div>
+		 		<div class="col-md-2">
+		 			<input name="submit" class="btn btn-primary btn-sm" type="submit" value="Speichern">
 		 		</div>
 		 	</div>
 		</form>
-	</div>
-
 </div> 
+<div class="row">
+    {% include '/buchungen/buchungenlist_partial.html' %}
+</div>
 {% endblock %}
