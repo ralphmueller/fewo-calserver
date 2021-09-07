@@ -36,8 +36,8 @@ body table.60percent {
 }
 body table td {
   text-align: left;
-  font-size: 1em;
-  height: 1.1em;
+  font-size: 0.8em;
+  height: 0.8em;
 }
 body table td.col20 {
   width: 20px;

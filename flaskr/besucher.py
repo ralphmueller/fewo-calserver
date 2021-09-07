@@ -37,7 +37,7 @@ def update_from_form(besucher, form):
 
 @bp.route('/')
 @login_required
-def besucher():
+def index():
     query = (Besucher
         .select()
         .order_by(Besucher.name)
@@ -53,6 +53,33 @@ def besucher():
 def besucher_find():
     return render_template('besucher_find.html', title="Finde Besucher",
         run_mode=envir)
+
+@bp.route('/create', methods=('GET', 'POST'))
+@login_required
+def create_besucher():
+
+    besucher = Besucher()
+
+    if request.method =='POST':
+        besucher.name = request.form['name']
+        besucher.vorname = request.form['vorname']
+        besucher.email = request.form['email']
+        besucher.tel = request.form['tel']
+        besucher.plz = request.form['plz']
+        besucher.name = request.form['name']
+        besucher.stadt = request.form['stadt']
+        besucher.strasse = request.form['strasse']
+        besucher.land = request.form['land']
+        besucher.vermerk = request.form['vermerk']
+
+        besucher.save()
+
+        flash('Neuer Besucher gespeichert: {} {}, {}'.format(besucher.id, besucher.name, besucher.vorname))
+
+        return(redirect(url_for('besucher.index')))
+
+    return render_template('besucher/create.html', besucher=besucher, title='Neuen Besucher anlegen', run_mode=envir)
+
 
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
 @login_required
@@ -70,23 +97,26 @@ def update(id):
         name = request.form['name']
         vorname = request.form['vorname']
         email = request.form['email']
+        action = request.form['button']
+        if action == 'update':
+            error = None
 
-        error = None
+            if (not name) or (not vorname) or (not email):
+                error = 'Name / Vorname / Email fehlen!'
 
-        if (not name) or (not vorname) or (not email):
-            error = 'Name / Vorname / Email fehlen!'
-
-        if error is not None:
-            flash(error)
-        else:
-            besucher = Besucher.get(Besucher.id == id)
-            besucher = update_from_form(besucher, request.form)
-            print('dirty', besucher.is_dirty())                                                                               
-            if besucher.is_dirty():
-                besucher.save()
-                flash('{}, {} Änderungen gespeichert!'.format(besucher.name, besucher.vorname))
+            if error is not None:
+                flash(error)
             else:
-                flash('{}, {} wurde nicht geändert!'.format(besucher.name, besucher.vorname))
-            return redirect(url_for('home.index'))
+                besucher = Besucher.get(Besucher.id == id)
+                besucher = update_from_form(besucher, request.form)
+                print('dirty', besucher.is_dirty())                                                                               
+                if besucher.is_dirty():
+                    besucher.save()
+                    flash('{}, {} Änderungen gespeichert!'.format(besucher.name, besucher.vorname))
+                else:
+                    flash('{}, {} wurde nicht geändert!'.format(besucher.name, besucher.vorname))
+                return redirect(url_for('home.index'))
+        if action == 'delete':
+            flash('delete besucher - not yet implemented')
 
     return render_template('besucher/update.html', besucher=besucher, title='{}, {}'.format(besucher.name, besucher.vorname), buchungen=buchungen)

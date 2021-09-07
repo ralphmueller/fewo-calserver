@@ -1,11 +1,11 @@
 <!-- 
-	partial für Besucherliste / rows
+	partial für Besucherliste
 -->
 <div class="table-responsive">
-	<table class="table">
+	<table class="table table-condensed table-hover">
 		<thead>
 			<tr>
-				<th>Anrede</th><th>Name</th><th>Strasse</th><th>Stadt</th><th>Land</th><th>Email</th>
+				<th>Anrede</th><th>Name</th><th>Vorname</th><th>Strasse</th><th>Stadt</th><th>Land</th><th>Email</th><th>Tel</th>
 			</tr>
 		</thead>
 		<tbody>	
@@ -13,11 +13,13 @@
 			<tbody>		
 		    <tr>
 		        <td>{{besucher.anrede}}</td>
-		        <td><a href="/besucher/{{besucher.id}}/update">{{besucher.name}}, {{besucher.vorname}}</a></td>
+		        <td><a href="/besucher/{{besucher.id}}/update">{{besucher.name}}</a></td>
+				<td>{{besucher.vorname}}</td>
 		        <td>{{besucher.strasse}}</td>
 		        <td>{{besucher.stadt}}</td>
 		        <td>{{besucher.land}}</td>
 		        <td>{{besucher.email}}</td>
+				<td>{{besucher.tel}}</td>
 		     </tr>
 		 {% endfor %}
 		 </tbody>
