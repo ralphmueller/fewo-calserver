@@ -1,0 +1,57 @@
+<!-- 
+	partial für Navigation Bar
+    RM 10.09.2021
+-->
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">MyApp</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/calendar">Kalender</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/resetinvoice">Rechnung zurücksetzen</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                    Besucher
+                </a>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="/besucher">Liste</a>
+                <a class="dropdown-item" href="/besucher/create">Neu</a>
+                <a class="dropdown-item" href="/stats/income_apartments">Finden</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                    Reports
+                </a>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="/stats/income_and_commission">Einnahmen Überblick</a>
+                <a class="dropdown-item" href="/stats/income_apartments">Einnahmen Wohnungen</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/stats/rechnungen">Rechnungen (alle)</a>
+                <a class="dropdown-item" href="/stats/rechnungen-aktuell">Rechnungen Jahr</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                {% if g.user %}
+                    <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout {{ g.user['username'] }}</a>
+                {% else %}	
+                    <a class="nav-link" href="{{ url_for('auth.login') }}">Log In</a>
+                {% endif %}
+            </li>
+        </ul>
+    </div>
+    <divclass="nav-link float-right">Runmode: {{run_mode}}</div>
+    </nav>

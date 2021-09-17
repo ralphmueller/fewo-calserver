@@ -2,11 +2,16 @@
 
 @frei: #ffffff; 
 @weekend: #ADD8E6;
+@today: orange;
 @belegt: green;
 @anreise-abreise: lightblue;
 @wechsel-am-selben-tag: red;
 
 body { 
+
+	.float-right{
+		float: right;
+	}
 	
 	.light-blue {
 	    background-color: blue;
@@ -18,7 +23,7 @@ body {
 	
 	h2 {
 		margin-bottom: 40px;
-		text-align: center;
+		text-align: left;
 		color: black;
 	}
 
@@ -77,14 +82,12 @@ body {
 				background-color: @belegt; 
 			}
 		}
-		th {
-			font-size: 1.2em;
-		}
+
 		td {
 			text-align: center;
-			font-size: 1em;
-			height: 1.1em;
-			width: 15px;
+			font-size: 0.6rem;
+			height: 1.1rem;
+			width: 0.8rem;
 			margin:0;
 			padding:0;
 		
@@ -102,6 +105,9 @@ body {
 			}
 			&.background_Sa, &.background_So  {
 				background-color: @weekend;
+			}
+			&.background_today {
+				background-color: @today;
 			}
 		}
 	}

@@ -6,38 +6,45 @@ Refactoring ongoing (7.3.2019)
 @author: ralph
 '''
 
-import sys
-import json
-import datetime
 from flask import Flask, render_template
 from flask_cors import CORS
-from flask import current_app, g
+from flaskr.auth import login_required
+import bkormlib
+bkormlib.envir = 'development'
+from . import home
+from . import auth
+from . import besucher
+from . import buchung
+
 # sys.path.append('../../libs') # to include file fewo_reporting
 import bkormlib
 bkormlib.envir = 'development'
 
-from flaskr.auth import login_required
-    
 app = Flask(__name__, instance_relative_config=True)
 
 CORS(app)
 app.secret_key = 'google hupf schmeckt gut'
 
-from . import home
+
+@app.errorhandler(404)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    return render_template('404.html'), 404
+
+
 app.register_blueprint(home.bp)
+
 
 @app.route("/resetinvoice/")
 @login_required
 def reset_invoice_new():
     return render_template('reset_invoice_new.html', run_mode=bkormlib.envir) 
 
-from . import auth
+
 app.register_blueprint(auth.bp)
 
-from . import besucher
 app.register_blueprint(besucher.bp)
 
-from . import buchung
 app.register_blueprint(buchung.bp)
 
 from . import rest

@@ -2,6 +2,9 @@
 Created on 7 Mar 2019
 
 @author: ralph
+
+@OBSOLETE?
+
 '''
 
 import json
@@ -22,6 +25,3 @@ def rechnungen_besucher(besucher_name):
         order_by(Buchung.anreise.desc())
         )
     return json.dumps([model_to_dict(r) for r in res], ensure_ascii=False, default=str)
-
-
-

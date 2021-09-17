@@ -70,6 +70,3 @@ def rest_buchungen_for_besucher(besucher_id):
         order_by(Buchung.anreise.desc())
         )
     return json.dumps([model_to_dict(r) for r in res], ensure_ascii=False, default=str)
-
-    
-        
