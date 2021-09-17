@@ -6,6 +6,7 @@ Refactoring ongoing (7.3.2019)
 @author: ralph
 '''
 
+import datetime
 from flask import Flask, render_template
 from flask_cors import CORS
 from flaskr.auth import login_required
@@ -17,14 +18,12 @@ from . import besucher
 from . import buchung
 
 # sys.path.append('../../libs') # to include file fewo_reporting
-import bkormlib
-bkormlib.envir = 'development'
 
 app = Flask(__name__, instance_relative_config=True)
+app.permanent_session_lifetime = datetime.timedelta(days=1)
 
 CORS(app)
-app.secret_key = 'google hupf schmeckt gut'
-
+app.secret_key = 'Welcome to Ferien-in-Gersfeld'
 
 @app.errorhandler(404)
 def page_not_found(e):

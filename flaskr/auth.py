@@ -16,6 +16,7 @@ from peewee import DoesNotExist
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
+
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
     if request.method == 'POST':
@@ -45,7 +46,7 @@ def login():
         password = request.form['password']
         error = None
         try:
-            user  = User.get(User.username == username)
+            user = User.get(User.username == username)
             if not check_password_hash(user.password, password):
                 error = 'Incorrect password.'
         except DoesNotExist:
@@ -61,20 +62,21 @@ def login():
 
     return render_template('auth/login.html')
 
+
 @bp.before_app_request
 def load_logged_in_user():
     user_id = session.get('user_id')
-    print('session - user-id = {}'.format(user_id))
     if user_id is None:
         g.user = None
     else:
-        g.user = User.get(User.id==user_id)
-        print('logged in as user {}'.format(g.user.username))
+        g.user = User.get(User.id == user_id)
+
 
 @bp.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('home.index'))
+
 
 def login_required(view):
     @functools.wraps(view)
@@ -82,7 +84,6 @@ def login_required(view):
         if g.user is None:
             flash('Login Required')
             return redirect(url_for('auth.login'))
-
+        print('session: ', session.get('user_id'))
         return view(**kwargs)
-
     return wrapped_view
