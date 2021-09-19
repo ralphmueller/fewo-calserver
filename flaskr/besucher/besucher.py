@@ -10,7 +10,7 @@ from flask import Blueprint, render_template, flash, redirect, url_for, request
 
 from bkormlib import envir
 
-from flaskr.auth import login_required
+from flaskr.auth.auth import login_required
 from flaskr.api import (
     fetch_visitors,
     create_besucher_from_request_form,

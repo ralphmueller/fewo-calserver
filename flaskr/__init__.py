@@ -9,10 +9,10 @@ Refactoring ongoing (7.3.2019)
 import datetime
 from flask import Flask, render_template, current_app
 from flask_cors import CORS
-from flaskr.auth import login_required
 import bkormlib
-bkormlib.envir = 'development'
+from flaskr.auth.auth import login_required
 
+bkormlib.envir = 'development'
 
 # sys.path.append('../../libs') # to include file fewo_reporting
 
@@ -27,7 +27,7 @@ app_context.push()
 
 with app.app_context():
     from .home import home
-    from . import auth
+    from .auth import auth
     from .besucher import besucher
     from . import buchung
     from . import rest
@@ -36,7 +36,7 @@ with app.app_context():
     from . import json_routes
 
     app.register_blueprint(home.home_bp)
-    app.register_blueprint(auth.bp)
+    app.register_blueprint(auth.auth_bp)
     app.register_blueprint(besucher.besucher_bp)
     app.register_blueprint(buchung.bp)
     app.register_blueprint(rest.bp)

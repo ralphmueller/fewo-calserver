@@ -46,12 +46,12 @@
             </li>
             <li class="nav-item">
                 {% if g.user %}
-                    <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout {{ g.user['username'] }}</a>
+                    <a class="nav-link" href="{{ url_for('auth_bp.logout') }}">Logout {{ g.user['username'] }}</a>
                 {% else %}	
-                    <a class="nav-link" href="{{ url_for('auth.login') }}">Log In</a>
+                    <a class="nav-link" href="{{ url_for('auth_bp.login') }}">Log In</a>
                 {% endif %}
             </li>
         </ul>
     </div>
-    <divclass="nav-link float-right">Runmode: {{run_mode}}</div>
+    <div class="nav-link float-right">Runmode: {{run_mode}}</div>
     </nav>

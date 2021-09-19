@@ -13,7 +13,7 @@ from flask import (
 
 from bkormlib import envir
 from bkormlib.schema import Buchung, Besucher, Apartment
-from flaskr.auth import login_required
+from flaskr.auth.auth import login_required
 
 bp = Blueprint('buchung', __name__, url_prefix='/buchung')
 

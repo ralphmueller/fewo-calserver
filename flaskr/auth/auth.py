@@ -14,10 +14,16 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from bkormlib.schema import User
 from peewee import DoesNotExist
 
-bp = Blueprint('auth', __name__, url_prefix='/auth')
+auth_bp = Blueprint(
+    'auth_bp',
+    __name__,
+    url_prefix='/auth',
+    template_folder='templates',
+    static_folder='static'
+)
 
 
-@bp.route('/register', methods=('GET', 'POST'))
+@auth_bp.route('/register', methods=('GET', 'POST'))
 def register():
     if request.method == 'POST':
         username = request.form['username']
@@ -37,9 +43,10 @@ def register():
 
         flash(error)
 
-    return render_template('auth/register.html')
+    return render_template('register.html')
 
-@bp.route('/login', methods=('GET', 'POST'))
+
+@auth_bp.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
         username = request.form['username']
@@ -56,14 +63,14 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user.id
-            return redirect(url_for('home.index'))
+            return redirect(url_for('home_bp.index'))
 
         flash(error)
 
-    return render_template('auth/login.html')
+    return render_template('login.html')
 
 
-@bp.before_app_request
+@auth_bp.before_app_request
 def load_logged_in_user():
     user_id = session.get('user_id')
     if user_id is None:
@@ -72,10 +79,10 @@ def load_logged_in_user():
         g.user = User.get(User.id == user_id)
 
 
-@bp.route('/logout')
+@auth_bp.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('home.index'))
+    return redirect(url_for('home_bp.index'))
 
 
 def login_required(view):
@@ -83,7 +90,6 @@ def login_required(view):
     def wrapped_view(**kwargs):
         if g.user is None:
             flash('Login Required')
-            return redirect(url_for('auth.login'))
-        print('session: ', session.get('user_id'))
+            return redirect(url_for('auth_bp.login'))
         return view(**kwargs)
     return wrapped_view

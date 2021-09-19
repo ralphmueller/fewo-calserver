@@ -10,7 +10,7 @@ import calendar
 
 from bkormlib import envir
 from bkormlib.schema import Apartment
-from flaskr.auth import login_required
+from flaskr.auth.auth import login_required
 
 bp = Blueprint('calendar', __name__, url_prefix='')
 
