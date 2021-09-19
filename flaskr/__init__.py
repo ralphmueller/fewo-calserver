@@ -26,16 +26,16 @@ app_context = app.app_context()
 app_context.push()
 
 with app.app_context():
-    from . import home
+    from .home import home
     from . import auth
-    from .besucher import routes as besucher
+    from .besucher import besucher
     from . import buchung
     from . import rest
     from . import stats
     from . import fewocalendar
     from . import json_routes
 
-    app.register_blueprint(home.bp)
+    app.register_blueprint(home.home_bp)
     app.register_blueprint(auth.bp)
     app.register_blueprint(besucher.besucher_bp)
     app.register_blueprint(buchung.bp)

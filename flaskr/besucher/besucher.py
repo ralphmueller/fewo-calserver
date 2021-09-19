@@ -59,12 +59,12 @@ def index():
     )
     if len(list(query)) > 0:
         return render_template(
-            'besucher/index.html',
+            'besucher_index.jinja2',
             number_besucher=len(list(query)),
             title='Besucherliste',
-            data=query, 
+            data=query,
             run_mode=envir
-        )     
+        )
     else:
         flash('no visitors found')
         return(redirect(url_for('home.index')))
@@ -102,10 +102,10 @@ def create_besucher():
             'Neuer Besucher gespeichert: {} {}, {}'
             .format(besucher.id, besucher.name, besucher.vorname)
         )
-        return(redirect(url_for('besucher.index')))
+        return(redirect(url_for('besucher_index')))
 
     return render_template(
-        'besucher/create.html',
+        'besucher_create.html',
         besucher=besucher, title='Neuen Besucher anlegen', run_mode=envir
     )
 
@@ -168,7 +168,7 @@ def update(id):
 
 
     return render_template(
-        'besucher/update.html', 
+        'besucher_update.jinja2',
         besucher=besucher, title='{}, {}'.format(
                 besucher.name,
                 besucher.vorname
