@@ -6,8 +6,10 @@ Created on 9. April 2019
 rest functions buchung
 
 '''
-from flask import Blueprint, render_template, request, flash, redirect, url_for
-import datetime
+from flask import (
+    render_template, flash, redirect, url_for, abort,
+    Blueprint, request
+    )
 
 from bkormlib import envir
 from bkormlib.schema import Buchung, Besucher, Apartment
@@ -15,11 +17,12 @@ from flaskr.auth import login_required
 
 bp = Blueprint('buchung', __name__, url_prefix='/buchung')
 
-@bp.route('/<string:status>')
+@bp.route('/')
 @login_required
-def index(status):
-    print('Status:', status)
-    where_list = status.split('+')
+def index():
+    request_params = request.args.get('where')
+    print('where:', request_params)
+    where_list = request_params.split()
     print('where_list: ', where_list)
     query = (
         Buchung
@@ -45,6 +48,11 @@ def index(status):
     else:
         flash('no bookings found for status ', where_list)
         return(redirect(url_for('home.index')))
+
+
+@bp.route('/create', methods=('GET', 'POST'))
+def create_buchung():
+    abort(404)
 
 
 @bp.route('/update/<int:id>', methods=('GET', 'POST'))
