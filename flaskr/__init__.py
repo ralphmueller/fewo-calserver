@@ -28,7 +28,7 @@ app_context.push()
 with app.app_context():
     from . import home
     from . import auth
-    from . import besucher
+    from .besucher import routes as besucher
     from . import buchung
     from . import rest
     from . import stats
@@ -37,7 +37,7 @@ with app.app_context():
 
     app.register_blueprint(home.bp)
     app.register_blueprint(auth.bp)
-    app.register_blueprint(besucher.bp)
+    app.register_blueprint(besucher.besucher_bp)
     app.register_blueprint(buchung.bp)
     app.register_blueprint(rest.bp)
     app.register_blueprint(stats.bp)

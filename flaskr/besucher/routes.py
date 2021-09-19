@@ -13,7 +13,13 @@ from bkormlib import envir, Besucher, Buchung, Apartment
 
 from flaskr.auth import login_required
 
-bp = Blueprint('besucher', __name__, url_prefix='/besucher')
+besucher_bp = Blueprint(
+    'besucher_bp',
+    __name__,
+    url_prefix='/besucher',
+    template_folder='templates',
+    static_folder='static'
+)
 
 
 def update_from_form(besucher, form):
@@ -41,7 +47,7 @@ def update_from_form(besucher, form):
     return besucher
 
 
-@bp.route('/')
+@besucher_bp.route('/')
 @login_required
 def index():
     '''
@@ -64,7 +70,7 @@ def index():
         return(redirect(url_for('home.index')))
 
 
-@bp.route('/find')
+@besucher_bp.route('/find')
 @login_required
 def besucher_find():
     return render_template(
@@ -73,7 +79,7 @@ def besucher_find():
         run_mode=envir)
 
 
-@bp.route('/create', methods=('GET', 'POST'))
+@besucher_bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create_besucher():
     '''
@@ -104,7 +110,7 @@ def create_besucher():
     )
 
 
-@bp.route('/update/<int:id>', methods=('GET', 'POST'))
+@besucher_bp.route('/update/<int:id>', methods=('GET', 'POST'))
 @login_required
 def update(id):
 
