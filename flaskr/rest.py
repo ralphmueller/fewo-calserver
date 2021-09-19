@@ -36,9 +36,10 @@ def rest_besucher_by_name(besucher_name):
         used in lookup_besucher.js
     '''
     reg = '^' + besucher_name
-    res = (Besucher.
-        select().
-        where(Besucher.name.regexp(reg))
+    res = (
+        Besucher
+        .select()
+        .where(Besucher.name.regexp(reg))
         )
     return json.dumps([model_to_dict(r) for r in res], ensure_ascii=False, default=str)
 
@@ -49,12 +50,13 @@ def rest_besucherliste_select(besucher_name):
         used in lookup_invoice.js
     '''
     reg = '^' + besucher_name
-    res = (Buchung.
-        select().
-        join(Besucher).
-        where(Besucher.name.regexp(reg) & (Buchung.status == "abgerechnet")).
-        order_by(Buchung.anreise.desc())
-        )
+    res = (
+        Buchung
+        .select()
+        .join(Besucher)
+        .where(Besucher.name.regexp(reg) & (Buchung.status == "abgerechnet"))
+        .order_by(Buchung.anreise.desc())
+    )
     a = []
     for r in res:
         a.append(model_to_dict(r))
@@ -63,10 +65,13 @@ def rest_besucherliste_select(besucher_name):
 @bp.route('/buchungen/besucher/<besucher_id>')     # ?status = '{'storno'|'gebucht'|'abgerechnet'}
 def rest_buchungen_for_besucher(besucher_id):
     status = request.args['status']
-    res = (Buchung.
-        select().
-        join(Besucher).
-        where((Besucher.id == besucher_id) & (Buchung.status == status)).
-        order_by(Buchung.anreise.desc())
+    res = (
+        Buchung
+        .select()
+        .join(Besucher)
+        .where((Besucher.id == besucher_id) & (Buchung.status == status))
+        .order_by(Buchung.anreise.desc())
         )
-    return json.dumps([model_to_dict(r) for r in res], ensure_ascii=False, default=str)
+    return json.dumps(
+        [model_to_dict(r) for r in res], ensure_ascii=False, default=str
+    )

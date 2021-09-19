@@ -23,31 +23,32 @@ def routecalendar():
     # calculate prev/next month
     around = []
     if (month == 1):
-        around.append ([12,year-1])
+        around.append([12, year-1])
     else:
-        around.append([month-1,year])
+        around.append([month-1, year])
     if (month == 12):
-        around.append ([1,year+1])
+        around.append([1, year+1])
     else:
-        around.append([month+1,year])  
-    fewocalendar = FewoCalendar() 
+        around.append([month + 1, year])
+    fewocalendar = FewoCalendar()
     return render_template('calendar.html', around=around, month=month, year=year, days=days_in_month(year, month), data=fewocalendar.calendar_for_apartments(year, month), run_mode=envir)
 
+
 class FewoCalendar():
-    ''' 
+    '''
         display a calendar for the holiday apartments
     '''
     def __init__(self):
         self.apartments = [apt for apt in Apartment.select()]
-        
+
     def apartment_names(self):
         return sorted([apt.name for apt in self.apartments])
-    
+
     def calendar_for_apartments(self, year, month):
-        ''' 
+        '''
             return an array that contains for every apartment a single list
             - name
-            - 
+            -
         '''
         cal = [c for c in calendar.Calendar().itermonthdates(year, month)]
         result_list = []
@@ -66,17 +67,29 @@ class FewoCalendar():
                             days[i] += 2
                         if day == active_visit.abreise:
                             days[i] += 2
-                        if (day > active_visit.anreise) and (day < active_visit.abreise):
+                        if (
+                            (day > active_visit.anreise)
+                            and
+                            (day < active_visit.abreise)
+                        ):
                             days[i] = 1
-                            av[i] = '{},{}:{}-{}'.format(active_visit.besucher.name, 
+                            av[i] = '{},{}:{}-{}'.format(
+                                    active_visit.besucher.name, 
                                     active_visit.besucher.vorname, 
                                     active_visit.anreise.strftime('%d.%m.%y'), 
                                     active_visit.abreise.strftime('%d.%m.%y'))
-                            html[i] = '<a href="/buchung/{}">&nbsp;</a>'.format(active_visit.id)
-            result_list.append([{'apt': apt.name, 'day': d.day,'month' : d.month, 'year': d.year, 'weekday': d.isoweekday(),  'belegung':days[i], 'buchung':av[i], 'html':html[i]} for i, d in enumerate(cal)])
+                            html[i] = (
+                                '<a href="/buchung/{}">&nbsp;</a>'
+                                .format(active_visit.id)
+                            )
+            result_list.append([{'apt': apt.name, 'day': d.day, 'month': d.month, 'year': d.year, 'weekday': d.isoweekday(),  'belegung': days[i], 'buchung':av[i], 'html':html[i]} for i, d in enumerate(cal)])
         return (result_list)
-        
+
+
 def days_in_month(year, month):
-    DAYS_OF_WEEK = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa','So']
+    DAYS_OF_WEEK = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
     c = calendar.Calendar()
-    return [(f.day,DAYS_OF_WEEK[f.isoweekday()-1], f.month) for f in c.itermonthdates(year, month)]
+    return [(
+        f.day,
+        DAYS_OF_WEEK[f.isoweekday()-1],
+        f.month) for f in c.itermonthdates(year, month)]
