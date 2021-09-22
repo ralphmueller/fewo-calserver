@@ -3,12 +3,18 @@ Created on 20 March 2019
 
 @author: ralph
 
-find or create besucher
+find, list, update, create and delete besucher
 
 '''
-from flask import Blueprint, render_template, flash, redirect, url_for, request
-
-from bkormlib import envir
+from flask import (
+    Blueprint,
+    render_template,
+    flash,
+    redirect,
+    url_for,
+    request,
+    current_app
+)
 
 from flaskr.auth.auth import login_required
 from flaskr.api import (
@@ -41,7 +47,7 @@ def index():
             number_besucher=len(data),
             title='Besucherliste',
             data=data,
-            run_mode=envir
+            run_mode=current_app.env
         )
     else:
         flash('no visitors found')
@@ -54,7 +60,7 @@ def besucher_find():
     return render_template(
         'besucher_find.html',
         title="Finde Besucher",
-        run_mode=envir)
+        run_mode=current_app.env)
 
 
 @besucher_bp.route('/create', methods=('GET', 'POST'))
@@ -63,6 +69,7 @@ def create_besucher():
     '''
         REST: Create new visitor
     '''
+
     if request.method == 'POST':
         id, name, vorname = create_besucher_from_request_form(request.form)
         flash(
@@ -73,7 +80,7 @@ def create_besucher():
 
     return render_template(
         'besucher_create.html',
-        title='Neuen Besucher anlegen', run_mode=envir
+        title='Neuen Besucher anlegen', run_mode=current_app.env
     )
 
 
@@ -101,9 +108,11 @@ def update(id):
 
     return render_template(
         'besucher_update.jinja2',
-        besucher=besucher, title='{}, {}'.format(
+        besucher=besucher, 
+        title='{}, {}'.format(
                 besucher.name,
                 besucher.vorname
             ),
-        buchungen=buchungen
+        buchungen=buchungen,
+        run_mode=current_app.env
     )

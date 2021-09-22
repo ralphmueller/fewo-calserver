@@ -7,7 +7,7 @@ API to models and helper functions
 '''
 
 from peewee import fn
-from bkormlib import envir, Besucher, Buchung, Apartment
+from bkormlib import Besucher, Buchung, Apartment
 
 
 def fetch_visitors():

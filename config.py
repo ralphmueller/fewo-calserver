@@ -19,7 +19,8 @@ class Config:
 
     FLASK_ENV = 'development'
     TESTING = True
-    SECRET_KEY = environ.get('SECRET_KEY')
     STATIC_FOLDER = 'static'
     TEMPLATES_FOLDER = 'templates'
     PERMANENT_SESSION_LIFETIME = datetime.timedelta(days=1)
+    SECRET_KEY = environ.get('SECRET_KEY')
+    DATABASE = environ.get(FLASK_ENV.upper() + '_DATABASE')

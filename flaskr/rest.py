@@ -7,7 +7,6 @@ import json
 from flask import Blueprint, request
 from playhouse.shortcuts import model_to_dict
 
-from bkormlib import envir
 from bkormlib.schema import Buchung, Besucher
 
 bp = Blueprint('rest', __name__, url_prefix='/rest')

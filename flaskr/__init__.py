@@ -10,15 +10,16 @@ import datetime
 from flask import Flask, render_template, current_app
 from flask_cors import CORS
 import bkormlib
+from bkormlib.schema import db_connect
 from flaskr.auth.auth import login_required
-
-bkormlib.envir = 'development'
 
 # sys.path.append('../../libs') # to include file fewo_reporting
 
 app = Flask(__name__, instance_relative_config=False)
 
 app.config.from_object('config.Config')
+
+db = db_connect(app.config.get('FLASK_ENV'), app.config.get('DATABASE'))
 
 CORS(app)
 
@@ -59,7 +60,7 @@ with app.app_context():
     @app.route("/resetinvoice/")
     @login_required
     def reset_invoice_new():
-        return render_template('reset_invoice_new.html', run_mode=bkormlib.envir)
+        return render_template('reset_invoice_new.html', run_mode=app.env)
 
 
 if __name__ == "__main__":

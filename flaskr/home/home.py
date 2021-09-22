@@ -6,9 +6,7 @@ Created on 20 March 2019
 find or create besucher
 
 '''
-from flask import Blueprint, render_template, request
-
-from bkormlib import envir
+from flask import Blueprint, render_template, current_app
 
 home_bp = Blueprint(
     'home_bp',
@@ -21,4 +19,4 @@ home_bp = Blueprint(
 
 @home_bp.route('/')
 def index():
-    return render_template('index.jinja2', title='Welcome', run_mode=envir)
+    return render_template('index.jinja2', title='Welcome', run_mode=current_app.env)

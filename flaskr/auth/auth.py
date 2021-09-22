@@ -7,12 +7,23 @@ Created on 27.08.2021
 import functools
 
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
+    Blueprint,
+    flash,
+    g,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+    current_app
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from bkormlib.schema import User
+from bkormlib import User
 from peewee import DoesNotExist
+
+
+from .auth_forms import LoginForm
 
 auth_bp = Blueprint(
     'auth_bp',
@@ -48,26 +59,32 @@ def register():
 
 @auth_bp.route('/login', methods=('GET', 'POST'))
 def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+    error_message = 'Benutzer Name oder Password nicht korrekt'
+    form = LoginForm()
+    if form.validate_on_submit():
         error = None
         try:
-            user = User.get(User.username == username)
-            if not check_password_hash(user.password, password):
-                error = 'Incorrect password.'
+            user = User.get(User.username == form.user.data)
+            if not check_password_hash(user.password, form.password.data):
+                error = error_message
         except DoesNotExist:
-            error = 'Incorrect username.'
+            error = error_message
             session.clear()
 
         if error is None:
             session.clear()
             session['user_id'] = user.id
             return redirect(url_for('home_bp.index'))
+        flash(error, 'error')
+        return redirect(url_for('auth_bp.login'))
 
-        flash(error)
-
-    return render_template('login.html')
+    return render_template(
+        'login.html',
+        form=form,
+        title='Login',
+        run_mode=current_app.env,
+        template='form-template'
+    )
 
 
 @auth_bp.before_app_request

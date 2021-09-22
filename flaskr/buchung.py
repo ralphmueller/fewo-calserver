@@ -8,10 +8,9 @@ rest functions buchung
 '''
 from flask import (
     render_template, flash, redirect, url_for, abort,
-    Blueprint, request
+    Blueprint, request, current_app
     )
 
-from bkormlib import envir
 from bkormlib.schema import Buchung, Besucher, Apartment
 from flaskr.auth.auth import login_required
 
@@ -43,7 +42,7 @@ def index():
             number_buchung=len(list(query)),
             title='Buchungsliste',
             data=query,
-            run_mode=envir
+            run_mode=current_app.env
         )
     else:
         flash('no bookings found for status ', where_list)
@@ -68,7 +67,9 @@ def buchung(id):
             print('Buchung {} mit Status {} kann nicht geändert werden!'.format(buchung.id, buchung.status))
             flash('Buchung {} mit Status {} kann nicht geändert werden!'.format(buchung.id, buchung.status), 'error')
             return(redirect(url_for('home.index')))
-        besucher = buchung.besucher
-        return render_template('buchung_display.html',
+
+        return render_template(
+            'buchung_display.html',
             buchung=buchung,
-            run_mode=envir)
+            run_mode=current_app.env
+        )

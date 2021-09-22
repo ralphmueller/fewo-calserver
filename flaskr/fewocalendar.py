@@ -4,13 +4,17 @@ Created on 10 Mar 2019
 @author: ralph
 '''
 
-from flask import Blueprint, render_template, request
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    current_app
+)
 import datetime
 import calendar
 
-from bkormlib import envir
-from bkormlib.schema import Apartment
-from flaskr.auth.auth import login_required
+from bkormlib import Apartment
+from flaskr.auth.auth import login_required 
 
 bp = Blueprint('calendar', __name__, url_prefix='')
 
@@ -31,7 +35,15 @@ def routecalendar():
     else:
         around.append([month + 1, year])
     fewocalendar = FewoCalendar()
-    return render_template('calendar.html', around=around, month=month, year=year, days=days_in_month(year, month), data=fewocalendar.calendar_for_apartments(year, month), run_mode=envir)
+    return render_template(
+        'calendar.html',
+        around=around,
+        month=month,
+        year=year,
+        days=days_in_month(year, month),
+        data=fewocalendar.calendar_for_apartments(year, month),
+        run_mode=current_app.env
+    )
 
 
 class FewoCalendar():
@@ -59,7 +71,7 @@ class FewoCalendar():
             for active_visit in apt.calendar_support():
                 # pass if it's not the current month
                 if (active_visit.anreise > cal[-1]) or (active_visit. abreise < cal[0]):
-                        pass
+                    pass
                 else:
                     # this is inside
                     for i, day in enumerate(cal):
