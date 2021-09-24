@@ -16,6 +16,7 @@ from flaskr.auth.auth import login_required
 
 bp = Blueprint('buchung', __name__, url_prefix='/buchung')
 
+
 @bp.route('/')
 @login_required
 def index():
@@ -35,7 +36,10 @@ def index():
     print(query.sql())
     print('len:', len(list(query)))
     if len(list(query)) > 0:
-        print(len(list(query)), list(query)[0].anreise, list(query)[0].besucher.name)
+        print(
+            len(list(query)),
+            list(query)[0].anreise,
+            list(query)[0].besucher.name)
         return(redirect(url_for('home.index')))
         return render_template(
             'buchung/index.html',
@@ -64,8 +68,12 @@ def buchung(id):
     else:
         buchung = Buchung.get(Buchung.id == id)
         if buchung.status in ['abgerechnet', 'storno', 'verworfen']:
-            print('Buchung {} mit Status {} kann nicht geändert werden!'.format(buchung.id, buchung.status))
-            flash('Buchung {} mit Status {} kann nicht geändert werden!'.format(buchung.id, buchung.status), 'error')
+            print(
+                'Buchung {} mit Status {} kann nicht geändert werden!'
+                .format(buchung.id, buchung.status))
+            flash(
+                'Buchung {} mit Status {} kann nicht geändert werden!'
+                .format(buchung.id, buchung.status), 'error')
             return(redirect(url_for('home.index')))
 
         return render_template(

@@ -16,10 +16,12 @@ from flask import (
     current_app
 )
 
+from .besucher_forms import CreateBesucherForm
+
 from flaskr.auth.auth import login_required
 from flaskr.api import (
     fetch_visitors,
-    create_besucher_from_request_form,
+    create_besucher_from_form,
     fetch_besucher_for_update,
     update_besucher_from_form,
     delete_besucher
@@ -43,7 +45,7 @@ def index():
 
     if data is not None:
         return render_template(
-            'besucher_index.jinja2',
+            'besucher_index.html',
             number_besucher=len(data),
             title='Besucherliste',
             data=data,
@@ -65,13 +67,13 @@ def besucher_find():
 
 @besucher_bp.route('/create', methods=('GET', 'POST'))
 @login_required
-def create_besucher():
+def create():
     '''
         REST: Create new visitor
     '''
-
-    if request.method == 'POST':
-        id, name, vorname = create_besucher_from_request_form(request.form)
+    form = CreateBesucherForm()
+    if form.validate_on_submit():
+        id, name, vorname = create_besucher_from_form(form)
         flash(
             'Neuer Besucher gespeichert: {} {}, {}'
             .format(id, name, vorname)
@@ -80,7 +82,10 @@ def create_besucher():
 
     return render_template(
         'besucher_create.html',
-        title='Neuen Besucher anlegen', run_mode=current_app.env
+        form=form,
+        title='Neuen Besucher anlegen',
+        run_mode=current_app.env,
+        template='form-template'
     )
 
 
@@ -107,8 +112,8 @@ def update(id):
             return redirect('/buchung/create-buchung/besucher/{}'.format(id))
 
     return render_template(
-        'besucher_update.jinja2',
-        besucher=besucher, 
+        'besucher_update.html',
+        besucher=besucher,
         title='{}, {}'.format(
                 besucher.name,
                 besucher.vorname

@@ -9,6 +9,7 @@ flask = "*"
 pymysql = "*"
 flask-wtf = "*"
 flake8 = "*"
+email-validator = "*"
 
 [dev-packages]
 flake8 = "*"

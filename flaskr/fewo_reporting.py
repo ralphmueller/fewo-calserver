@@ -1,9 +1,13 @@
 '''
 Created on 11.01.2013
-Changed on 05.05.2013, (calculation of arrivals and nights include all visitors - old, young etc.)
-Changed on 31.08.2016 - using peewee ORM to access objects, results were compared with the old reporting function and are the same (August 2016)
+Changed on 05.05.2013, (calculation of arrivals and nights
+    include all visitors - old, young etc.)
+Changed on 31.08.2016 - using peewee ORM to access objects,
+    results were compared with the old reporting function and are
+    the same (August 2016)
 Changed on 3.10.2018, better reporting for nights / arrival per country
-Fixed bug on 3.1.0.2018: departure on first day of month doesn't account for any nights in this month
+Fixed bug on 3.1.0.2018: departure on first day of month doesn't account
+    for any nights in this month
 
 @author: ralph
 '''
@@ -16,33 +20,41 @@ from bkormlib.schema import Buchung, Apartment
 
 # -------------------- functions ------------------
 
-def report_stats_for_month (month, year):
+def report_stats_for_month(month, year):
 
     arrivals_dict = dict()
     arrivals_sum = 0
     nights_sum = 0
     kurtaxe = 0.0
-    nights_ueber_15_kt, nights_ueber_15, nights_ueber_10_kt, nights_unter_10 = 0,0,0,0
+    nights_ueber_15_kt = 0
+    nights_ueber_15 = 0
+    nights_ueber_10_kt = 0
+    nights_unter_10 = 0
     transactions = []
     email_addresses = set()
 
-    
-    visits = (Buchung 
+    visits = (
+        Buchung
         .select()
-        .where((Buchung.abreise > datetime.date(year,month, 1))         # departure on first day of month doesn't account for any nights in this month (3.10.2018)
-                & (Buchung.abreise <= datetime.date(year,month, calendar.monthrange(year, month)[1]))
-                & (Buchung.status == 'abgerechnet')
+        .where(
+            # departure on first day of month doesn't account for any
+            # nights in this month (3.10.2018)
+            (Buchung.abreise > datetime.date(year, month, 1))
+            & (Buchung.abreise <= datetime.date(
+                year, month, calendar.monthrange(year, month)[1]))
+            & (Buchung.status == 'abgerechnet')
         ))
 
     for visit in visits:
         # collect unique email addresses
         email_addresses.add(visit.besucher.email)
 
-        # Deal with arrivals first   
-        arrivals = visit.arrivals_for_month(month, year)   
-        if arrivals > 0: 
+        # Deal with arrivals first
+        arrivals = visit.arrivals_for_month(month, year)
+        if arrivals > 0:
             if visit.besucher.land not in arrivals_dict.keys():
-                arrivals_dict[visit.besucher.land] = {'arrivals':0, 'nights':0} 
+                arrivals_dict[visit.besucher.land] = {
+                    'arrivals': 0, 'nights': 0}
             arrivals_dict[visit.besucher.land]['arrivals'] += arrivals
             arrivals_sum += arrivals
 
@@ -53,7 +65,7 @@ def report_stats_for_month (month, year):
         nights_report = visit.nights_report(month, year)
 
         if visit.besucher.land not in arrivals_dict.keys():
-            arrivals_dict[visit.besucher.land] = {'arrivals':0, 'nights':0}
+            arrivals_dict[visit.besucher.land] = {'arrivals': 0, 'nights': 0}
         arrivals_dict[visit.besucher.land]['nights'] += nights_report[4]
 
         nights_sum += nights_report[4]
@@ -62,71 +74,104 @@ def report_stats_for_month (month, year):
         nights_ueber_10_kt += nights_report[2]
         nights_unter_10 += nights_report[3]
 
-    return ({'kurtaxe':kurtaxe,
-             'arrivals_sum' : arrivals_sum,
+    return ({'kurtaxe': kurtaxe,
+             'arrivals_sum': arrivals_sum,
              'arrivals': arrivals_dict,
-             'nights_sum':nights_sum,
-             'kt_nights':nights_ueber_15_kt,
-             'nights_ueber_15_kt':nights_ueber_15_kt,
-             'nights_ueber_15':nights_ueber_15,
-             'nights_ueber_10_kt':nights_ueber_10_kt,
-             'nights_unter_10':nights_unter_10,
+             'nights_sum': nights_sum,
+             'kt_nights': nights_ueber_15_kt,
+             'nights_ueber_15_kt': nights_ueber_15_kt,
+             'nights_ueber_15': nights_ueber_15,
+             'nights_ueber_10_kt': nights_ueber_10_kt,
+             'nights_unter_10': nights_unter_10,
              'transactions': transactions},
-            email_addresses
-        )
+            email_addresses)
 
-def financials_for_month (month, year):
-  
-    query = (Buchung 
-        .select(fn.SUM(Buchung.miete).alias('miete'), fn.SUM(Buchung.kurtaxe).alias('kurtaxe'), fn.SUM(Buchung.vorauszahlung).alias('vorauszahlung'), fn.SUM(Buchung.vip_passes).alias('vip_paesse'), fn.SUM(Buchung.kommission).alias('kommission'), Buchung.apartment.alias('id'))
+
+def financials_for_month(month, year):
+
+    query = (
+        Buchung
+        .select(
+            fn.SUM(Buchung.miete).alias('miete'),
+            fn.SUM(Buchung.kurtaxe).alias('kurtaxe'),
+            fn.SUM(Buchung.vorauszahlung).alias('vorauszahlung'),
+            fn.SUM(Buchung.vip_passes).alias('vip_paesse'),
+            fn.SUM(Buchung.kommission).alias('kommission'),
+            Buchung.apartment.alias('id'))
         .where(
-            (Buchung.abreise >= datetime.date(year,month, 1)) 
-            & (Buchung.abreise <= datetime.date(year,month, calendar.monthrange(year, month)[1]))
+            (Buchung.abreise >= datetime.date(year, month, 1))
+            & (Buchung.abreise <= datetime.date(
+                year, month, calendar.monthrange(year, month)[1]))
             & (Buchung.status == 'abgerechnet')
         )
         .group_by(Buchung.apartment))
-    
+
     miete = 0
     kurtaxe = 0
     kommission = 0
-    vip_paesse = 0.0
     vorauszahlungen = 0.0
-    
+
     fewo_vector = []
 
     for r in query:
         miete += float(r.miete)
-        kurtaxe +=  float(r.kurtaxe)
+        kurtaxe += float(r.kurtaxe)
         kommission += float(r.kommission)
         vorauszahlungen += float(r.vorauszahlung)
-        fewo_vector.append( (Apartment.get(Apartment.id==r.id).name, float(r.miete), float(r.kurtaxe), float(r.kommission) ))
-        
-    pretty_string = ("\n\n" \
-        "Einnahmen:        {0: 8.2f} €\n"  \
-        "Vorauszahlungen:  {1: 8.2f} €\n"  \
-        "Kurtaxe           {3: 8.2f} €\n"
-        "Kommission        {4: 8.2f} €\n").format(miete, vorauszahlungen, vip_paesse, kurtaxe, kommission)
+        fewo_vector.append((
+            Apartment.get(Apartment.id == r.id).name,
+            float(r.miete),
+            float(r.kurtaxe), float(r.kommission)))
+
+    pretty_string = (
+        "\n\n"
+        "Einnahmen:        {0: 8.2f} €\n"
+        "Vorauszahlungen:  {1: 8.2f} €\n"
+        "Kurtaxe           {2: 8.2f} €\n"
+        "Kommission        {3: 8.2f} €\n").format(
+            miete,
+            vorauszahlungen,
+            kurtaxe,
+            kommission)
     for v in fewo_vector:
-        pretty_string += "\nWohnung {}     Miete:{:8.2f} €    Kommission:{:8.2f} €".format(v[0], v[1], v[3])
-    return ({'miete': miete, 'kurtaxe':kurtaxe, 'kommission':kommission, 'vorauszahlungen': vorauszahlungen,'fewo_vector': fewo_vector, 'pretty':pretty_string})
+        pretty_string += (
+            "\nWohnung {}     Miete:{:8.2f} €    Kommission:{:8.2f} €"
+            .format(v[0], v[1], v[3]))
+    return ({
+        'miete': miete,
+        'kurtaxe': kurtaxe,
+        'kommission': kommission,
+        'vorauszahlungen': vorauszahlungen,
+        'fewo_vector': fewo_vector,
+        'pretty': pretty_string})
+
 
 def aggregate_byMonth_byApartment(status='abgerechnet'):
     '''
-    Aggregate for bookings for status ('storno' | 'abgerechnet' | 'gebucht') 
+    Aggregate for bookings for status ('storno' | 'abgerechnet' | 'gebucht')
     select COUNT(id), SUM(miete), YEAR(abreise), MONTH(abreise), apartment_id
         from buchung
         GROUP BY YEAR(abreise), MONTH(abreise), apartment_name
     '''
-    query= (Buchung
+    query = (
+        Buchung
         .select(Buchung.apartment,
-                fn.COUNT(Buchung.id).alias('count'), 
-                fn.SUM(Buchung.miete).alias('miete'), 
-                fn.YEAR(Buchung.abreise).alias('year'), 
+                fn.COUNT(Buchung.id).alias('count'),
+                fn.SUM(Buchung.miete).alias('miete'),
+                fn.YEAR(Buchung.abreise).alias('year'),
                 fn.MONTH(Buchung.abreise).alias('month'))
         .where(Buchung.status == status)
-        .group_by(fn.YEAR(Buchung.abreise), fn.MONTH(Buchung.abreise), Buchung.apartment)
-    ) 
-    return ([{ 'count':x.count, 'rent':x.miete, 'year':x.year, 'month':x.month, 'Apartment':x.apartment.name} for x in query]) 
+        .group_by(
+            fn.YEAR(Buchung.abreise),
+            fn.MONTH(Buchung.abreise),
+            Buchung.apartment)
+    )
+    return ([{
+        'count': x.count,
+        'rent': x.miete,
+        'year': x.year,
+        'month': x.month,
+        'Apartment': x.apartment.name} for x in query])
 
 
 def calc_apartment_income_and_commission_for_years(apartment_name, years):
@@ -134,42 +179,50 @@ def calc_apartment_income_and_commission_for_years(apartment_name, years):
     income = []
     commission = []
     for year in years:
-        startdate = datetime.date(year, 1,1)
-        enddate = datetime.date(year, 12,31)
-        res = (Buchung 
-            .select(fn.sum(Buchung.miete).alias('income'), fn.sum(Buchung.kommission).alias('kommission'))
+        startdate = datetime.date(year, 1, 1)
+        enddate = datetime.date(year, 12, 31)
+        res = (
+            Buchung
+            .select(
+                fn.sum(Buchung.miete).alias('income'),
+                fn.sum(Buchung.kommission).alias('kommission'))
             .where(
-                (Buchung.abreise >= startdate) 
-                & (apt.id ==  Buchung.apartment_id)
+                (Buchung.abreise >= startdate)
+                & (apt.id == Buchung.apartment_id)
                 & (Buchung.abreise <= enddate)
                 & (Buchung.status << ['abgerechnet', 'gebucht'])
             )).scalar(as_tuple=True)
-        if res[0] != None:
+        if res[0] is not None:
             income.append(float(res[0]))
             commission.append(float(res[1]))
         else:
             income.append(0.0)
             commission.append(0.0)
-            
+
     return income, commission
+
 
 def calc_income_and_commission_for_years(years):
     income = []
     commission = []
     for year in years:
-        startdate = datetime.date(year, 1,1)
-        enddate = datetime.date(year, 12,31)
-        res = (Buchung 
-            .select(fn.sum(Buchung.miete).alias('income'), fn.sum(Buchung.kommission).alias('kommission'))
+        startdate = datetime.date(year, 1, 1)
+        enddate = datetime.date(year, 12, 31)
+        res = (
+            Buchung
+            .select(
+                fn.sum(Buchung.miete).alias('income'),
+                fn.sum(Buchung.kommission).alias('kommission'))
             .where(
-                (Buchung.abreise >= startdate) 
+                (Buchung.abreise >= startdate)
                 & (Buchung.abreise <= enddate)
                 & (Buchung.status << ['abgerechnet', 'gebucht'])
             )).scalar(as_tuple=True)
-        
+
         income.append(float(res[0]))
         commission.append(float(res[1]))
     return income, commission
+
 
 def calc_income_all_apartments_for_years(apartment_names, years):
     dataset = []
@@ -177,32 +230,34 @@ def calc_income_all_apartments_for_years(apartment_names, years):
         apt = Apartment.get(Apartment.name == apt_name)
         income = []
         for year in years:
-            startdate = datetime.date(year, 1,1)
-            enddate = datetime.date(year, 12,31)
-            res = (Buchung 
-                   .select(fn.sum(Buchung.miete).alias('income'))
-                   .where(
-                       (Buchung.abreise >= startdate) 
-                       & (apt.id ==  Buchung.apartment_id)
+            startdate = datetime.date(year, 1, 1)
+            enddate = datetime.date(year, 12, 31)
+            res = (
+                Buchung
+                .select(fn.sum(Buchung.miete).alias('income'))
+                .where(
+                       (Buchung.abreise >= startdate)
+                       & (apt.id == Buchung.apartment_id)
                        & (Buchung.abreise <= enddate)
                        & (Buchung.status << ['abgerechnet', 'gebucht'])
                 )).scalar(as_tuple=True)
-            if res[0] != None: 
+            if res[0] is not None:
                 income.append(float(res[0]))
-            else: 
+            else:
                 income.append(0.0)
         dataset.append(income)
     return dataset
 
+
 def calc_income_apartment(apt_name, year):
-    startdate = datetime.date(year, 1,1)
-    enddate = datetime.date(year, 12,31)
+    startdate = datetime.date(year, 1, 1)
+    enddate = datetime.date(year, 12, 31)
     apt = Apartment.get(Apartment.name == apt_name)
-    bookings = (Buchung 
-        .select()
+    bookings = (
+        Buchung
         .where(
-            (Buchung.abreise >= startdate) 
-            & (apt.id ==  Buchung.apartment_id)
+            (Buchung.abreise >= startdate)
+            & (apt.id == Buchung.apartment_id)
             & (Buchung.abreise <= enddate)
             & (Buchung.status << ['abgerechnet', 'gebucht'])
         ))
@@ -214,6 +269,7 @@ def calc_income_apartment(apt_name, year):
         # calulate average rent / day
         days_for_daily_rate += b.miete/(b.abreise-b.anreise).days
         # calculate days in year
-        
-    return [float(miete), len(bookings), float(days_for_daily_rate/len(bookings))]
-
+    return [
+        float(miete),
+        len(bookings),
+        float(days_for_daily_rate/len(bookings))]
