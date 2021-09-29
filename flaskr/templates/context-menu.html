@@ -1,0 +1,23 @@
+<!-- 
+	partial for left-side 
+-->
+
+<h3>Aktionen</h3>
+{% if actions %}
+    <ul class="actions">
+    {% for action in actions %}
+        <li>{{actions}}</li>
+    {% endfor %}
+    </ul>
+{% else %}		
+    <ul class="actions"> 
+        <li><a target="_blank" href="https://ferien-in-gersfeld.de">Ferien-in-Gersfeld</a></li>
+        <li><a target="_blank" href="https://ferien-in-gersfeld.de">Preisliste 2022</a></li>
+        <li>&nbsp;</li>
+        <li><a target="self" href="{{url_for('besucher_bp.besucher_find')}}">Besucher finden</a></li>
+        <li><a target="self" href="#">Buchung finden</a></li>
+    </ul>
+  
+{% endif %}
+
+{% include 'flash.html' %}

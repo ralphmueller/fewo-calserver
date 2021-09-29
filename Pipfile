@@ -10,9 +10,12 @@ pymysql = "*"
 flask-wtf = "*"
 flake8 = "*"
 email-validator = "*"
+flask-debugtoolbar = "*"
 
 [dev-packages]
 flake8 = "*"
+rope = "*"
+ipykernel = "*"
 
 [requires]
 python_version = "3.8"

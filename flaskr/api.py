@@ -9,7 +9,18 @@ API to models and helper functions
 from peewee import fn
 from bkormlib import Besucher, Buchung, Apartment
 
-ANREDE = {1: 'Fam', 2: 'Herr', 3: 'Frau', 4: 'Firma'}
+# choices and helper fucntions for dropdowns in Besucher forms
+ANREDE = [('1', 'Fam.'), ('2', 'Herr'), ('3', 'Frau'), ('4', 'Firma')]
+
+
+def anrede_for_key(key):
+    # TODO : check for out of index
+    return [item for item in ANREDE if item[0] == key][0][1]
+
+
+def key_for_anrede(anrede):
+    # TODO : check for out of index
+    return [item for item in ANREDE if item[1] == anrede][0][0]
 
 
 def fetch_visitors():
@@ -27,7 +38,7 @@ def fetch_visitors():
 def create_besucher_from_form(form):
     ''' create new visitor from form data '''
     besucher = Besucher()
-    besucher.anrede = ANREDE[int(form.anrede.data)]
+    besucher.anrede = anrede_for_key(form.anrede.data)
     besucher.name = form.name.data
     besucher.vorname = form.vorname.data
     besucher.email = form.email.data
@@ -54,38 +65,37 @@ def fetch_besucher_for_update(id):
     return besucher, list(buchungen)
 
 
-def update_besucher_from_form(id, form):
+def update_besucher(self, besucher):
     '''
         update besucher: check which fields need updating
 
-        TODO: move to api.py
     '''
-    besucher = Besucher.get(Besucher.id == id)
 
-    if besucher.anrede != form["anrede"]:
-        besucher.anrede = form["anrede"]
-    if besucher.name != form["name"]:
-        besucher.name = form["name"]
-    if besucher.vorname != form["vorname"]:
-        besucher.vorname = form["vorname"]
-    if besucher.tel != form["tel"]:
-        besucher.tel = form["tel"]
-    if besucher.email != form["email"]:
-        besucher.email = form["email"]
-    if besucher.stadt != form["stadt"]:
-        besucher.stadt = form["stadt"]
-    if besucher.plz != form["plz"]:
-        besucher.plz = form["plz"]
-    if besucher.strasse != form["strasse"]:
-        besucher.strasse = form["strasse"]
-    if besucher.vermerk != form["vermerk"]:
-        besucher.vermerk = form["vermerk"]
+    if besucher.anrede != anrede_for_key(self.anrede.data):
+        besucher.anrede = anrede_for_key(self.anrede.data)
+    if besucher.name != self.name.data:
+        besucher.name = self.name.data
+    if besucher.vorname != self.vorname.data:
+        besucher.vorname = self.vorname.data
+    if besucher.tel != self.tel.data:
+        besucher.tel = self.tel.data
+    if besucher.email != self.email.data:
+        besucher.email = self.email.data
+    if besucher.stadt != self.stadt.data:
+        besucher.stadt = self.stadt.data
+    if besucher.plz != self.plz.data:
+        besucher.plz = self.plz.data
+    if besucher.strasse != self.strasse.data:
+        besucher.strasse = self.strasse.data
+    if besucher.vermerk != self.vermerk.data:
+        besucher.vermerk = self.vermerk.data
     if besucher.is_dirty():
         besucher.save()
         return "Daten für {}, {} gespeichert".format(
             besucher.name, besucher.vorname
         )
-    return 'Keine Änderungen'
+    return "Keine Änderungen für {}, {}".format(
+            besucher.name, besucher.vorname)
 
 
 def delete_besucher(id):

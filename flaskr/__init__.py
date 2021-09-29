@@ -8,6 +8,7 @@ Refactoring ongoing (7.3.2019)
 
 from flask import Flask, render_template
 from flask_cors import CORS
+from flask_debugtoolbar import DebugToolbarExtension
 from bkormlib.schema import db_connect
 from flaskr.auth.auth import login_required
 
@@ -19,12 +20,14 @@ def init_app():
 
     app.config.from_object('config.Config')
 
-    db = db_connect(app.config.get('FLASK_ENV'), app.config.get('DATABASE'))
+    _ = db_connect(app.config.get('FLASK_ENV'), app.config.get('DATABASE'))
 
     CORS(app)
 
     app_context = app.app_context()
     app_context.push()
+    
+    _ = DebugToolbarExtension(app)
 
     with app.app_context():
         from .home import home

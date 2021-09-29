@@ -12,20 +12,20 @@ from flask import (
     flash,
     redirect,
     url_for,
-    request,
-    current_app
+    current_app,
+    request
 )
 
-from .besucher_forms import CreateBesucherForm
+from .besucher_forms import BesucherForm
 
 from flaskr.auth.auth import login_required
 from flaskr.api import (
+    anrede_for_key,
     fetch_visitors,
-    create_besucher_from_form,
     fetch_besucher_for_update,
-    update_besucher_from_form,
-    delete_besucher
+    create_besucher_from_form
 )
+
 besucher_bp = Blueprint(
     'besucher_bp',
     __name__,
@@ -71,7 +71,7 @@ def create():
     '''
         REST: Create new visitor
     '''
-    form = CreateBesucherForm()
+    form = BesucherForm()
     if form.validate_on_submit():
         id, name, vorname = create_besucher_from_form(form)
         flash(
@@ -93,31 +93,29 @@ def create():
 @login_required
 def update(id):
 
+    print(request.method)
+
     besucher, buchungen = fetch_besucher_for_update(id)
 
-    if request.method == 'POST':
-        action = request.form['button']
+    form = BesucherForm()
+    if request.method == 'GET':
+        form.data_from_besucher(besucher)
 
-        if action == 'update':
-            flash(update_besucher_from_form(id, request.form))
-            return redirect(url_for('home_bp.index'))
-
-        if action == 'delete':
-            flash(delete_besucher(id))
-            return redirect(url_for('home_bp.index'))
-
-        if action == 'neues_angebot':
-            return redirect('/buchung/create-angebot/besucher/{}'.format(id))
-        if action == 'neue_buchung':
-            return redirect('/buchung/create-buchung/besucher/{}'.format(id))
+    if form.validate_on_submit():
+        res = form.update_besucher(besucher)
+        flash(
+            res
+        )
+        return(redirect(url_for('besucher_bp.index')))
 
     return render_template(
         'besucher_update.html',
-        besucher=besucher,
+        form=form,
         title='{}, {}'.format(
                 besucher.name,
                 besucher.vorname
             ),
         buchungen=buchungen,
+        besucher=besucher,
         run_mode=current_app.env
     )

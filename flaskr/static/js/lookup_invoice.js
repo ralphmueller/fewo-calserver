@@ -23,7 +23,6 @@ function getRechnung(t) {
   	var k = $(t).attr("id");
 	var rx = Rx.Observable.fromPromise(fetch('/rest/buchung/' + k).then(res => res.json()))
 	.subscribe(data => {
-		console.log(data);
 		$("#id-and-name").text(`Ändern Rechnung ${data.id}: ${data.besucher.name}, ${data.besucher.vorname}`);
 		$("#buchung-vorname").val(data.besucher.vorname);
 		$("#buchung-anreise").val(data.anreise);

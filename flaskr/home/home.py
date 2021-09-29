@@ -19,4 +19,7 @@ home_bp = Blueprint(
 
 @home_bp.route('/')
 def index():
-    return render_template('index.jinja2', title='Welcome', run_mode=current_app.env)
+    return render_template(
+        'index.html',
+        title='Welcome',
+        run_mode=current_app.env)

@@ -18,7 +18,6 @@ function getBuchungenForBesucher(t, h4Text, stat){
 			}))
 			
 			return(table);
-	
 	}
 	
 	Rx.Observable.fromPromise(fetch('/rest/buchungen/besucher/' + t + '?status=' + stat).then(res => res.json()))
@@ -34,24 +33,10 @@ function getBuchungenForBesucher(t, h4Text, stat){
 	});
 }
 
+
 function getBesucherDetails(t) {
-	Rx.Observable.fromPromise(fetch('/rest/besucher/' + t).then(res => res.json()))
-	.subscribe(data => {
-		var results = $("#besucher-details");
-		results.show();		
-		results
-			.empty()
-			.append($('<h3>').text('Besucher Details'))
-			.append($('<div class="d-flex flex-column bd-highlight mb-3">')
-				.html($('<div id="1" class="d-inline p-2 bg-light border">').html(`<span class="badge badge-dark">${data.id}</span> ${data.anrede} ${data.name}, ${data.vorname}`))
-				.append($('<div id="2" class="d-inline p-2 bg-light border">').text(`${data.strasse}, ${data.stadt}, ${data.land}-${data.plz}`))
-				.append($('<div id="2" class="d-inline p-2 bg-light border">').text(`${data.email}, ${data.tel}`))
-			)
-	});
-	
-	getBuchungenForBesucher(t, 'Rechnungen', 'abgerechnet');
-	getBuchungenForBesucher(t, 'Buchungen', 'gebucht');
-	getBuchungenForBesucher(t, 'Storno', 'storno');
+	window.location.href = '/besucher/update/' + t;
+	return (t)
   }
 
 
@@ -106,12 +91,13 @@ function getBesucherDetails(t) {
       function (data) {
         $results
           .empty()
-		  .append('<tr><th>ID</th><th>Name</th><th>Vorname</th><th>Strasse</th></tr>')
+		  .append('<tr><th>Anrede</th><th>Name</th><th>Vorname</th><th>Email</th><th>Adresse</th></tr>')
           .append ($.map(data, function (v) {return $(`<tr id=${v.id} onclick=getBesucherDetails(${v.id})>`).html(
-			  	`<td>${v.id}</td>` +
+			  	`<td>${v.anrede}</td>` +
 			    `<td>${v.name}</td>`+
 			    `<td>${v.vorname}</td>` +
-			    `<td>${v.strasse}, ${v.stadt}</td>` 
+				`<td>${v.email}</td>` +
+			    `<td>${v.strasse}, ${v.plz} - ${v.stadt}</td>` 
 			  );
 		  }))
       },

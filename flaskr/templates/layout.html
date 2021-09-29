@@ -21,13 +21,17 @@
 	
 	<!-- Seiteninhalt -->	
 	<div class="container container-fluid">
-	
-		<h2>{{title}}</h2>
+		<div class="row g-3">
+			<div class="col-md-2">
+				<!-- left column -->
+				{% include 'context-menu.html' %}
+			</div>
 
-		{% include 'flash.html' %}
-
-		<div id="content">{% block content %}{% endblock %}</div>
-
+			<div class="col-md-10">
+				<h3>{{title}}</h3>
+				<div id="content">{% block content %}{% endblock %}</div>
+			</div>
+		</div>
 	</div> <!-- container Seiteninhalt-->
 
 	<!-- Footer -->	
@@ -42,7 +46,6 @@
 			</ul>
 		  </div>
 	</div> <!-- container Footer-->
-
 	
 </body>
 </html>
