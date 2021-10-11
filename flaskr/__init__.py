@@ -3,16 +3,16 @@ Created on 13.09.2016
 
 Refactoring ongoing (7.3.2019)
 
+Rewrite Oct. 2021
+
 @author: ralph
 '''
 
 from flask import Flask, render_template
 from flask_cors import CORS
 from flask_debugtoolbar import DebugToolbarExtension
-from bkormlib.schema import db_connect
+from bkormlib.schema import Apartment, db_connect
 from flaskr.auth.auth import login_required
-
-# sys.path.append('../../libs') # to include file fewo_reporting
 
 
 def init_app():
@@ -20,20 +20,20 @@ def init_app():
 
     app.config.from_object('config.Config')
 
-    _ = db_connect(app.config.get('FLASK_ENV'), app.config.get('DATABASE'))
+    db = db_connect(app.config.get('FLASK_ENV'), app.config.get('DATABASE'))
 
     CORS(app)
 
     app_context = app.app_context()
     app_context.push()
-    
-    _ = DebugToolbarExtension(app)
+
+    # _ = DebugToolbarExtension(app)
 
     with app.app_context():
         from .home import home
         from .auth import auth
         from .besucher import besucher
-        from . import buchung
+        from .buchung import buchung
         from . import rest
         from . import stats
         from . import fewocalendar
@@ -42,7 +42,7 @@ def init_app():
         app.register_blueprint(home.home_bp)
         app.register_blueprint(auth.auth_bp)
         app.register_blueprint(besucher.besucher_bp)
-        app.register_blueprint(buchung.bp)
+        app.register_blueprint(buchung.buchung_bp)
         app.register_blueprint(rest.bp)
         app.register_blueprint(stats.bp)
         app.register_blueprint(fewocalendar.bp)
@@ -64,5 +64,6 @@ def init_app():
             return render_template('reset_invoice_new.html', run_mode=app.env)
 
     return app
+
 
 app = init_app()

@@ -5,6 +5,9 @@ Created on 20 March 2019
 
 find, list, update, create and delete besucher
 
+
+
+
 '''
 from flask import (
     Blueprint,
@@ -20,7 +23,6 @@ from .besucher_forms import BesucherForm
 
 from flaskr.auth.auth import login_required
 from flaskr.api import (
-    anrede_for_key,
     fetch_visitors,
     fetch_besucher_for_update,
     create_besucher_from_form
@@ -45,7 +47,7 @@ def index():
 
     if data is not None:
         return render_template(
-            'besucher_index.html',
+            'besucher/index.html',
             number_besucher=len(data),
             title='Besucherliste',
             data=data,
@@ -81,7 +83,7 @@ def create():
         return(redirect(url_for('besucher_bp.index')))
 
     return render_template(
-        'besucher_create.html',
+        'create.html',
         form=form,
         title='Neuen Besucher anlegen',
         run_mode=current_app.env,
@@ -89,17 +91,15 @@ def create():
     )
 
 
-@besucher_bp.route('/update/<int:id>', methods=('GET', 'POST'))
+@besucher_bp.route('/update/<int:besucher_id>', methods=('GET', 'POST'))
 @login_required
-def update(id):
+def update(besucher_id):
 
     print(request.method)
 
-    besucher, buchungen = fetch_besucher_for_update(id)
+    besucher, buchungen = fetch_besucher_for_update(besucher_id)
 
-    form = BesucherForm()
-    if request.method == 'GET':
-        form.data_from_besucher(besucher)
+    form = BesucherForm(obj=besucher)
 
     if form.validate_on_submit():
         res = form.update_besucher(besucher)
@@ -109,7 +109,7 @@ def update(id):
         return(redirect(url_for('besucher_bp.index')))
 
     return render_template(
-        'besucher_update.html',
+        'update.html',
         form=form,
         title='{}, {}'.format(
                 besucher.name,
