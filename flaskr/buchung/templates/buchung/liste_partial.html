@@ -1,0 +1,33 @@
+<!-- 
+	partial für Liste Buchungen / rows
+-->
+
+<div class="table-responsive">
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Anreise</th><th>Abreise</th><th>Preis</th><th>Summe</th><th>Vorauszahlung</th><th>Apartment</th><th>Status</th><th></th><th></th><th></th>
+			</tr>
+		</thead>
+		<tbody>	
+	    {% for buchung in buchungen %}	  	
+            <tr>
+                <td>{{buchung.anreise}}</td>
+                <td>{{buchung.abreise}}</td>
+                <td>{{buchung.miete}}</td>
+                <td>{{buchung.summe}}</td>
+                <td>{{buchung.vorauszahlung}}</td>
+                <td>{{buchung.apartment.name}}</td>
+                <td>{{buchung.status}}</td>
+                {% if buchung.status in ['abgerechnet'] %}
+                    <td><a href="/buchung/vorauszahlung/{{buchung.id}}">Vorauszahlung</a></td>
+                    <td><a href="/buchung/print/{{buchung.id}}">Drucken</a></td>
+                {% else %}
+                    <td><a href="/buchung/delete/{{buchung.id}}">Stornieren</a></td>
+                    <td><a href="/buchung/update/{{buchung.id}}">Ändern</a></td>
+                {% endif%}
+            </tr>
+		 {% endfor %}
+		 </tbody>
+	</table>
+</div>

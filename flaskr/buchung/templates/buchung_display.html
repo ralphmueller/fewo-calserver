@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+<!-- 
+	partial für Anzeige Buchung
+-->
+
+{% block content %}
+
+<div class="row">
+
+	<div class="col-12">
+		<h3>Buchung {{buchung.id}}</h3>
+		
+		<p>{{buchung.besucher.vorname}} {{buchung.besucher.name}} <br/>{{buchung.besucher.strasse}} {{buchung.besucher.plz}} {{buchung.besucher.stadt}}</p>
+		  
+		{% import 'buchung_edit_partial.html' %}
+
+	</div>
+	<!-- 
+	<div class="col-6">
+		<a class="btn btn-primary" href="#" role="button">Ändern</a>
+		<a class="btn btn-primary" href="#" role="button">Stornieren</a>
+		<a class="btn btn-primary" href="#" role="button">Neu</a>
+	</div>
+	-->
+</div> 
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+<!-- 
+	List all buchungen
+-->
+
+{% block content %}
+
+<div class="row">
+	<div class="col-12">
+
+		{% include 'buchung/liste_partial.html' %}
+
+	</div>
+</div>
+
+{% include "blueprintinfo.jinja2" %}
+
+{% endblock %}
