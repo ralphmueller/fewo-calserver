@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+<!-- 
+	List all visitors
+-->
+
+{% block content %}
+
+<div class="row">
+	<div class="col-12">
+
+		{% include 'besucher/list_partial.html' %}
+
+	</div>
+</div>
+
+{% include "blueprintinfo.jinja2" %}
+
+{% endblock %}

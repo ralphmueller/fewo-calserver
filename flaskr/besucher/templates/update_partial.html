@@ -1,0 +1,28 @@
+{% from "_macros.html" import render_field %}
+
+
+<form method="post" action="{{ url_for('besucher_bp.update', besucher_id=besucher.id) }}">
+
+  {{ form.csrf_token }}
+
+    <dl>
+      {{ render_field(form.anrede) }}
+      {{ render_field(form.vorname) }}
+      {{ render_field(form.name)}}
+      {{ render_field(form.firmenname) }}
+      {{ render_field(form.email) }}
+      {{ render_field(form.tel) }}
+      {{ render_field(form.strasse) }}
+      {{ render_field(form.plz) }}
+      {{ render_field(form.stadt) }}
+      {{ render_field(form.land) }}
+      {{ render_field(form.vermerk) }}
+    </dl>
+
+    <input type="submit" value="Speichern">
+
+    {% if form.errors %}
+        {{ form.errors }}
+    {% endif %}
+
+  </form>
