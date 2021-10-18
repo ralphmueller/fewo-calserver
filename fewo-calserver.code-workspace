@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../pythonpacks/bkormlib"
+		},
+		{
+			"path": "../html/flask_wtforms_hidden"
+		}
+	],
+	"settings": {}
+}

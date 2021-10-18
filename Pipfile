@@ -16,6 +16,7 @@ flask-debugtoolbar = "*"
 flake8 = "*"
 rope = "*"
 ipykernel = "*"
+autopep8 = "*"
 
 [requires]
 python_version = "3.8"

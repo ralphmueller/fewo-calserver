@@ -7,11 +7,12 @@ WTF for buchungen
 '''
 from datetime import date, timedelta
 from flask_wtf import FlaskForm
-from wtforms import SelectField, HiddenField
+from wtforms import SelectField, HiddenField, TextAreaField, TextField
 from wtforms.fields.html5 import (
     DateField,
     DecimalField,
     IntegerField)
+from flaskr.api import FlaskrTemplate
 
 from wtforms.validators import DataRequired
 
@@ -19,7 +20,7 @@ from bkormlib import Portal, Apartment, StaticValuesBuchung
 
 
 class BuchungForm(FlaskForm):
-    """ Create/update form"""
+    """ Create buchung form, step 1"""
 
     mwstsatz = HiddenField(
         'MwStSatz',
@@ -37,14 +38,19 @@ class BuchungForm(FlaskForm):
     )
 
     id = HiddenField()
-    besucher_id = HiddenField(
-        [DataRequired()]
-    )
 
-    apartment = SelectField(
+    besucher_id = HiddenField()
+
+    apartment_id = SelectField(
         'Apartment',
         [DataRequired()],
         choices=Apartment.choices()
+    )
+
+    portal_id = SelectField(
+        'Portal',
+        [DataRequired()],
+        choices=Portal.choices()
     )
 
     anreise = DateField(
@@ -60,32 +66,22 @@ class BuchungForm(FlaskForm):
     )
 
     kurtaxe_vz = IntegerField(
-        'Erwachsene',
-        [DataRequired()],
+        'Erwachsene / Jugendliche ab 15J',
         default=2
     )
 
     kurtaxe_hz = IntegerField(
         'Kinder 10-15J',
-        [DataRequired()],
         default=0
     )
 
     kurtaxe_kinder = IntegerField(
-        'Kinder',
-        [DataRequired()],
+        'Kinder unter 10J',
         default=0
     )
     kurtaxe_nz = IntegerField(
         'Kurtaxe befreit',
-        [DataRequired()],
-        default=0,
-        render_kw={'class':'myclass','style':'font-size:150%;color:green'}
-    )
-
-    kurtaxe = DecimalField(
-        'Kurtaxe',
-        default=0.0
+        default=0
     )
 
     preis_nacht = DecimalField(
@@ -103,8 +99,21 @@ class BuchungForm(FlaskForm):
         default=0.0
     )
 
-    portal = SelectField(
-        'Portal',
-        [DataRequired()],
-        choices=Portal.choices()
+    vorauszahlung = DecimalField(
+        'Vorauszahlung',
+        default=0.0
+    )
+
+    notiz = TextField(
+        'Notiz',
+        default='muss noch in Schema übernommen werden ...'
+    )
+
+
+class Buchung2Form(FlaskForm):
+    """ Create buchung form, step 2"""
+
+    template = TextAreaField(
+        'Buchungsbestätigung',
+        default=FlaskrTemplate.get_bestaetigungstemplate()
     )

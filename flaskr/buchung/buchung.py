@@ -9,6 +9,7 @@ Created on 04.10.2021
 * initiate emails to team and besucher
 
 '''
+
 from flask import (
     Blueprint,
     render_template,
@@ -16,12 +17,12 @@ from flask import (
     redirect,
     url_for,
     current_app,
-    request
+    request,
+    session
 )
+from bkormlib import Buchung, Besucher, Apartment, User, FlaskrSession, Portal
 
-from bkormlib import Buchung, Besucher, Apartment
-
-from .buchung_forms import BuchungForm
+from .buchung_forms import BuchungForm, Buchung2Form
 
 from flaskr.auth.auth import login_required
 
@@ -49,7 +50,6 @@ def index():
             'gebucht',
             'abgerechnet'
         ]
-    print('where_list: ', where_list)
     query = (
         Buchung
         .select()
@@ -74,3 +74,98 @@ def index():
     else:
         flash('no bookings found for status ', where_list)
         return(redirect(url_for('home.index')))
+
+
+@buchung_bp.route('/create/<int:besucher_id>', methods=('GET', 'POST'))
+@login_required
+def create_buchung(besucher_id):
+    '''
+        Create new booking, step 1 
+        gather data 
+    '''
+    form = BuchungForm()
+    form.besucher_id.data = besucher_id
+    besucher = Besucher.get(besucher_id)
+    if form.validate_on_submit():
+        form.besucher_id = besucher_id
+        session_data = form.data
+        session_object = FlaskrSession.from_object(
+            User.get(id=session['user_id']),
+            session_data
+        )
+        session['create_buchung'] = session_object.id
+
+        flash(
+            'Neue Buchung Daten: {}'
+            .format(str(form.data))
+        )
+        return(redirect(url_for('buchung_bp.create_buchung_finish')))
+
+    return render_template(
+        'buchung/create.html',
+        besucher=besucher,
+        form=form,
+        title='Neue Buchung anlegen',
+        run_mode=current_app.env,
+        template='form-template'
+    )
+
+
+@buchung_bp.route('/create_finish', methods=('GET', 'POST'))
+@login_required
+def create_buchung_finish():
+    '''
+        Finalize new booking
+        - check availability of apartment
+        - prepare confirmation text
+        - send emails and finish booking
+    '''
+
+    session_id = session['create_buchung']
+    session_data = FlaskrSession.get(id=session_id)
+    buchung = Buchung(**session_data.as_object())
+    buchung.recalc(us='gebucht')
+    form = Buchung2Form(object=buchung)
+    # form.
+
+    if form.validate_on_submit():
+
+        flash(
+            'Neue Buchung Daten: {}'
+            .format(str(form.data))
+        )
+        return(redirect(url_for('besucher_bp.index')))
+
+    return render_template(
+        'buchung/create.html',
+        form=form,
+        title='Neue Buchung anlegen',
+        run_mode=current_app.env,
+        template='form-template'
+    )
+
+
+@buchung_bp.route('/update/<int:id>', methods=('GET', 'POST'))
+@login_required
+def buchung(id):
+    if request.method == 'POST':
+        print('POST')
+        print(request.form)
+        flash('Supi!')
+        return(redirect(url_for('home.index')))
+    else:
+        buchung = Buchung.get(Buchung.id == id)
+        if buchung.status in ['abgerechnet', 'storno', 'verworfen']:
+            print(
+                'Buchung {} mit Status {} kann nicht geändert werden!'
+                .format(buchung.id, buchung.status))
+            flash(
+                'Buchung {} mit Status {} kann nicht geändert werden!'
+                .format(buchung.id, buchung.status), 'error')
+            return(redirect(url_for('home.index')))
+
+        return render_template(
+            'buchung_display.html',
+            buchung=buchung,
+            run_mode=current_app.env
+        )
