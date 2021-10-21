@@ -1,4 +1,18 @@
-<p>Sehr geehrter {{buchung.besucher.anrede}} {{buchung.besucher.name}} - </p>
+<!-- 
+    Created: Ralph, 20.10.2021
+
+    Template für Bestätigungs Email
+        - renering durch Jinja2 Engine
+
+    TODO: Styling einfügen und akurates HTML Template -->
+<p>Sehr 
+    
+    {% if buchung.besucher.anrede == 'Herr' %}
+        geehrter
+    {% else %}
+        geehrte
+    {% endif %}
+    {{buchung.besucher.anrede}} {{buchung.besucher.name}} - </p>
 
 <p>
 	gerne bestätigen wir Ihre Buchung für unsere Wohnung {{buchung.apartment.name}}, {{buchung.apartment.beschreibung}} 
