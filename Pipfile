@@ -11,6 +11,7 @@ flask-wtf = "*"
 flake8 = "*"
 email-validator = "*"
 flask-debugtoolbar = "*"
+babel = "*"
 
 [dev-packages]
 flake8 = "*"

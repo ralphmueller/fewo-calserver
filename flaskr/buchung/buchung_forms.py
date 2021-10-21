@@ -8,11 +8,11 @@ WTF for buchungen
 from datetime import date, timedelta
 from flask_wtf import FlaskForm
 from wtforms import SelectField, HiddenField, TextAreaField, TextField
+from wtforms.fields.core import FormField
 from wtforms.fields.html5 import (
     DateField,
     DecimalField,
     IntegerField)
-from flaskr.api import FlaskrTemplate
 
 from wtforms.validators import DataRequired
 
@@ -91,7 +91,7 @@ class BuchungForm(FlaskForm):
 
     rabatt = DecimalField(
         'Rabatt(%)',
-        default=0.0
+        default=0
     )
 
     zusatzkosten = DecimalField(
@@ -104,16 +104,17 @@ class BuchungForm(FlaskForm):
         default=0.0
     )
 
-    notiz = TextField(
+    notiz = TextAreaField(
         'Notiz',
         default='muss noch in Schema übernommen werden ...'
     )
 
 
 class Buchung2Form(FlaskForm):
-    """ Create buchung form, step 2"""
+    """
+        Create buchung form, step 2
+    """
 
-    template = TextAreaField(
-        'Buchungsbestätigung',
-        default=FlaskrTemplate.get_bestaetigungstemplate()
+    email_text = TextAreaField(
+        'Buchungsbestätigung'
     )

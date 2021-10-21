@@ -7,7 +7,9 @@ Rewrite Oct. 2021
 
 @author: ralph
 '''
-
+from babel.numbers import format_decimal, format_percent
+from babel.numbers import format_currency
+from babel.dates import format_date
 from flask import Flask, render_template
 from flask_cors import CORS
 from bkormlib.schema import db_connect
@@ -25,6 +27,23 @@ def init_app():
 
     app_context = app.app_context()
     app_context.push()
+
+    @app.template_filter()
+    def euro_percent(value):
+        return format_percent(value, locale='de_DE')
+
+    @app.template_filter()
+    def euro_decimal(value):
+        return format_decimal(value, locale='de_DE')
+
+    @app.template_filter()
+    def euro_currency(value):
+        return format_currency(value, '€', locale='de_DE')
+
+    @app.template_filter()
+    def euro_date(value):
+        print(value)
+        return format_date(value, locale='de_DE', format="full")
 
     from flask_debugtoolbar import DebugToolbarExtension
     _ = DebugToolbarExtension(app)

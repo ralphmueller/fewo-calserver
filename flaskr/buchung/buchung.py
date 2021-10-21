@@ -20,7 +20,7 @@ from flask import (
     request,
     session
 )
-from bkormlib import Buchung, Besucher, Apartment, User, FlaskrSession, Portal
+from bkormlib import Buchung, Besucher, Apartment, User, FlaskrSession
 
 from .buchung_forms import BuchungForm, Buchung2Form
 
@@ -122,27 +122,30 @@ def create_buchung_finish():
     '''
 
     session_id = session['create_buchung']
-    session_data = FlaskrSession.get(id=session_id)
-    buchung = Buchung(**session_data.as_object())
-    buchung.recalc(us='gebucht')
+    buchung = Buchung(**FlaskrSession.get(id=session_id).as_object())
+    buchung.recalc(status='gebucht')
+    besucher = Besucher.get(buchung.besucher_id)
+    # prepare email_confirmation_email
+    email_html = render_template(
+        'buchung_confirmation_email.html',
+        buchung=buchung
+    )
     form = Buchung2Form(object=buchung)
-    # form.
+    form.email_text.data = email_html
 
     if form.validate_on_submit():
-
-        flash(
-            'Neue Buchung Daten: {}'
-            .format(str(form.data))
-        )
+        # check if apartment is available
+        # 
         return(redirect(url_for('besucher_bp.index')))
 
     return render_template(
-        'buchung/create.html',
+        'buchung/create_part2.html',
+        besucher=besucher,
+        buchung=buchung,
         form=form,
-        title='Neue Buchung anlegen',
+        title='Neue Buchung fertigstellen',
         run_mode=current_app.env,
-        template='form-template'
-    )
+        template='form-template')
 
 
 @buchung_bp.route('/update/<int:id>', methods=('GET', 'POST'))
