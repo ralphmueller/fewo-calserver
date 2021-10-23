@@ -1,3 +1,7 @@
+body {
+  /* li color marking for flash messages */
+
+}
 body .float-right {
   float: right;
 }
@@ -33,6 +37,12 @@ body #map {
 body #message {
   color: green;
   margin-bottom: 30px;
+}
+body li.error {
+  color: red;
+}
+body li.message {
+  color: green;
 }
 body table.60percent {
   width: 60%;

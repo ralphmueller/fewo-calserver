@@ -80,8 +80,12 @@ def index():
 @login_required
 def create_buchung(besucher_id):
     '''
-        Create new booking, step 1 
-        gather data 
+        Create new booking, step 1
+        - gather booking data
+        at the end of this step:
+        - validate the information
+        - check availability of apartment (flash if not)
+        - contiue to second step (create_buchung_finish)
     '''
     form = BuchungForm()
     form.besucher_id.data = besucher_id
@@ -94,11 +98,11 @@ def create_buchung(besucher_id):
             session_data
         )
         session['create_buchung'] = session_object.id
+        if Apartment.get_by_id(form.apartment_id.data).check_avail(form.anreise.data, form.abreise.data):
+            flash('Apartment is verfügbar')
+        else:
+            flash('Apartment ist nicht verfügbar!', 'error')
 
-        flash(
-            'Neue Buchung Daten: {}'
-            .format(str(form.data))
-        )
         return(redirect(url_for('buchung_bp.create_buchung_finish')))
 
     return render_template(

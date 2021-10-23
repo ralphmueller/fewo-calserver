@@ -100,16 +100,16 @@
 		<td class="text-right">{{buchung.get_miete() |euro_currency}}</td></tr>					
 	<tr>
 		<td>Kurtaxe Vollzahler</td>	
-		<td class="text-right">{{buchung.get_kurtaxe_vz}}</td></tr>		
+		<td class="text-right">{{buchung.get_kurtaxe_vz()}}</td></tr>		
 	<tr>
 		<td>Kurtaxe Halbzahler</td>	
-		<td class="text-right">{{buchung.get_kurtaxe_hz}}</td></tr>	
+		<td class="text-right">{{buchung.get_kurtaxe_hz()}}</td></tr>	
 	<tr>
 		<td>Kinder</td>
-		<td class="text-right">{{buchung.get_kurtaxe_kinder}}</td></tr>	
+		<td class="text-right">{{buchung.get_kurtaxe_kinder()}}</td></tr>	
 	<tr>
 		<td>Kurtaxe befreit</td>	
-		<td class="text-right">{{buchung.get_kurtaxe_nz}}</td></tr>	
+		<td class="text-right">{{buchung.get_kurtaxe_nz()}}</td></tr>	
 	<tr>
 		<td>Kurtaxe gesamt</td>		
 		<td class="text-right">{{buchung.get_kurtaxe() |euro_currency}}</td></tr>		
