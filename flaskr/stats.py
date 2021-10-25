@@ -115,5 +115,5 @@ def abgerechnete_besuche():
     return render_template(
         'abgerechnete-besuche.html',
         data=aggregate_byMonth_byApartment(),
-        run_mode=current_app.current_app.env
+        run_mode=current_app.env,
     )

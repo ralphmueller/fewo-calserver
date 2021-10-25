@@ -95,8 +95,6 @@ def create():
 @login_required
 def update(besucher_id):
 
-    print(request.method)
-
     besucher, buchungen = fetch_besucher_for_update(besucher_id)
 
     form = BesucherForm(obj=besucher)
@@ -108,9 +106,16 @@ def update(besucher_id):
         )
         return(redirect(url_for('besucher_bp.index')))
 
+    # left side actions
+    actions = [
+        (
+            'Neue Buchung',
+            url_for('buchung_bp.create_buchung', besucher_id=besucher.id))
+    ]
     return render_template(
         'update.html',
         form=form,
+        actions=actions,
         title='{}, {}'.format(
                 besucher.name,
                 besucher.vorname

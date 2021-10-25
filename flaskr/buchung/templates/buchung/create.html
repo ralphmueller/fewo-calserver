@@ -54,12 +54,20 @@
     </form>
 
   </div>
-  <!-- 
-	<div class="col-6">
-		<a class="btn btn-primary" href="#" role="button">Ändern</a>
-		<a class="btn btn-primary" href="#" role="button">Stornieren</a>
-		<a class="btn btn-primary" href="#" role="button">Neu</a>
-	</div>
-	-->
+  <script>
+    // 
+    // Set date of abreise field to 3 days ahead of anreise field
+    // 
+    const selectElement = document.querySelector('#anreise');
+
+    selectElement.addEventListener('change', (event) => {
+
+      const abreise = document.querySelector('#abreise');
+      let d1 = new Date(event.target.value);
+      d1.setDate(d1.getDate() + 3);
+      abreise.value = d1.toISOString().substring(0,10);
+    });
+  </script>
+
 </div>
 {% endblock %}

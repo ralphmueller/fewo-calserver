@@ -98,9 +98,16 @@ def create_buchung(besucher_id):
             session_data
         )
         session['create_buchung'] = session_object.id
-        if Apartment.get_by_id(form.apartment_id.data).check_avail(form.anreise.data, form.abreise.data):
+        if besucher.email == "":
+            flash('Besucher hat keine Email Adresse', 'error')
+        if (
+            Apartment
+            .get_by_id(form.apartment_id.data)
+            .check_availability(form.anreise.data, form.abreise.data)
+        ):
             flash('Apartment is verfügbar')
         else:
+            # TODO: Liste der verfügbaren Aprtments
             flash('Apartment ist nicht verfügbar!', 'error')
 
         return(redirect(url_for('buchung_bp.create_buchung_finish')))
@@ -139,8 +146,12 @@ def create_buchung_finish():
 
     if form.validate_on_submit():
         # check if apartment is available
-        # 
-        return(redirect(url_for('besucher_bp.index')))
+
+        return(
+            redirect(
+                url_for(
+                    'besucher_bp.update',
+                    besucher_id=besucher.id)))
 
     return render_template(
         'buchung/create_part2.html',

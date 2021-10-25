@@ -6,14 +6,11 @@
 
 {% block content %}
 <div class="row">
-<div class="col-md-8">
-	{% include 'update_partial.html' %}
-</div> 
-<div class="col-md-4">
-    {% include 'stats_partial.html' %}
-</div>
-<div class="col-md-8">
-    {% include 'buchung_list_partial.html' %}
-</div>
+    <div class="col-md-4">
+	    {% include 'update_partial.html' %}
+    </div> 
+    <div class="col-md-8">
+        {% include 'buchung_list_partial.html' %}
+    </div>
 </div>
 {% endblock %}
