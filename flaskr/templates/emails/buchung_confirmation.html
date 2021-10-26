@@ -4,7 +4,12 @@
     Template für Bestätigungs Email
         - renering durch Jinja2 Engine
 
-    TODO: Styling einfügen und akurates HTML Template -->
+-->
+
+{% extends "emails/layout.html" %}
+
+{% block content %}
+
 <p>Sehr 
     
     {% if buchung.besucher.anrede == 'Herr' %}
@@ -71,15 +76,15 @@
 
 <p>Das Ferien-in-Gersfeld Team</p>
 
-<p>
+<p class="small">
 		Telefon: <strong>0700 789 33344</strong> (freecall) / International: +49 177 4490460<br>
 		email: <a href="mailto:info@ferien-in-gersfeld.de">info@ferien-in-gersfeld.de</a><br>
 		Home: <a href="https://ferien-in-gersfeld.de">https://ferien-in-gersfeld.de</a>
 </p>
 
-<p>Ihre Buchung in der Zusammenfassung</p>
+<p><strong>Ihre Buchung in der Zusammenfassung</strong></p>
 
-<table  class="table table-bordered table-condensed table-hover table-striped col-2-table">
+<table  class="table table-bordered table-striped col-2-table">
 	<tr>
 		<td>Wohnung</td>			
 		<td class="text-right">{{buchung.apartment.name}}</td></tr>
@@ -119,10 +124,15 @@
 </table>
 <p>Erläuterungen zur Tabelle:</p>
 <ul>
-	<li>Die Kurtaxe beträgt seit dem 2. März 2019 € 2,40 / Nacht für Besucher, die das 14. Lebensjahr beendet haben (Vollzahler) und € 1,20 
+	<li>
+		Die Kurtaxe beträgt seit dem 2. März 2019 € 2,40 / Nacht für Besucher, die das 14. Lebensjahr beendet haben (Vollzahler) und € 1,20 
 		für Besucher zwischen dem 10. und 15. Lebensjahr (Halbzahler). Kinder vor Vollendung des 10. Lebensjahres 
 		zahlen keine Kurtaxe.
 	</li>	
-	<li>Von der Kurtaxe befreit sind Personen, die  Gersfeld aus beruflichen Gründen (auch Fortbildung) besuchen.
+	<li>
+		Von der Kurtaxe befreit sind Personen, die  Gersfeld aus beruflichen Gründen (auch Fortbildung) besuchen.
 	</li>		
 </ul>
+
+
+{% endblock %}

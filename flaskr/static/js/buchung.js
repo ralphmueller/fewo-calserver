@@ -19,7 +19,6 @@ $( function() {
 	$( "#abreise" ).datepicker( "option", "dateFormat", "dd.mm.yy" );
     $('#anreise').datepicker({
     onSelect: function(dateText, inst) {
-		console.log(dateText);
       $("input[name='abreise']").val(dateText);
     }
 	});

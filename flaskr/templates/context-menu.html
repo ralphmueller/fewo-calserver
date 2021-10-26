@@ -10,13 +10,13 @@
 {% if actions %}
     <ul class="actions">
     {% for action in actions %}
-    <li class="nav-item"><a class="nav-link" target="_blank" href={{action[1]}}>{{action[0]}}</a></li>
+    <li class="nav-item"><a class="nav-link" target="_self" href={{action[1]}}>{{action[0]}}</a></li>
     {% endfor %}
     </ul>
 {% else %}		
     <ul class="actions"> 
-        <li class="nav-item"><a class="nav-link" target="self" href="{{url_for('besucher_bp.besucher_find')}}">Besucher finden</a></li>
-        <li class="nav-item"><a class="nav-link" target="self" href="#">Buchung finden</a></li>
+        <li class="nav-item"><a class="nav-link" target="_self" href="{{url_for('besucher_bp.besucher_find')}}">Besucher finden</a></li>
+        <li class="nav-item"><a class="nav-link" target="_self" href="#">Buchung finden</a></li>
     </ul>
 {% endif %}
 

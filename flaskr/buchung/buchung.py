@@ -9,7 +9,7 @@ Created on 04.10.2021
 * initiate emails to team and besucher
 
 '''
-
+from babel.dates import format_date
 from flask import (
     Blueprint,
     render_template,
@@ -20,7 +20,8 @@ from flask import (
     request,
     session
 )
-from bkormlib import Buchung, Besucher, Apartment, User, FlaskrSession
+from bkormlib import Buchung, Besucher, Apartment, User, FlaskrSession, Email
+from rmemaillib import mailer
 
 from .buchung_forms import BuchungForm, Buchung2Form
 
@@ -60,10 +61,6 @@ def index():
         .order_by(Buchung.anreise)
     )
     if len(list(query)) > 0:
-        print(
-            len(list(query)),
-            list(query)[0].anreise,
-            list(query)[0].besucher.name)
         return render_template(
             'buchung/index.html',
             number_buchung=len(list(query)),
@@ -137,16 +134,61 @@ def create_buchung_finish():
     buchung.recalc(status='gebucht')
     besucher = Besucher.get(buchung.besucher_id)
     # prepare email_confirmation_email
-    email_html = render_template(
-        'buchung_confirmation_email.html',
-        buchung=buchung
-    )
-    form = Buchung2Form(object=buchung)
-    form.email_text.data = email_html
+    form = Buchung2Form()
+    if request.method == 'GET':
+        form.email_text.data = render_template(
+            'emails/buchung_confirmation.html',
+            buchung=buchung
+        )
 
     if form.validate_on_submit():
-        # check if apartment is available
+        # save booking
+        buchung.id = None
+        buchung.save()
+        # create email record
+        besucher_email = Email()
+        besucher_email.besucher = besucher
+        besucher_email.buchung = buchung
+        besucher_email.header = (
+            'Buchungsbestätigung Apartment {}, {} vom {} bis {}'
+            .format(
+                buchung.apartment.name,
+                buchung.apartment.beschreibung,
+                format_date(buchung.anreise, format='full', locale='de_DE'),
+                format_date(buchung.abreise, format='full', locale='de_DE')))
+        besucher_email.body = form.email_text.data
+        besucher_email.save()
+        # email section
+        # prepare email to besucher
+        mailer.add_email(
+            [besucher.email],
+            ['ralph.mueller.de@gmail.com'],
+            besucher_email.header,
+            besucher_email.body,
+            'empty'
+        )
+        # prepare email to team
+        email_html = render_template(
+            'emails/buchung_info_team.html',
+            buchung=buchung
+        )
+        header = (
+            '[fig:Neue Buchung {}, {} - {}'
+            .format(
+                buchung.apartment.name,
+                format_date(buchung.anreise, format='full', locale='de_DE'),
+                format_date(buchung.abreise, format='full', locale='de_DE')))
 
+        mailer.add_email(
+            ['ralph.mueller.de@gmail.com'],     # team ...
+            [],                                 # nobody in cc
+            header,
+            email_html,
+            'empty'
+        )
+
+        mailer.send_emails()
+        mailer.close()
         return(
             redirect(
                 url_for(
@@ -167,16 +209,10 @@ def create_buchung_finish():
 @login_required
 def buchung(id):
     if request.method == 'POST':
-        print('POST')
-        print(request.form)
-        flash('Supi!')
         return(redirect(url_for('home.index')))
     else:
         buchung = Buchung.get(Buchung.id == id)
         if buchung.status in ['abgerechnet', 'storno', 'verworfen']:
-            print(
-                'Buchung {} mit Status {} kann nicht geändert werden!'
-                .format(buchung.id, buchung.status))
             flash(
                 'Buchung {} mit Status {} kann nicht geändert werden!'
                 .format(buchung.id, buchung.status), 'error')

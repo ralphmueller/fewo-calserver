@@ -42,7 +42,6 @@ def init_app():
 
     @app.template_filter()
     def euro_date(value):
-        print(value)
         return format_date(value, locale='de_DE', format="full")
 
     from flask_debugtoolbar import DebugToolbarExtension

@@ -1,0 +1,80 @@
+<!-- 
+	* Twig Template
+	* schicke Email an das Team und die Stadt: Neue Buchung 
+	* benutzt von: send_buchung_new_notice()
+	* ralph, 22. 07. 2014
+-->
+
+{% extends 'emails/layout.html' %}
+
+{% block content %}
+
+	<p>{{notice}} für <strong>{{ buchung.besucher.anrede }} 
+        {{buchung.besucher.vorname}} 
+        {{buchung.besucher.name}}</strong>, 
+        {{buchung.besucher.stadt}}, 
+        {{buchung.besucher.strasse}}<p>
+
+	<table  class="table table-bordered table-striped col-6-table">
+		<tr>
+			<td>Wohnung</td>			
+			<td class="text-right">{{ buchung.apartment.name }}</td>
+		</tr>
+		<tr>
+			<td>Anreise</td>			
+			<td class="text-right">{{ buchung.get_anreise() | euro_date }}</td>
+		</tr>
+		<tr>
+			<td>Abreise</td>			
+			<td class="text-right">{{ buchung.get_abreise() | euro_date }}</td>
+		</tr>		
+        <tr>
+            <td>Preis/Nacht</td>		
+            <td class="text-right">{{buchung.get_preis_nacht() | euro_currency }} €</td>
+        </tr>			
+        <tr>
+            <td>Zusatzkosten</td>		
+            <td class="text-right">{{ buchung.get_zusatzkosten() | euro_currency }} €</td>
+        </tr>
+        <tr>
+            <td>Miete</td>				
+            <td class="text-right">{{ buchung.get_miete() | euro_currency }} €</td>
+        </tr>					
+        <tr>
+            <td>Kurtaxe Vollzahler</td>	
+            <td class="text-right">{{ buchung.get_kurtaxe_vz()  }}</td>
+        </tr>		
+        <tr>
+            <td>Kurtaxe Halbzahler</td>	
+            <td class="text-right">{{ buchung.get_kurtaxe_hz() }}</td>
+        </tr>	
+        <tr>
+            <td>Kinder u. 10 Jahren</td>
+            <td class="text-right">{{ buchung.get_kurtaxe_kinder() }}</td>
+        </tr>	
+        <tr>
+            <td>Kurtaxe befreit</td>	
+            <td class="text-right">{{ buchung.get_kurtaxe_nz() }}</td>
+        </tr>	
+        <tr>
+            <td>Kurtaxe gesamt</td>		
+            <td class="text-right">{{ buchung.get_kurtaxe() | euro_currency }} €</td>
+        </tr>		
+        <tr>
+            <td>Summe</td>				
+            <td class="text-right">{{ buchung.get_summe() | euro_currency }} €</td>
+        </tr>	
+        <tr>
+            <td>Vorauszahlung</td>				
+            <td class="text-right">{{ buchung.get_vorauszahlung() | euro_currency }} €</td>
+        </tr>	            			
+	</table>
+
+    {{buchung.notiz}}
+
+    {% if buchung.notiz != ''%}
+    <p>Anmerkungen: </p>
+    <p>{{ buchung.notiz }}</p>
+    {% endif %}
+
+{% endblock %}

@@ -106,7 +106,7 @@ class BuchungForm(FlaskForm):
 
     notiz = TextAreaField(
         'Notiz',
-        default='muss noch in Schema übernommen werden ...'
+        default=''
     )
 
 
