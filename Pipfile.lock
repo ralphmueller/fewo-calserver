@@ -217,10 +217,10 @@
         },
         "peewee": {
             "hashes": [
-                "sha256:9e356b327c2eaec6dd42ecea6f4ddded025793dba906a3d065a0452e726c51a2"
+                "sha256:9ca804d6a7032ddf47b7252b1f8e15d8e90a83f366124c127c5f4e0fe16bdbba"
             ],
             "index": "pypi",
-            "version": "==3.14.4"
+            "version": "==3.14.6"
         },
         "pluggy": {
             "hashes": [
@@ -264,11 +264,11 @@
         },
         "pyparsing": {
             "hashes": [
-                "sha256:84196357aa3566d64ad123d7a3c67b0e597a115c4934b097580e5ce220b91531",
-                "sha256:fd93fc45c47893c300bd98f5dd1b41c0e783eaeb727e7cea210dcc09d64ce7c3"
+                "sha256:09fa60a2e3bc3c6a23c2ed23332199d0e57b2c676b9193750cfc22a4358b69c2",
+                "sha256:9366e57ad2d2faa8dd89775ef284ecae0fc4012c24717f3705613b262d712090"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==3.0.1"
+            "version": "==3.0.2"
         },
         "pytest": {
             "hashes": [
@@ -290,7 +290,7 @@
                 "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b",
                 "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"
             ],
-            "markers": "python_version >= '2.6' and python_version not in '3.0, 3.1, 3.2, 3.3'",
+            "markers": "python_version >= '2.6' and python_version not in '3.0, 3.1, 3.2'",
             "version": "==0.10.2"
         },
         "werkzeug": {
@@ -425,11 +425,11 @@
         },
         "jupyter-core": {
             "hashes": [
-                "sha256:8dd262ec8afae95bd512518eb003bc546b76adbf34bf99410e9accdf4be9aa3a",
-                "sha256:ef210dcb4fca04de07f2ead4adf408776aca94d17151d6f750ad6ded0b91ea16"
+                "sha256:adfc754536b34a1cd987c7991a24536d95f4a791e9761e9327fa919fc8d424f3",
+                "sha256:d03ef9eaa5b28925d30c8f83547ccc24b95cd0394b272000a1a6ab069a652be3"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==4.8.1"
+            "version": "==4.9.0"
         },
         "matplotlib-inline": {
             "hashes": [
@@ -521,7 +521,7 @@
                 "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86",
                 "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"
             ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2'",
             "version": "==2.8.2"
         },
         "pyzmq": {
@@ -589,7 +589,7 @@
                 "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926",
                 "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"
             ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2'",
             "version": "==1.16.0"
         },
         "toml": {
@@ -597,7 +597,7 @@
                 "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b",
                 "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"
             ],
-            "markers": "python_version >= '2.6' and python_version not in '3.0, 3.1, 3.2, 3.3'",
+            "markers": "python_version >= '2.6' and python_version not in '3.0, 3.1, 3.2'",
             "version": "==0.10.2"
         },
         "tornado": {
@@ -649,11 +649,11 @@
         },
         "traitlets": {
             "hashes": [
-                "sha256:03f172516916220b58c9f19d7f854734136dd9528103d04e9bf139a92c9f54c4",
-                "sha256:bd382d7ea181fbbcce157c133db9a829ce06edffe097bcf3ab945b435452b46d"
+                "sha256:059f456c5a7c1c82b98c2e8c799f39c9b8128f6d0d46941ee118daace9eb70c7",
+                "sha256:2d313cc50a42cd6c277e7d7dc8d4d7fedd06a2c215f78766ae7b1a66277e0033"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==5.1.0"
+            "version": "==5.1.1"
         },
         "wcwidth": {
             "hashes": [

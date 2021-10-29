@@ -7,17 +7,15 @@
 	<link rel="stylesheet" href="/static/css/myapp.css">	
 	<link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
 	<script src="/static/node_modules/jquery/dist/jquery.js"></script>
-	<script src="/static/node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
+	<script src="/static/node_modules/bootstrap/dist/js/bootstrap.js"></script>
 	<script src="/static/node_modules/chart.js/dist/Chart.js"></script>
 	<script src="/static/js/chart_functions.js"></script>
 	
     <title>FewoApp Extensions</title>
 </head>
 <body>
-	<div class="container container-fluid">
-		{% include 'nav.html' %}
-	</div>
-	
+	{% include 'nav.html' %}
+
 	<!-- Seiteninhalt -->	
 	<div class="container container-fluid">
 		<div class="row g-3">

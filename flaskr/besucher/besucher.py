@@ -15,8 +15,7 @@ from flask import (
     flash,
     redirect,
     url_for,
-    current_app,
-    request
+    current_app
 )
 
 from .besucher_forms import BesucherForm

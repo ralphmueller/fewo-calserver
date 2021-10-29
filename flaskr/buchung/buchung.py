@@ -204,22 +204,60 @@ def create_buchung_finish():
         run_mode=current_app.env,
         template='form-template')
 
-
-@buchung_bp.route('/update/<int:id>', methods=('GET', 'POST'))
+@buchung_bp.route('/update/<int:buchung_id>', methods=('GET', 'POST'))
 @login_required
-def buchung(id):
-    if request.method == 'POST':
-        return(redirect(url_for('home.index')))
-    else:
-        buchung = Buchung.get(Buchung.id == id)
-        if buchung.status in ['abgerechnet', 'storno', 'verworfen']:
-            flash(
-                'Buchung {} mit Status {} kann nicht geändert werden!'
-                .format(buchung.id, buchung.status), 'error')
-            return(redirect(url_for('home.index')))
+def update(buchung_id):
 
-        return render_template(
-            'buchung_display.html',
-            buchung=buchung,
-            run_mode=current_app.env
+    buchung = Buchung.get_by_id(buchung_id)
+    if buchung.status in ['abgerechnet', 'storno', 'verworfen']:
+        flash(
+            'Buchung {} mit Status {} kann nicht geändert werden!</br> \
+            Vorauszahlung siehe linke Seite!'
+            .format(buchung.id, buchung.status), 'error')
+        return(redirect(url_for('home_bp.index')))
+
+    form = BuchungForm(obj=buchung)
+
+    if form.validate_on_submit():
+        res = form.update_buchung(buchung)
+        flash(
+            res
         )
+        return(redirect(url_for('home_bp.index')))
+
+    # left side actions
+    actions = [
+        (
+            'Buchung stornieren',
+            url_for('buchung_bp.storno', buchung_id=buchung.id)),
+        (
+            'Buchung abrechnen',
+            url_for('buchung_bp.abrechnen', buchung_id=buchung.id))
+    ]
+    return render_template(
+        'buchung/create.html',
+        form=form,
+        actions=actions,
+        title='{}, {}'.format(
+                buchung.besucher.name,
+                buchung.besucher.vorname
+            ),
+        buchungen=buchung,
+        besucher=buchung.besucher,
+        run_mode=current_app.env
+    )
+
+
+@buchung_bp.route('/storno/<int:buchung_id>', methods=('GET', 'POST'))
+@login_required
+def storno(buchung_id):
+    flash ('buchung storno not implemented yet')
+    return(redirect(url_for('home_bp.index')))
+
+
+@buchung_bp.route('/abrechnen/<int:buchung_id>', methods=('GET', 'POST'))
+@login_required
+def abrechnen(buchung_id):
+    flash ('buchung abrechnen not implemented yet')
+    return(redirect(url_for('home_bp.index')))
+
