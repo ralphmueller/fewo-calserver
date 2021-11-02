@@ -13,6 +13,7 @@
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="#">Startseite</a>
         </li>
+        {% if g.user %}
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                 data-bs-toggle="dropdown" aria-expanded="false">
@@ -27,13 +28,14 @@
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                 data-bs-toggle="dropdown" aria-expanded="false">
-                Besucher
+                Statistik
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="/stats/income_and_commission">Einnahmen Überblick</a>>
+                <a class="dropdown-item" href="/stats/income_and_commission">Einnahmen Überblick</a>
                 <a class="dropdown-item" href="/stats/income_apartments">Einnahmen Wohnungen</a>
             </div>
         </li>
+        {% endif %}
         <li class="nav-item">
             {% if g.user %}
             <a class="nav-link" href="{{ url_for('auth_bp.logout') }}">Logout {{ g.user['username'] }}</a>
