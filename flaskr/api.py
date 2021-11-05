@@ -7,7 +7,7 @@ API to models and helper functions
 '''
 
 from peewee import fn
-from bkormlib import Besucher, Buchung, Apartment, StaticValuesBuchung, Portal
+from bkormlib import Besucher, Buchung, Apartment
 
 # choices and helper fucntions for dropdowns in Besucher forms
 ANREDE = [('1', 'Fam.'), ('2', 'Herr'), ('3', 'Frau'), ('4', 'Firma')]
@@ -65,12 +65,33 @@ def fetch_besucher_for_update(id):
     return besucher, list(buchungen)
 
 
+def delete_besucher(id):
+    """ delete besucher if no related objects exist"""
+    besucher = Besucher.get(Besucher.id == id)
+    no_buchungen = (
+        Buchung
+        .select(fn.Count(Buchung.id))
+        .alias('count')
+        .where(Buchung.besucher == besucher).scalar()
+    )
+
+    if no_buchungen > 0:
+        return (
+            'Besucher {}, {} wurde nicht gelöscht, da {} Buchungen existieren!'
+            .format(besucher.name, besucher.vorname, no_buchungen)
+        )
+    else:
+        besucher.delete_instance()
+        return (
+            'Besucher {}, {} gelöscht'.
+            format(besucher.name, besucher.vorname)
+        )
+
+
 def update_besucher(form, besucher):
     '''
         update besucher: check which fields need updating
-
     '''
-
     if besucher.anrede != anrede_for_key(form.anrede.data):
         besucher.anrede = anrede_for_key(form.anrede.data)
     if besucher.name != form.name.data:
@@ -98,26 +119,50 @@ def update_besucher(form, besucher):
             besucher.name, besucher.vorname)
 
 
-def delete_besucher(id):
-    """ delete besucher if no related objects exist"""
-    besucher = Besucher.get(Besucher.id == id)
-    no_buchungen = (
-        Buchung
-        .select(fn.Count(Buchung.id))
-        .alias('count')
-        .where(Buchung.besucher == besucher).scalar()
-    )
+def update_buchung(form, buchung):
+    """
+        check the relevant buchung fields, recalc and save if needed
+        Note: change in vorauszahlung has to be handled differntly
+              with an email notice to visitor
+    """
+    if buchung.anreise != form.anreise.data:
+        buchung.anreise = form.anreise.data
 
-    if no_buchungen > 0:
-        return (
-            'Besucher {}, {} wurde nicht gelöscht, da {} Buchungen existieren!'
-            .format(besucher.name, besucher.vorname, no_buchungen)
-        )
+    if buchung.abreise != form.abreise.data:
+        buchung.abreise = form.abreise.data
+
+    if buchung.get_preis_nacht() != form.get_preis_nacht().data:
+        buchung.preis_nacht = form.preis_nacht.data
+
+    if buchung.get_zusatzkosten() != form.get_zusatzkosten().data:
+        buchung.zusatzkosten = form.zusatzkosten.data
+
+    if buchung.get_rabatt() != form.get_rabatt().data:
+        buchung.rabatt = form.rabatt.data
+
+    if buchung.get_vorauszahlung() != form.get_vorauszahlung().data:
+        buchung.vorauszahlung = form.vorauszahlung.data
+
+    if buchung.get_portal() != form.get_portal().data:
+        buchung.portal = form.portal.data
+
+    if buchung.get_kurtaxe_vz() != form.get_kurtaxe_vz().data:
+        buchung.kurtaxe_vz = form.kurtaxe_vz.data
+
+    if buchung.get_kurtaxe_hz() != form.get_kurtaxe_hz().data:
+        buchung.kurtaxe_hz = form.kurtaxe_hz.data
+
+    if buchung.get_kurtaxe_kinder() != form.get_kurtaxe_kinder().data:
+        buchung.kurtaxe_kinder = form.kurtaxe_kinder.data
+
+    if buchung.get_kurtaxe_nz() != form.get_kurtaxe_nz().data:
+        buchung.kurtaxe_nz = form.kurtaxe_nz.data
+
+    if buchung.get_notiz() != form.get_notiz().data:
+        buchung.notiz = form.notiz.data
+
+    if buchung.is_dirty():
+        buchung.recalc().save()
+        return True
     else:
-        besucher.delete_instance()
-        return (
-            'Besucher {}, {} gelöscht'.
-            format(besucher.name, besucher.vorname)
-        )
-
-
+        return False

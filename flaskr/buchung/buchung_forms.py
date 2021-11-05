@@ -7,15 +7,12 @@ WTF for buchungen
 '''
 from datetime import date, timedelta
 from flask_wtf import FlaskForm
-from wtforms import SelectField, HiddenField, TextAreaField, TextField
-from wtforms.fields.core import FormField
+from wtforms import SelectField, HiddenField, TextAreaField
 from wtforms.fields.html5 import (
     DateField,
     DecimalField,
     IntegerField)
-
 from wtforms.validators import DataRequired
-
 from bkormlib import Portal, Apartment, StaticValuesBuchung
 
 

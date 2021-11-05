@@ -20,7 +20,7 @@ from .fewo_reporting import (
     calc_income_apartment
 )
 
-YEARS = [2015, 2016, 2017, 2018, 2019, 2020, 2021]
+YEARS = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022]
 APTS = [a.name for a in Apartment.select().order_by(Apartment.name)]
 
 bp = Blueprint('stats', __name__, url_prefix='/stats')
@@ -44,7 +44,7 @@ def income_and_commission():
     return render_template(
         'apartment_income_and_commission.html',
         sel='',
-        chart_title="Einnahmen und Kommission",
+        title="Einnahmen und Kommission",
         rest_url='/stats/rest/income_and_commission/',
         run_mode=current_app.env)
 
@@ -54,7 +54,7 @@ def income_apartments():
     return render_template(
         'apartment_income_and_commission.html',
         sel='',
-        chart_title="Einnahmen Apartments",
+        title="Einnahmen Apartments",
         rest_url='/stats/rest/income_apartments',
         run_mode=current_app.env)
 
@@ -64,15 +64,14 @@ def apartment_income_and_commission(apartment_name):
     return render_template(
         'apartment_income_and_commission.html',
         sel=apartment_name,
-        chart_title=apartment_name + " Einnahmen und Kommission",
+        title=apartment_name + " Einnahmen und Kommission",
         rest_url='/stats/rest/income_apartment_and_commission/',
         run_mode=current_app.env)
 
 
 @bp.route('/rest/income_year')
 def stats_income_year():
-    today = datetime.date.today()
-    year = int(request.args.get('year') or today.year)
+    year = int(request.args.get('year') or datetime.date.today().year)
     data = []
     for apt in APTS:
         data.append([apt, *calc_income_apartment(apt, year)])

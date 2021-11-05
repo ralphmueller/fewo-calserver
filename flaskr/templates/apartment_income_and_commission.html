@@ -6,24 +6,18 @@
 
 {% block content %}
 
-<div class="row">
-	<h2>{{chart_title}}</h2>
-</div>
-<div class="row">	
-	<div class="col-md-6">
-				<canvas id="data-chart"></canvas>
+<div class="row top-70">
+	<div class="col-md-8">
+		<canvas id="data-chart"></canvas>
 	</div>
 </div>
 <div class="row top-70">
-	<div class="col-md-6">
- 		
-		<table id="data-table" class="table table-bordered table-condensed table-hover 60percent">
-		</table>
+	<div class="col-md-8">
+		<table id="data-table" class="table table-bordered table-condensed"></table>
 	</div>
 </div>
-	   <script>
-	   		// sel gets added to the url, but can be empty
-	    	$.getJSON("{{rest_url}}{{sel}}", chart_func_1);
-		</script>
-    </table>
+<script>
+	// sel gets added to the url, but can be empty
+	$.getJSON("{{rest_url}}{{sel}}", chart_func_1);
+</script>
 {% endblock %}

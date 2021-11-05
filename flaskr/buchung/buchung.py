@@ -204,6 +204,7 @@ def create_buchung_finish():
         run_mode=current_app.env,
         template='form-template')
 
+
 @buchung_bp.route('/update/<int:buchung_id>', methods=('GET', 'POST'))
 @login_required
 def update(buchung_id):
@@ -220,9 +221,20 @@ def update(buchung_id):
 
     if form.validate_on_submit():
         res = form.update_buchung(buchung)
-        flash(
-            res
-        )
+        
+        if res:
+            # TODO: send email to team
+
+            # set flash
+            flash("Update für {}, {} gespeichert".format(
+                buchung.id, buchung.besucher.name
+                ))
+        else:
+            # set flash
+            flash("Keine Änderung für {}, {} gespeichert".format(
+                buchung.id, buchung.besucher.name
+                ))
+
         return(redirect(url_for('home_bp.index')))
 
     # left side actions
@@ -248,16 +260,22 @@ def update(buchung_id):
     )
 
 
-@buchung_bp.route('/storno/<int:buchung_id>', methods=('GET', 'POST'))
+@buchung_bp.route('/vorauszahlung/<int:buchung_id>', methods=('GET', 'POST'))
+@login_required
+def vorauszahlung(buchung_id):
+    flash('buchung vorauszahlung not implemented yet')
+    return(redirect(url_for('home_bp.index')))
+
+
+@buchung_bp.route('/storno/<int:buchung_id>')
 @login_required
 def storno(buchung_id):
-    flash ('buchung storno not implemented yet')
+    flash('buchung storno not implemented yet')
     return(redirect(url_for('home_bp.index')))
 
 
-@buchung_bp.route('/abrechnen/<int:buchung_id>', methods=('GET', 'POST'))
+@buchung_bp.route('/abrechnen/<int:buchung_id>')
 @login_required
 def abrechnen(buchung_id):
-    flash ('buchung abrechnen not implemented yet')
+    flash('buchung abrechnen not implemented yet')
     return(redirect(url_for('home_bp.index')))
-

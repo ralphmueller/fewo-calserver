@@ -6,10 +6,10 @@ WTF for auth
 @author: ralph
 '''
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, HiddenField    # DateField
-from wtforms.fields.html5 import EmailField     #  DateField
+from wtforms import StringField, SelectField, HiddenField
+from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Email
-from flaskr.api import ANREDE, anrede_for_key
+from flaskr.api import ANREDE
 
 
 class BesucherForm(FlaskForm):
@@ -69,35 +69,3 @@ class BesucherForm(FlaskForm):
         'Vermerk',
         []
     )
-
-    def update_besucher(self, besucher):
-        '''
-            update besucher: check which fields need updating
-
-        '''
-
-        if besucher.anrede != anrede_for_key(self.anrede.data):
-            besucher.anrede = anrede_for_key(self.anrede.data)
-        if besucher.name != self.name.data:
-            besucher.name = self.name.data
-        if besucher.vorname != self.vorname.data:
-            besucher.vorname = self.vorname.data
-        if besucher.tel != self.tel.data:
-            besucher.tel = self.tel.data
-        if besucher.email != self.email.data:
-            besucher.email = self.email.data
-        if besucher.stadt != self.stadt.data:
-            besucher.stadt = self.stadt.data
-        if besucher.plz != self.plz.data:
-            besucher.plz = self.plz.data
-        if besucher.strasse != self.strasse.data:
-            besucher.strasse = self.strasse.data
-        if besucher.vermerk != self.vermerk.data:
-            besucher.vermerk = self.vermerk.data
-        if besucher.is_dirty():
-            besucher.save()
-            return "Daten für {}, {} gespeichert".format(
-                besucher.name, besucher.vorname
-            )
-        return "Keine Änderungen für {}, {}".format(
-                besucher.name, besucher.vorname)

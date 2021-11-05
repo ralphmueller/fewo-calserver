@@ -13,6 +13,7 @@ email-validator = "*"
 flask-debugtoolbar = "*"
 babel = "*"
 pytest = "*"
+python-dotenv = "*"
 
 [dev-packages]
 flake8 = "*"
@@ -21,4 +22,4 @@ ipykernel = "*"
 autopep8 = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.9"
