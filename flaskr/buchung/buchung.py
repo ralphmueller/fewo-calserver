@@ -26,6 +26,7 @@ from rmemaillib import mailer
 from .buchung_forms import BuchungForm, Buchung2Form
 
 from flaskr.auth.auth import login_required
+from flaskr.api import update_buchung
 
 buchung_bp = Blueprint(
     'buchung_bp',
@@ -205,6 +206,23 @@ def create_buchung_finish():
         template='form-template')
 
 
+@buchung_bp.route('/update_check/<int:buchung_id>')
+@login_required
+def update_check(buchung_id):
+    """
+        make decisions what to do:
+            - if the booking status is abgerechnet, re-route to
+              vorauszahlung
+            - if the booking status is gebucht, re-route to update
+    """
+    buchung = Buchung.get_by_id(buchung_id)
+    if buchung.status == 'gebucht':
+        return redirect(url_for('buchung_bp.update', buchung_id=buchung_id))
+    else:       # abgerechnet
+        return redirect(
+            url_for('buchung_bp.update_vorauszahlung', buchung_id=buchung_id))
+
+
 @buchung_bp.route('/update/<int:buchung_id>', methods=('GET', 'POST'))
 @login_required
 def update(buchung_id):
@@ -220,8 +238,8 @@ def update(buchung_id):
     form = BuchungForm(obj=buchung)
 
     if form.validate_on_submit():
-        res = form.update_buchung(buchung)
-        
+        res = update_buchung(form, buchung)
+
         if res:
             # TODO: send email to team
 
@@ -262,7 +280,17 @@ def update(buchung_id):
 
 @buchung_bp.route('/vorauszahlung/<int:buchung_id>', methods=('GET', 'POST'))
 @login_required
-def vorauszahlung(buchung_id):
+def update_vorauszahlung(buchung_id):
+    """
+        received vorauszahlung for a buchung with status 'abgerechnet'
+        - enter repaid amount
+        - TODO: enter payment method (transfer, paypal)
+        - send receipt email to besucher
+        - update buchung
+        - actions:
+            - print invoice
+    """
+    buchung = Buchung.get_by_id(buchung_id)
     flash('buchung vorauszahlung not implemented yet')
     return(redirect(url_for('home_bp.index')))
 
@@ -274,8 +302,17 @@ def storno(buchung_id):
     return(redirect(url_for('home_bp.index')))
 
 
-@buchung_bp.route('/abrechnen/<int:buchung_id>')
+@buchung_bp.route('/abrechnen/<int:buchung_id>', methods=('GET', 'POST'))
 @login_required
 def abrechnen(buchung_id):
+    """
+        get:
+            - show current details 
+            - input form for meldeschein data
+        post:
+            - change buchung status to abgerechnet
+            - set meldeschein data
+            - reroute to printing invoice
+    """
     flash('buchung abrechnen not implemented yet')
     return(redirect(url_for('home_bp.index')))

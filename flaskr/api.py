@@ -131,38 +131,39 @@ def update_buchung(form, buchung):
     if buchung.abreise != form.abreise.data:
         buchung.abreise = form.abreise.data
 
-    if buchung.get_preis_nacht() != form.get_preis_nacht().data:
+    if buchung.get_preis_nacht() != form.preis_nacht.data:
         buchung.preis_nacht = form.preis_nacht.data
 
-    if buchung.get_zusatzkosten() != form.get_zusatzkosten().data:
+    if buchung.get_zusatzkosten() != form.zusatzkosten.data:
         buchung.zusatzkosten = form.zusatzkosten.data
 
-    if buchung.get_rabatt() != form.get_rabatt().data:
+    if buchung.get_rabatt() != form.rabatt.data:
         buchung.rabatt = form.rabatt.data
 
-    if buchung.get_vorauszahlung() != form.get_vorauszahlung().data:
+    if buchung.get_vorauszahlung() != form.vorauszahlung.data:
         buchung.vorauszahlung = form.vorauszahlung.data
 
-    if buchung.get_portal() != form.get_portal().data:
-        buchung.portal = form.portal.data
+    if buchung.portal_id != int(form.portal_id.data):
+        buchung.portal_id = int(form.portal_id.data)
 
-    if buchung.get_kurtaxe_vz() != form.get_kurtaxe_vz().data:
+    if buchung.get_kurtaxe_vz() != form.kurtaxe_vz.data:
         buchung.kurtaxe_vz = form.kurtaxe_vz.data
 
-    if buchung.get_kurtaxe_hz() != form.get_kurtaxe_hz().data:
+    if buchung.get_kurtaxe_hz() != form.kurtaxe_hz.data:
         buchung.kurtaxe_hz = form.kurtaxe_hz.data
 
-    if buchung.get_kurtaxe_kinder() != form.get_kurtaxe_kinder().data:
+    if buchung.get_kurtaxe_kinder() != form.kurtaxe_kinder.data:
         buchung.kurtaxe_kinder = form.kurtaxe_kinder.data
 
-    if buchung.get_kurtaxe_nz() != form.get_kurtaxe_nz().data:
+    if buchung.get_kurtaxe_nz() != form.kurtaxe_nz.data:
         buchung.kurtaxe_nz = form.kurtaxe_nz.data
 
-    if buchung.get_notiz() != form.get_notiz().data:
+    if buchung.get_notiz() != form.notiz.data:
         buchung.notiz = form.notiz.data
 
     if buchung.is_dirty():
-        buchung.recalc().save()
+        print(buchung.dirty_fields)
+        buchung.recalc(buchung.status).save()
         return True
     else:
         return False

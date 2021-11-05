@@ -24,7 +24,8 @@ from flaskr.auth.auth import login_required
 from flaskr.api import (
     fetch_visitors,
     fetch_besucher_for_update,
-    create_besucher_from_form
+    create_besucher_from_form,
+    update_besucher
 )
 
 besucher_bp = Blueprint(
@@ -99,7 +100,7 @@ def update(besucher_id):
     form = BesucherForm(obj=besucher)
 
     if form.validate_on_submit():
-        res = form.update_besucher(besucher)
+        res = update_besucher(form, besucher)
         flash(
             res
         )
@@ -119,7 +120,7 @@ def update(besucher_id):
                 besucher.name,
                 besucher.vorname
             ),
-        buchungen=buchungen,
+        buchungen=[b for b in buchungen if b.status in ['gebucht', 'abgerechnet']],
         besucher=besucher,
         run_mode=current_app.env
     )

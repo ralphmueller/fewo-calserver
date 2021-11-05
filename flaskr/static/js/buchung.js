@@ -13,6 +13,13 @@
 *
 */
 
+function getBuchungDetails(id, status) {
+	console.log('getBuchungDetails, id= ', id)
+	window.location.href = '/buchung/update_check/' + id;
+	return (t)
+  }
+
+/*
 $( function() {
 	$.datepicker.setDefaults( $.datepicker.regional[ "de" ] );
 	$( "#abreise" ).datepicker( "option", "dateFormat", "dd.mm.yy" );
@@ -23,3 +30,4 @@ $( function() {
     }
 	});
   } );
+*/

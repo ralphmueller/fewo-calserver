@@ -10,7 +10,7 @@
 		</thead>
 		<tbody>	
 	    {% for besucher in data %}	  	
-		    <tr id="{{besucher.id}}" onclick=getBesucherDetails({{besucher.id}})>
+		    <tr id="{{besucher.id}}" onclick=getBesucherDetails({{ besucher.id }})>
 		        <td>{{besucher.anrede}}</td>
 		        <td>{{besucher.name}}, {{besucher.vorname}}</td>
 		        <td>{{besucher.strasse}}</td>

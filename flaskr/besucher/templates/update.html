@@ -7,10 +7,13 @@
 {% block content %}
 <div class="row">
     <div class="col-md-4">
+        <h4>Besucherdaten</h4>
 	    {% include 'update_partial.html' %}
     </div> 
     <div class="col-md-8">
+        <h4>Buchungen</h4>
         {% include 'buchung_list_partial.html' %}
     </div>
 </div>
+<script src="/static/js/buchung.js"></script>
 {% endblock %}

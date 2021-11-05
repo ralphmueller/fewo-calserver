@@ -3,31 +3,30 @@
 -->
 
 <div class="table-responsive">
-	<table class="table">
+    {% if buchungen | length > 0 %}
+	<table class="table table-bordered table-condensed table-hover">
 		<thead>
 			<tr>
-				<th>Anreise</th><th>Abreise</th><th>Preis</th><th>Summe</th><th>Vorauszahlung</th><th>Apartment</th><th>Status</th><th></th><th></th><th></th>
+				<th>Anreise</th><th>Abreise</th><th>Preis</th><th>Summe</th><th>Vorauszahlung</th><th>Apartment</th><th>Status</th>
 			</tr>
 		</thead>
 		<tbody>	
-	    {% for buchung in buchungen %}	  	
-            <tr>
-                <td>{{buchung.anreise}}</td>
-                <td>{{buchung.abreise}}</td>
-                <td>{{buchung.miete}}</td>
-                <td>{{buchung.summe}}</td>
-                <td>{{buchung.vorauszahlung}}</td>
-                <td>{{buchung.apartment.name}}</td>
-                <td>{{buchung.status}}</td>
-                {% if buchung.status in ['abgerechnet'] %}
-                    <td><a href="/buchung/vorauszahlung/{{buchung.id}}">Vorauszahlung</a></td>
-                    <td><a href="/buchung/vorauszahlung/{{buchung.id}}">Drucken</a></td>
-                {% else %}
-                    <td><a href="/buchung/delete/{{buchung.id}}">Stornieren</a></td>
-                    <td><a href="/buchung/update/{{buchung.id}}">Ändern</a></td>
-                {% endif%}
-            </tr>
+	    {% for buchung in buchungen %}
+            {% if buchung.status in ['abgerechnet', 'gebucht'] %}
+                <tr id=" {{buchung.id}} " onclick=getBuchungDetails(`{{ buchung.id }}`)>
+                    <td>{{buchung.anreise | euro_date_short }}</td>
+                    <td>{{buchung.abreise | euro_date_short }}</td>
+                    <td>{{buchung.apartment.name}}</td>
+                    <td>{{buchung.miete | euro_currency }}</td>
+                    <td>{{buchung.summe | euro_currency }}</td>
+                    <td>{{buchung.vorauszahlung | euro_currency }}</td>
+                    <td>{{buchung.status}}</td>
+                </tr>
+            {% endif %}
 		 {% endfor %}
 		 </tbody>
 	</table>
+    {% else %}
+    <p>Keine Buchungen gefunden</p>
+    {% endif %}
 </div>
