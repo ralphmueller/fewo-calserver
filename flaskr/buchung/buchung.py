@@ -46,9 +46,6 @@ def index():
         where_list = request_params.split()
     else:
         where_list = [
-            'verworfen',
-            'angebot',
-            'storno',
             'gebucht',
             'abgerechnet'
         ]
@@ -114,7 +111,7 @@ def create_buchung(besucher_id):
         'buchung/create.html',
         besucher=besucher,
         form=form,
-        title='Neue Buchung anlegen',
+        title='Buchung anlegen',
         run_mode=current_app.env,
         template='form-template'
     )
@@ -265,13 +262,11 @@ def update(buchung_id):
             url_for('buchung_bp.abrechnen', buchung_id=buchung.id))
     ]
     return render_template(
-        'buchung/create.html',
+        'buchung/update.html',
         form=form,
+        buchung=buchung,
         actions=actions,
-        title='{}, {}'.format(
-                buchung.besucher.name,
-                buchung.besucher.vorname
-            ),
+        title='Buchung ändern',
         buchungen=buchung,
         besucher=buchung.besucher,
         run_mode=current_app.env

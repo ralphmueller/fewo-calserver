@@ -2,11 +2,11 @@
 	partial für Liste Buchungen / rows
 -->
 
-<div class="table-responsive">
+<div class="table table-bordered table-condensed table-hover">
 	<table class="table">
 		<thead>
 			<tr>
-				<th>Anreise</th><th>Abreise</th><th>Preis</th><th>Summe</th><th>Vorauszahlung</th><th>Apartment</th><th>Status</th><th></th><th></th><th></th>
+				<th>Anreise</th><th>Abreise</th><th>Apartment</th><th>Summe</th><th>Vorauszahlung</th><th>Status</th><th></th><th></th>
 			</tr>
 		</thead>
 		<tbody>	
@@ -14,10 +14,9 @@
             <tr>
                 <td>{{buchung.anreise}}</td>
                 <td>{{buchung.abreise}}</td>
-                <td>{{buchung.miete}}</td>
+                <td>{{buchung.apartment.name}}</td>
                 <td>{{buchung.summe}}</td>
                 <td>{{buchung.vorauszahlung}}</td>
-                <td>{{buchung.apartment.name}}</td>
                 <td>{{buchung.status}}</td>
                 {% if buchung.status in ['abgerechnet'] %}
                     <td><a href="/buchung/vorauszahlung/{{buchung.id}}">Vorauszahlung</a></td>
