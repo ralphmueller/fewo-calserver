@@ -162,8 +162,8 @@ def update_buchung(form, buchung):
         buchung.notiz = form.notiz.data
 
     if buchung.is_dirty():
-        print(buchung.dirty_fields)
+        dirty_fields = [df.column_name for df in buchung.dirty_fields]
         buchung.recalc(buchung.status).save()
-        return True
+        return dirty_fields
     else:
-        return False
+        return []

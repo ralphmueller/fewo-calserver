@@ -24,3 +24,8 @@ class Config:
     PERMANENT_SESSION_LIFETIME = datetime.timedelta(days=1)
     SECRET_KEY = environ.get('SECRET_KEY')
     DATABASE = environ.get(FLASK_ENV.upper() + '_DATABASE')
+
+    if FLASK_ENV == 'development':
+        EMAILS_TEAM = ['ralph.mueller.de@gmail.com']
+    else:
+        EMAILS_TEAM = ['ralph.mueller.de@gmail.com', 'susan.iwai@gmail.com', 'bianka.moeller73@googlemail.com']

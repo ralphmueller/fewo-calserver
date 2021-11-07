@@ -160,7 +160,7 @@ def create_buchung_finish():
         # prepare email to besucher
         mailer.add_email(
             [besucher.email],
-            ['ralph.mueller.de@gmail.com'],
+            current_app.config['EMAILS_TEAM'],
             besucher_email.header,
             besucher_email.body,
             'empty'
@@ -178,7 +178,7 @@ def create_buchung_finish():
                 format_date(buchung.abreise, format='full', locale='de_DE')))
 
         mailer.add_email(
-            ['ralph.mueller.de@gmail.com'],     # team ...
+            current_app.config['EMAILS_TEAM'],     # team ...
             [],                                 # nobody in cc
             header,
             email_html,
@@ -235,10 +235,31 @@ def update(buchung_id):
     form = BuchungForm(obj=buchung)
 
     if form.validate_on_submit():
+        buchung_alt = Buchung.get_by_id(buchung_id)     # save copy
         res = update_buchung(form, buchung)
+        if len(res) > 0:                                # changes
+            # send emails
+            if 'vorauszahluung' in res:
+                # send payment confirmation to besucher
+                pass
 
-        if res:
-            # TODO: send email to team
+            # prepare email to team
+            email_html = render_template(
+                'emails/buchung_changed_team.html',
+                buchung=buchung,
+                buchung_alt=buchung_alt
+            )
+            header = '[fig:Buchung geändert'
+
+            mailer.add_email(
+                current_app.config['EMAILS_TEAM'],     # team ...
+                [],                                    # nobody in cc
+                header,
+                email_html,
+                'empty'
+            )
+
+            mailer.send_emails()
 
             # set flash
             flash("Update für {}, {} gespeichert".format(

@@ -15,11 +15,14 @@ from flask_cors import CORS
 from bkormlib.schema import db_connect
 from flaskr.auth.auth import login_required
 
+import config
+
 
 def init_app():
     app = Flask(__name__, instance_relative_config=False)
 
     app.config.from_object('config.Config')
+    app.config['TEAM_EMAILS'] = config.Config.EMAILS_TEAM
 
     db = db_connect(app.config.get('FLASK_ENV'), app.config.get('DATABASE'))
 
@@ -48,8 +51,10 @@ def init_app():
     def euro_date_short(value):
         return format_date(value, locale='de_DE', format="short")
 
+    """
     from flask_debugtoolbar import DebugToolbarExtension
     _ = DebugToolbarExtension(app)
+    """
 
     with app.app_context():
         from .home import home
