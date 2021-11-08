@@ -239,9 +239,22 @@ def update(buchung_id):
         res = update_buchung(form, buchung)
         if len(res) > 0:                                # changes
             # send emails
-            if 'vorauszahluung' in res:
+            if 'vorauszahlung' in res:
                 # send payment confirmation to besucher
-                pass
+                email_html = render_template(
+                    'emails/buchung_vorauszahlung.html',
+                    buchung=buchung,
+                    buchung_alt=buchung_alt
+                )
+                header = 'Ihre Fewo Buchung bei uns: Vorauszahlung'
+
+                mailer.add_email(
+                    [buchung.besucher.email],              # besucher
+                    current_app.config['INFO_EMAIL'],    # info
+                    header,
+                    email_html,
+                    'empty'
+                )
 
             # prepare email to team
             email_html = render_template(
@@ -249,7 +262,7 @@ def update(buchung_id):
                 buchung=buchung,
                 buchung_alt=buchung_alt
             )
-            header = '[fig:Buchung geändert'
+            header = '[fig:Buchung geändert]'
 
             mailer.add_email(
                 current_app.config['EMAILS_TEAM'],     # team ...

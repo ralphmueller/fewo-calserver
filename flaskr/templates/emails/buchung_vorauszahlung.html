@@ -1,0 +1,45 @@
+<!-- 
+    Created: Ralph, 20.10.2021
+
+    Template für Bestätigungs Email
+        - renering durch Jinja2 Engine
+
+-->
+
+{% extends "emails/layout.html" %}
+
+{% block content %}
+
+<p>Sehr 
+    
+    {% if buchung.besucher.anrede == 'Herr' %}
+        geehrter
+    {% else %}
+        geehrte
+    {% endif %}
+    {{buchung.besucher.anrede}} {{buchung.besucher.name}} - </p>
+
+<p>
+	gerne bestätigen wir den Eingang einer Vorauszahlung von {{buchung.get_vorauszahlung() | euro_currency}} für Ihre Buchung bei uns.
+
+    Details Ihres Besuchs:
+</p>
+<ul>
+    <li>Apartment: {{buchung.apartment.name}}</li>
+    <li>Datum: {{buchung.get_anreise() |euro_date}} - {{buchung.get_abreise() |euro_date}}</li>
+    <li>Miete und Kurtaxe: {{buchung.get_summe() | euro_currency}}</li>
+    <li>Restbetrag: {{buchung.get_offener_betrag() | euro_currency}}</li>
+</ul>
+
+<p>Wir freuen uns auf Ihren Besuch!</p>
+
+<p>Liebe Grüsse,  </p>
+<p>Das Ferien-in-Gersfeld Team</p>
+<p class="small">
+		Telefon: <strong>0700 789 33344</strong> (freecall) / International: +49 177 4490460<br>
+		email: <a href="mailto:info@ferien-in-gersfeld.de">info@ferien-in-gersfeld.de</a><br>
+		Home: <a href="https://ferien-in-gersfeld.de">https://ferien-in-gersfeld.de</a>
+</p>
+
+
+{% endblock %}

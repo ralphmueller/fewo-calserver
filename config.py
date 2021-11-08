@@ -27,5 +27,10 @@ class Config:
 
     if FLASK_ENV == 'development':
         EMAILS_TEAM = ['ralph.mueller.de@gmail.com']
+        INFO_EMAIL = ['ralph.mueller.de@gmail.com']
     else:
-        EMAILS_TEAM = ['ralph.mueller.de@gmail.com', 'susan.iwai@gmail.com', 'bianka.moeller73@googlemail.com']
+        EMAILS_TEAM = [
+            'ralph.mueller.de@gmail.com',
+            'susan.iwai@gmail.com',
+            'bianka.moeller73@googlemail.com']
+        INFO_EMAIL = ['info@ferien-in-gersfeld.de']
