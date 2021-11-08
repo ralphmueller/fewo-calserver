@@ -11,6 +11,7 @@ from bkormlib import Besucher, Buchung, Apartment
 
 # choices and helper fucntions for dropdowns in Besucher forms
 ANREDE = [('1', 'Fam.'), ('2', 'Herr'), ('3', 'Frau'), ('4', 'Firma')]
+LANGUAGE = [('1', 'DE'), ('2', 'EN'), ('3', 'FR')]
 
 
 def anrede_for_key(key):
@@ -18,9 +19,19 @@ def anrede_for_key(key):
     return [item for item in ANREDE if item[0] == key][0][1]
 
 
+def language_for_key(key):
+    # TODO : check for out of index
+    return [item for item in LANGUAGE if item[0] == key][0][1]
+
+
 def key_for_anrede(anrede):
     # TODO : check for out of index
     return [item for item in ANREDE if item[1] == anrede][0][0]
+
+
+def key_for_language(language):
+    # TODO : check for out of index
+    return [item for item in LANGUAGE if item[1] == language][0][0]
 
 
 def fetch_visitors():
@@ -49,6 +60,7 @@ def create_besucher_from_form(form):
     besucher.strasse = form.strasse.data
     besucher.land = form.land.data
     besucher.vermerk = form.vermerk.data
+    besucher.language = form.language.data
     besucher.save()
     return besucher.id, besucher.name, besucher.vorname
 

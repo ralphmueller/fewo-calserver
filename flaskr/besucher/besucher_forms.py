@@ -9,7 +9,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, HiddenField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Email
-from flaskr.api import ANREDE
+from flaskr.api import ANREDE, LANGUAGE
 
 
 class BesucherForm(FlaskForm):
@@ -21,6 +21,12 @@ class BesucherForm(FlaskForm):
         'Anrede',
         [DataRequired()],
         choices=ANREDE
+    )
+
+    language = SelectField(
+        'Bevorzugte Sprache',
+        [DataRequired()],
+        choices=LANGUAGE
     )
 
     name = StringField(
