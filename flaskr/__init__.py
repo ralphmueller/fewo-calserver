@@ -63,7 +63,7 @@ def init_app():
         from .buchung import buchung
         from . import rest
         from . import stats
-        from . import fewocalendar
+        from .calendar import calendar
         from . import json_routes
 
         app.register_blueprint(home.home_bp)
@@ -72,7 +72,7 @@ def init_app():
         app.register_blueprint(buchung.buchung_bp)
         app.register_blueprint(rest.bp)
         app.register_blueprint(stats.bp)
-        app.register_blueprint(fewocalendar.bp)
+        app.register_blueprint(calendar.calendar_bp)
         app.register_blueprint(json_routes.bp)
 
         @app.errorhandler(404)

@@ -284,7 +284,11 @@ def update(buchung_id):
                 buchung.id, buchung.besucher.name
                 ))
 
-        return(redirect(url_for('home_bp.index')))
+        return(
+            redirect(
+                url_for(
+                    'besucher_bp.update',
+                    besucher_id=buchung.besucher.id)))
 
     # left side actions
     actions = [

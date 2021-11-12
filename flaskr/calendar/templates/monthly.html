@@ -5,7 +5,7 @@
 -->
 
 {% block content %}
-	<h2><a href="/calendar?year={{around[0][1]}}&month={{around[0][0]}}">&lt&nbsp;</a> {{month}} / {{year}} <a href="/calendar?year={{around[1][1]}}&month={{around[1][0]}}">&nbsp;&gt</a></h2>
+	<h2><a href="/calendar/month?year={{around[0][1]}}&month={{around[0][0]}}">&lt&nbsp;</a> {{month}} / {{year}} <a href="/calendar/month?year={{around[1][1]}}&month={{around[1][0]}}">&nbsp;&gt</a></h2>
 	<table id="calendar" class="table table-bordered table-condensed table-hover 80percent">
 		<tr>
 			<td></td>
@@ -17,9 +17,12 @@
 		<tr>
 			<td>{{apt[0]['apt']}}</td>
 			{% for day in apt %} 
-				<td class="10px belegung_{{day['belegung']}} " data-toggle="tooltip" title={{day['buchung']}}>{{day['html']|safe}}</td>
+				<td id="{{day['html']}}" onclick=getBuchungDetails(`{{day['html']}}`) class="10px {{day['belegung']}}" data-toggle="tooltip" title={{day['buchung']}}></td>
 			{% endfor %}
 		</tr>
 		{% endfor %}
 	</table>
+
+	<script src="/static/js/buchung.js"></script>
+	
 {% endblock %}

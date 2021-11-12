@@ -122,6 +122,8 @@ def update_besucher(form, besucher):
         besucher.strasse = form.strasse.data
     if besucher.vermerk != form.vermerk.data:
         besucher.vermerk = form.vermerk.data
+    if besucher.language != form.language.data:
+        besucher.language = form.language.data
     if besucher.is_dirty():
         besucher.save()
         return "Daten für {}, {} gespeichert".format(

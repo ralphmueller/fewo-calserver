@@ -4,8 +4,18 @@
 @weekend: #ADD8E6;
 @today: orange;
 @belegt: green;
-@anreise-abreise: lightblue;
+@an: LightGray;
+@ab: LightGray;
 @wechsel-am-selben-tag: red;
+@f1: SkyBlue;
+@f2: DodgerBlue;
+@f4: MediumSlateBlue;
+@f5: Navy;
+@m1: LightSalmon;
+@m2: tomato;
+@g1: SandyBrown;
+@g2: Peru;
+
 
 body { 
 
@@ -20,13 +30,13 @@ body {
 		}
 	}
 
-
 	.float-right{
 		float: right;
 	}
-	
+
 	.light-blue {
-	    background-color: blue;
+	    background-color: lightblue;
+		color: lightblue;
 	}
 
 	.top-70 {
@@ -113,24 +123,62 @@ body {
 			width: 0.8rem;
 			margin:0;
 			padding:0;
+
+			/* apartment colors */
+			&.g1 {
+				background-color: @g1;
+				color: @g1;
+			}
 		
-			&.belegung_0 {
-				background-color: @frei;
+			&.g2 {
+				background-color: @g2;
+				color: @g2;
 			}
-			&.belegung_1 {
-				background-color: @belegt;
+			&.f1 {
+				background-color: @f1;
+				color: @f1;
 			}
-			&.belegung_2 {
-				background-color: @anreise-abreise;
+			&.f2 {
+				background-color: @f2;
+				color: @f2;
 			}
-			&.belegung_4 {
-				background-color: @wechsel-am-selben-tag;
+			&.f4 {
+				background-color: @f4;
+				color: @f4;
 			}
+			&.f5 {
+				background-color: @f5;
+				color: @f5;
+			}
+			&.m1 {
+				background-color: @m1;
+				color: @m1;
+			}
+			&.m2 {
+				background-color: @m2;
+				color: @m2;
+			}
+
+			/* day of week colors */
 			&.background_Sa, &.background_So  {
 				background-color: @weekend;
 			}
 			&.background_today {
 				background-color: @today;
+			}
+
+			/* arrival-, departure day colors */
+			&.an {
+				background-color: @an;
+				color: @an;
+			}
+			&.ab {
+				background-color: @ab;
+				color: @ab;
+			}
+			&.aban {
+				background-color: @an;
+				color: @ab;
 			}
 		}
 	}
