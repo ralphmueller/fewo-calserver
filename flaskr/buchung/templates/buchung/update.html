@@ -52,6 +52,7 @@
               {{ render_label_data("Summe", buchung.get_summe() | euro_currency) }}
               {{ render_label_data("Vorauszahlung", buchung.get_vorauszahlung() | euro_currency) }}
               {{ render_label_data("Restbetrag", buchung.get_offener_betrag() | euro_currency) }}
+              {{ render_label_data("Status", buchung.status) }}
             </dl>
           </div>
         {% if form.errors %}
@@ -63,7 +64,7 @@
         {% endif %}
       </div>
 
-      <input type="submit" value="Weiter">
+      <input type="submit" value="Speichern">
 
     </form>
 

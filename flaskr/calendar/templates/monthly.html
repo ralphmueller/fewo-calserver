@@ -17,12 +17,12 @@
 		<tr>
 			<td>{{apt[0]['apt']}}</td>
 			{% for day in apt %} 
-				<td id="{{day['html']}}" onclick=getBuchungDetails(`{{day['html']}}`) class="10px {{day['belegung']}}" data-toggle="tooltip" title={{day['buchung']}}></td>
+				<td id="{{day['buchung_id']}}" onclick="getBuchungDetails(`{{day['buchung_id']}}`)" class="10px {{day['belegung']}}" data-toggle="tooltip" title="{{day['buchung']}}"></td>
 			{% endfor %}
 		</tr>
 		{% endfor %}
 	</table>
 
 	<script src="/static/js/buchung.js"></script>
-	
+
 {% endblock %}

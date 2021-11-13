@@ -14,7 +14,7 @@ import datetime
 import calendar
 
 from bkormlib import Apartment
-from flaskr.auth.auth import login_required 
+from flaskr.auth.auth import login_required
 
 calendar_bp = Blueprint(
     'calendar_bp',
@@ -58,7 +58,7 @@ class FewoCalendar():
         display a calendar for the holiday apartments
     '''
     def __init__(self):
-        self.apartments = [apt for apt in Apartment.select()]
+        self.apartments = [apt for apt in Apartment.select() if apt.active]
 
     def apartment_names(self):
         return sorted([apt.name for apt in self.apartments])
@@ -73,8 +73,10 @@ class FewoCalendar():
         result_list = []
         for apt in self.apartments:
             days = ['' for c in cal]
-            av = [None for c in cal]    # active visit for each day of the month, None if no visit
-            html = ['' for c in cal]    # active visit for each day of the month, None if no visit
+            # active visit for each day of the month, None if no visit
+            av = [None for c in cal]
+            # active visit for each day of the month, None if no visit
+            buchung_id_list = ['' for c in cal]
             for active_visit in apt.calendar_support():
                 # pass if it's not the current month
                 if (
@@ -100,8 +102,17 @@ class FewoCalendar():
                                     active_visit.besucher.vorname,
                                     active_visit.anreise.strftime('%d.%m.%y'),
                                     active_visit.abreise.strftime('%d.%m.%y'))
-                            html[i] = active_visit.id
-            result_list.append([{'apt': apt.name, 'day': d.day, 'month': d.month, 'year': d.year, 'weekday': d.isoweekday(),  'belegung': days[i], 'buchung':av[i], 'html':html[i]} for i, d in enumerate(cal)])
+                            buchung_id_list[i] = active_visit.id
+            result_list.append([{
+                'apt': apt.name,
+                'day': d.day,
+                'month': d.month,
+                'year': d.year,
+                'weekday': d.isoweekday(),
+                'belegung': days[i],
+                'buchung':av[i],
+                'buchung_id':buchung_id_list[i]
+                } for i, d in enumerate(cal)])
         return (result_list)
 
 
