@@ -16,7 +16,6 @@ load_dotenv(path.join(basedir, '.env'))
 
 class Config:
     """Set Flask config variables."""
-
     FLASK_ENV = 'development'
     TESTING = True
     STATIC_FOLDER = 'static'
@@ -34,3 +33,12 @@ class Config:
             'susan.iwai@gmail.com',
             'bianka.moeller73@googlemail.com']
         INFO_EMAIL = ['info@ferien-in-gersfeld.de']
+
+
+class EmailConfig:
+    EMAIL_ADDRESS = environ.get('EMAIL_ADDRESS')
+    EMAIL_USER = environ.get('EMAIL_USER')
+    EMAIL_PASSWORD = environ.get('EMAIL_PASSWORD')
+    EMAIL_HOST = environ.get('EMAIL_HOST')
+    EMAIL_SSL = False
+    EMAIL_PORT = 587

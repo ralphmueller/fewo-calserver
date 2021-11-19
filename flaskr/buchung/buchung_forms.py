@@ -7,7 +7,7 @@ WTF for buchungen
 '''
 from datetime import date, timedelta
 from flask_wtf import FlaskForm
-from wtforms import SelectField, HiddenField, TextAreaField
+from wtforms import SelectField, HiddenField, TextAreaField, StringField
 from wtforms.fields.html5 import (
     DateField,
     DecimalField,
@@ -115,4 +115,15 @@ class Buchung2Form(FlaskForm):
     email_text = TextAreaField(
         'Buchungsbestätigung',
         render_kw={'rows': "50", 'cols': "80"}
+    )
+
+
+class MeldescheinForm(FlaskForm):
+    """
+        Erfassen Meldeschein Nr
+    """
+
+    meldeschein_nummer = StringField(
+        'Meldeschein',
+        default=''
     )

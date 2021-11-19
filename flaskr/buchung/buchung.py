@@ -21,12 +21,12 @@ from flask import (
     session
 )
 from bkormlib import Buchung, Besucher, Apartment, User, FlaskrSession, Email
-from rmemaillib import mailer
 
-from .buchung_forms import BuchungForm, Buchung2Form
+from .buchung_forms import BuchungForm, Buchung2Form, MeldescheinForm
 
 from flaskr.auth.auth import login_required
 from flaskr.api import update_buchung
+from flaskr import mailer
 
 buchung_bp = Blueprint(
     'buchung_bp',
@@ -209,7 +209,7 @@ def update_check(buchung_id):
     """
         make decisions what to do:
             - if the booking status is abgerechnet, re-route to
-              vorauszahlung
+              anzeigen
             - if the booking status is gebucht, re-route to update
     """
     buchung = Buchung.get_by_id(buchung_id)
@@ -217,7 +217,7 @@ def update_check(buchung_id):
         return redirect(url_for('buchung_bp.update', buchung_id=buchung_id))
     else:       # abgerechnet
         return redirect(
-            url_for('buchung_bp.update_vorauszahlung', buchung_id=buchung_id))
+            url_for('buchung_bp.anzeigen', buchung_id=buchung_id))
 
 
 @buchung_bp.route('/update/<int:buchung_id>', methods=('GET', 'POST'))
@@ -323,7 +323,6 @@ def update_vorauszahlung(buchung_id):
         - actions:
             - print invoice
     """
-    buchung = Buchung.get_by_id(buchung_id)
     flash('buchung vorauszahlung not implemented yet')
     return(redirect(url_for('home_bp.index')))
 
@@ -340,12 +339,80 @@ def storno(buchung_id):
 def abrechnen(buchung_id):
     """
         get:
-            - show current details 
+            - show current details
             - input form for meldeschein data
         post:
             - change buchung status to abgerechnet
             - set meldeschein data
             - reroute to printing invoice
     """
-    flash('buchung abrechnen not implemented yet')
+    buchung = Buchung.get_by_id(buchung_id)
+    if buchung.status in ['storno', 'verworfen', 'abgerechnet']:
+        flash(
+            'Buchung {} mit Status {} kann nicht abgerechnet werden!'
+            .format(buchung.id, buchung.status), 'error')
+        return(redirect(url_for('home_bp.index')))
+    form = MeldescheinForm()
+
+    if form.validate_on_submit():
+        # save meldeschein data
+        buchung.meldeschein_nummer = form.meldeschein_nummer.data
+        # set status to abgrechnet
+        buchung.status = 'abgerechnet'
+        buchung.save()
+        return(
+            redirect(
+                url_for(
+                    'besucher_bp.update',
+                    besucher_id=buchung.besucher.id)))
+
+    return render_template(
+        'buchung/abrechnen.html',
+        form=form,
+        buchung=buchung,
+        # actions=actions,
+        title='Buchung abrechnen',
+        besucher=buchung.besucher,
+        run_mode=current_app.env
+    )
+
+
+@buchung_bp.route('/anzeigen/<int:buchung_id>')
+@login_required
+def anzeigen(buchung_id):
+    """
+        get:
+            - show current details
+            - input form for meldeschein data
+        post:
+            - change buchung status to abgerechnet
+            - set meldeschein data
+            - reroute to printing invoice
+    """
+    buchung = Buchung.get_by_id(buchung_id)
+
+    # left side actions
+    actions = [
+        (
+            'Buchung ändern',
+            url_for('buchung_bp.update_vorauszahlung', buchung_id=buchung.id)),
+        (
+            'Rechnung',
+            url_for('buchung_bp.rechnung', buchung_id=buchung.id))
+    ]
+
+    return render_template(
+        'buchung/anzeigen.html',
+        buchung=buchung,
+        actions=actions,
+        title='Buchung anzeigen',
+        besucher=buchung.besucher,
+        run_mode=current_app.env
+    )
+
+
+@buchung_bp.route('/rechnung/<int:buchung_id>')
+@login_required
+def rechnung(buchung_id):
+    flash('rechnung storno not implemented yet')
     return(redirect(url_for('home_bp.index')))

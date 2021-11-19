@@ -14,15 +14,18 @@ from flask import Flask, render_template
 from flask_cors import CORS
 from bkormlib.schema import db_connect
 from flaskr.auth.auth import login_required
+from rmemaillib.email import EmailObject
 
 import config
+
+mailer = EmailObject.from_object(config.EmailConfig)
 
 
 def init_app():
     app = Flask(__name__, instance_relative_config=False)
 
     app.config.from_object('config.Config')
-    app.config['TEAM_EMAILS'] = config.Config.EMAILS_TEAM
+    app.config.from_object('config.EmailConfig')
 
     db = db_connect(app.config.get('FLASK_ENV'), app.config.get('DATABASE'))
 
@@ -30,6 +33,11 @@ def init_app():
 
     app_context = app.app_context()
     app_context.push()
+
+    @app.template_filter()
+    def rabatt(value):
+        print('rabatt', value)
+        return '{} %'.format(value)
 
     @app.template_filter()
     def euro_percent(value):
@@ -89,7 +97,6 @@ def init_app():
         @login_required
         def reset_invoice_new():
             return render_template('reset_invoice_new.html', run_mode=app.env)
-
     return app
 
 
