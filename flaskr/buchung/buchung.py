@@ -10,6 +10,7 @@ Created on 04.10.2021
 
 '''
 from babel.dates import format_date
+import datetime
 from flask import (
     Blueprint,
     render_template,
@@ -20,7 +21,15 @@ from flask import (
     request,
     session
 )
-from bkormlib import Buchung, Besucher, Apartment, User, FlaskrSession, Email
+
+from bkormlib import (
+    Buchung,
+    Besucher,
+    Apartment,
+    User,
+    FlaskrSession,
+    Email,
+    StaticValuesBuchung)
 
 from .buchung_forms import BuchungForm, Buchung2Form, MeldescheinForm
 
@@ -359,6 +368,10 @@ def abrechnen(buchung_id):
         buchung.meldeschein_nummer = form.meldeschein_nummer.data
         # set status to abgrechnet
         buchung.status = 'abgerechnet'
+        buchung.rechnungs_nummer = '{}-{:03}-{}'.format(
+            buchung.apartment.name,
+            buchung.apartment.get_next_invoice_no(),
+            datetime.date.today().year)
         buchung.save()
         return(
             redirect(
@@ -414,5 +427,22 @@ def anzeigen(buchung_id):
 @buchung_bp.route('/rechnung/<int:buchung_id>')
 @login_required
 def rechnung(buchung_id):
-    flash('rechnung storno not implemented yet')
-    return(redirect(url_for('home_bp.index')))
+    buchung = Buchung.get_by_id(buchung_id)
+
+    actions = [
+        (
+            'Rechnung Drucken',
+            url_for('buchung_bp.update_vorauszahlung', buchung_id=buchung.id)),
+        (
+            'Rechnung',
+            url_for('buchung_bp.rechnung', buchung_id=buchung.id))
+    ]
+
+    return render_template(
+        'print/rechnung.html',
+        buchung=buchung,
+        actions=actions,
+        mwst_satz=StaticValuesBuchung.mwstsatz(),
+        title='Buchung anzeigen',
+        run_mode=current_app.env
+    )

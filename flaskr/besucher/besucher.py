@@ -15,7 +15,8 @@ from flask import (
     flash,
     redirect,
     url_for,
-    current_app
+    current_app,
+    session
 )
 
 from .besucher_forms import BesucherForm
@@ -74,6 +75,7 @@ def create():
         REST: Create new visitor
     '''
     form = BesucherForm()
+    form.user_id.data = session.get('user_id')
     if form.validate_on_submit():
         id, name, vorname = create_besucher_from_form(form)
         flash(

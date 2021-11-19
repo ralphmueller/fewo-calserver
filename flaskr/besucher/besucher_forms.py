@@ -15,6 +15,8 @@ from flaskr.api import ANREDE, LANGUAGE
 class BesucherForm(FlaskForm):
     """ Create/update form"""
 
+    user_id = HiddenField()      # user of the app
+
     besucher_id = HiddenField()
 
     anrede = SelectField(

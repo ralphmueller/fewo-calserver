@@ -1,0 +1,122 @@
+/*
+
+Ralph Mueller
+19.11.2021
+
+css file display/print rechnung
+
+*/
+
+@media print {
+    * {
+      font-family: verdana,arial,sans-serif;
+    }
+    .clear {
+      clear: both;
+    }
+    * {
+      background: transparent !important;
+      color: black !important;
+      text-shadow: none !important;
+      filter: none !important;
+      -ms-filter: none !important;
+    }
+    /* Black prints faster: h5bp.com/s */
+    body {
+      font-size: 14px;
+    }
+    @page  {
+      size: a4 portrait;
+      margin-right: 2.0cm;
+      margin-left: 2.0cm;
+      margin-top: 1.0cm;
+      margin-bottom: 1.0cm;
+    }
+    .image {
+      float: left;
+      padding-right: 100px;
+    }
+    .image img {
+      padding-top: 20px;
+      width: 200px;
+    }
+    .header-text {
+      float: right;
+    }
+    .header-text h1,
+    .header-text p {
+      text-align: center;
+    }
+    .header-text h1 {
+      font-size: 42px;
+    }
+    #address-date {
+      padding-top: 1cm;
+      clear: both;
+    }
+    #address-date #address {
+      float: left;
+    }
+    #address-date #date {
+      float: right;
+    }
+    #address-date #date p {
+      text-align: right;
+    }
+    #filename {
+      height: 0px;
+      visibility: hidden;
+    }
+    #invoice-data tr th,
+    #invoice-data tr td {
+      border: 1px solid black;
+      padding-right: 5px;
+      padding-left: 5px;
+      padding-top: 5px;
+    }
+    #invoice-data tr th.long,
+    #invoice-data tr td.long {
+      text-align: left;
+      width: 300px;
+    }
+    #invoice-data tr th.medium,
+    #invoice-data tr td.medium {
+      width: 200px;
+      text-align: right;
+    }
+    #invoice-data h2 {
+      font-size: 16.8px;
+      font-weight: bold;
+    }
+    #vielen-dank, #mfg, #kurtaxe-text, #visit-description, #invoice-data {
+      clear: both;
+    }
+    #visit-description, #invoice-data {
+      padding-top: 1cm;
+    }
+    #footer {
+      margin-top: 1.0cm;
+      border-top: 2px solid black;
+      text-align: left;
+      font-size: 12px;
+    }
+    #footer p {
+      margin-top: 10px;
+    }
+    #weiter-button {
+      display: none;
+    }
+  }
+
+  @media screen {
+    .image {
+      display: none;
+    }
+    #invoice-data, #kurtaxe-text, #footer, #mfg {
+      display: none;
+    }
+    #visit-description {
+      clear: both;
+    }
+}
+  
