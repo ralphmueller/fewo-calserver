@@ -1,9 +1,15 @@
-<!DOCTYPE>
-
+<!-- 
+	Rechnungsformular Ferien-in-Gersfeld
+	Abgeleitet aus alter TWIG Version, umgestellt für Jinja2
+	Autor: Ralph Müller
+	20.11.2021
+ -->
+<!DOCTYPE html>
 <html lang="de">
 	<head>
 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="author" content="Ralph Mueller">
 
 	<title>Rechnung</title>
@@ -13,6 +19,7 @@
 
     <link rel="stylesheet" href="/static/node_modules/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="/static/css/print.css">
+	<link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
 
 </head>
 
@@ -41,7 +48,7 @@
 			<!-- Datum, Rechnungs-Nr. -->
 
 			<div id="date">
-				<p>Gersfeld, den {{ buchung.rechnungsdatum | euro_date }}<br>
+				<p>Gersfeld, den {{ buchung.rechnungsdatum | euro_date_short }}<br>
 				Rechnung Nr. {{ buchung.rechnungs_nummer }}</p>
 			</div>  <!-- date -->
 		
