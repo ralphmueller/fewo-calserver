@@ -7,8 +7,11 @@ WTF for buchungen
 '''
 from datetime import date, timedelta
 from flask_wtf import FlaskForm
-from wtforms import SelectField, HiddenField, TextAreaField, StringField
-from wtforms.fields.html5 import (
+from wtforms import (
+    SelectField,
+    HiddenField,
+    TextAreaField,
+    StringField,
     DateField,
     DecimalField,
     IntegerField)

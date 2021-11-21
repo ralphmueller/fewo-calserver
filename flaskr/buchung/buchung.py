@@ -193,9 +193,8 @@ def create_buchung_finish():
             email_html,
             'empty'
         )
-
+        # send all emails; email server quits after sending
         mailer.send_emails()
-        mailer.close()
         return(
             redirect(
                 url_for(
@@ -339,8 +338,44 @@ def update_vorauszahlung(buchung_id):
 @buchung_bp.route('/storno/<int:buchung_id>')
 @login_required
 def storno(buchung_id):
-    flash('buchung storno not implemented yet')
-    return(redirect(url_for('home_bp.index')))
+    buchung = Buchung.get_by_id(buchung_id)
+    buchung.status = 'storno'
+    buchung.save()
+    # sending emails
+    # email to visitor
+    email_html = render_template(
+        'emails/buchung_storno.html',
+        buchung=buchung
+    )
+    header = 'Ihre Fewo Buchung bei uns: Storno'
+    mailer.add_email(
+        [buchung.besucher.email],            # besucher
+        current_app.config['INFO_EMAIL'],    # info
+        header,
+        email_html,
+        'empty'
+    )
+    # email to team
+    email_html = render_template(
+        'emails/buchung_storno_team.html',
+        buchung=buchung
+    )
+    header = '[fig:Buchung storniert]'
+
+    mailer.add_email(
+        current_app.config['EMAILS_TEAM'],     # team ...
+        [],                                    # nobody in cc
+        header,
+        email_html,
+        'empty'
+    )
+    mailer.send_emails()
+    # done, back to visitor
+    flash('Buchung {} storniert'.format(buchung_id))
+    return redirect(
+        url_for(
+            'besucher_bp.update',
+            besucher_id=buchung.besucher.id))
 
 
 @buchung_bp.route('/abrechnen/<int:buchung_id>', methods=('GET', 'POST'))
@@ -441,6 +476,7 @@ def rechnung(buchung_id):
     return render_template(
         'print/rechnung.html',
         buchung=buchung,
+        days=(buchung.abreise - buchung.anreise).days,
         actions=actions,
         mwst_satz=StaticValuesBuchung.mwstsatz(),
         title='Buchung anzeigen',

@@ -1,0 +1,25 @@
+<!-- 
+	* Jinja partial
+	* schicke Email an das Team: Storno Buchung 
+	* ralph, 21.11.2021
+-->
+
+{% extends 'emails/layout.html' %}
+
+{% block content %}
+
+	<p>Storno für <strong>{{buchung.anrede}} {{buchung.vorname}} {{buchung.name}}</strong>, {{buchung.stadt}}, {{buchung.strasse}}<p>
+
+	<table  class="table table-bordered table-condensed table-hover table-striped col-2-table">
+		<tr>
+			<td>Wohnung</td>			
+			<td class="text-right">{{ buchung.apartment.name }}</td></tr>
+		<tr>
+			<td>Anreise</td>			
+			<td class="text-right">{{ buchung.anreise | euro_date_short }}</td></tr>
+		<tr>
+			<td>Abreise</td>			
+			<td class="text-right">{{ buchung.abreise | euro_date_short }}</td></tr>	
+	</table>
+			
+{% endblock %}

@@ -13,7 +13,6 @@ from babel.dates import format_date
 from flask import Flask, render_template
 from flask_cors import CORS
 from bkormlib.schema import db_connect
-from flaskr.auth.auth import login_required
 from rmemaillib.email import EmailObject
 
 import config
@@ -21,7 +20,7 @@ import config
 mailer = EmailObject.from_object(config.EmailConfig)
 
 
-def init_app():
+def create_app():
     app = Flask(__name__, instance_relative_config=False)
 
     app.config.from_object('config.Config')
@@ -63,6 +62,15 @@ def init_app():
     from flask_debugtoolbar import DebugToolbarExtension
     _ = DebugToolbarExtension(app)
     """
+    @app.errorhandler(404)
+    def page_not_found(e):
+        # note that we set the 404 status explicitly
+        return render_template('404.html'), 404
+
+    @app.errorhandler(500)
+    def internal_error(e):
+        # note that we set the 500 status explicitly
+        return render_template('500.html'), 500
 
     with app.app_context():
         from .home import home
@@ -74,6 +82,9 @@ def init_app():
         from .calendar import calendar
         from . import json_routes
 
+        app.register_error_handler(404, page_not_found)
+        app.register_error_handler(500, internal_error)
+
         app.register_blueprint(home.home_bp)
         app.register_blueprint(auth.auth_bp)
         app.register_blueprint(besucher.besucher_bp)
@@ -83,21 +94,11 @@ def init_app():
         app.register_blueprint(calendar.calendar_bp)
         app.register_blueprint(json_routes.bp)
 
-        @app.errorhandler(404)
-        def page_not_found(e):
-            # note that we set the 404 status explicitly
-            return render_template('404.html'), 404
+    """        @app.route("/resetinvoice/")
+            @login_required
+            def reset_invoice_new():
+                return render_template('reset_invoice_new.html',
+                run_mode=app.env)
+    """
 
-        @app.errorhandler(500)
-        def internal_error(e):
-            # note that we set the 500 status explicitly
-            return render_template('500.html'), 500
-
-        @app.route("/resetinvoice/")
-        @login_required
-        def reset_invoice_new():
-            return render_template('reset_invoice_new.html', run_mode=app.env)
     return app
-
-
-app = init_app()

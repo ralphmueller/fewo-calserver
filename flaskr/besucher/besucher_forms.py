@@ -6,8 +6,8 @@ WTF for auth
 @author: ralph
 '''
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, HiddenField
-from wtforms.fields.html5 import EmailField
+from wtforms import StringField, SelectField, HiddenField, EmailField
+# from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Email
 from flaskr.api import ANREDE, LANGUAGE
 

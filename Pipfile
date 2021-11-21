@@ -13,6 +13,11 @@ email-validator = "*"
 babel = "*"
 pytest = "*"
 python-dotenv = "*"
+flask-cors = "*"
+wtforms = "*"
+cd = "*"
+rneu = {path = "."}
+uwsgi = "*"
 
 [dev-packages]
 flake8 = "*"

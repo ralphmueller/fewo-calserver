@@ -1,8 +1,7 @@
 <!-- 
-    Created: Ralph, 20.10.2021
+    Created: Ralph, 21.10.2021
 
-    Template für Bestätigungs Email
-        - renering durch Jinja2 Engine
+    Template für storno Email
 
 -->
 
@@ -20,9 +19,9 @@
     {{buchung.besucher.anrede}} {{buchung.besucher.name}} - </p>
 
 <p>
-	gerne bestätigen wir den Eingang einer Vorauszahlung von {{buchung.get_vorauszahlung() | euro_currency}} für Ihre Buchung bei uns.
+	Wir betätigen hiermit die Stornierung der unten angezeigten Buchung.
 
-    Details Ihres Besuchs:
+    Details der stornierten Buchung:
 </p>
 <ul>
     <li>Apartment: {{buchung.apartment.name}}</li>
@@ -31,8 +30,8 @@
     <li>Restbetrag: {{buchung.get_offener_betrag() | euro_currency}}</li>
 </ul>
 
-<p>Wir freuen uns auf Ihren Besuch!</p>
+<p>Schade, dass es diesmal nicht geklappt hat!</p>
 
-{% import 'emails/mfg.html' %}
+{% include 'emails/mfg.html' %}
 
 {% endblock %}
