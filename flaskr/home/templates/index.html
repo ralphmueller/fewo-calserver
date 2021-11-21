@@ -6,6 +6,68 @@
 
 {% block content %}
 
-<p>Main Page</p>
+{% if anreisen | length > 0 %}
+	<div class="table-responsive">
+		<h3>Anreisen</h3>
+		<table class="table table-bordered table-condensed table-hover">
+			<thead>
+				<tr>
+					<th>Anreise</th><th>Abreise</th><th>Apartment</th><th>Miete</th><th>Kurtaxe</th><th>Summe</th><th>Vorauszahlung</th><th>Status</th><th>Besucher</th>
+				</tr>
+			</thead>
+			<tbody>	
+			{% for buchung in anreisen %}
+				{% if buchung.status in ['abgerechnet', 'gebucht'] %}
+					<tr id=" {{buchung.id}} " onclick=getBuchungDetails(`{{ buchung.id }}`)>
+						<td>{{buchung.anreise | euro_date_short }}</td>
+						<td>{{buchung.abreise | euro_date_short }}</td>
+						<td>{{buchung.apartment.name}}</td>
+						<td>{{buchung.miete | euro_currency }}</td>
+						<td>{{buchung.kurtaxe | euro_currency }}</td>
+						<td>{{buchung.summe | euro_currency }}</td>
+						<td>{{buchung.vorauszahlung | euro_currency }}</td>
+						<td>{{buchung.status}}</td>
+						<td>{{buchung.besucher.name}}, {{buchung.besucher.vorname}}</td>
+					</tr>
+				{% endif %}
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
+{% else %}
+	<p>Keine Anreisen in den nächsten 10 Tagen</p>
+{% endif %}
+
+{% if abreisen | length > 0 %}
+	<div class="table-responsive">
+		<h3>Abreisen</h3>
+		<table class="table table-bordered table-condensed table-hover">
+			<thead>
+				<tr>
+					<th>Anreise</th><th>Abreise</th><th>Apartment</th><th>Miete</th><th>Kurtaxe</th><th>Summe</th><th>Vorauszahlung</th><th>Status</th><th>Besucher</th>
+				</tr>
+			</thead>
+			<tbody>	
+			{% for buchung in abreisen %}
+				{% if buchung.status in ['abgerechnet', 'gebucht'] %}
+					<tr id=" {{buchung.id}} " onclick=getBuchungDetails(`{{ buchung.id }}`)>
+						<td>{{buchung.anreise | euro_date_short }}</td>
+						<td>{{buchung.abreise | euro_date_short }}</td>
+						<td>{{buchung.apartment.name}}</td>
+						<td>{{buchung.miete | euro_currency }}</td>
+						<td>{{buchung.kurtaxe | euro_currency }}</td>
+						<td>{{buchung.summe | euro_currency }}</td>
+						<td>{{buchung.vorauszahlung | euro_currency }}</td>
+						<td>{{buchung.status}}</td>
+						<td>{{buchung.besucher.name}}, {{buchung.besucher.vorname}}</td>
+					</tr>
+				{% endif %}
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
+{% else %}
+	<p>Keine Anreisen in den nächsten 10 Tagen</p>
+{% endif %}
 
 {% endblock %}

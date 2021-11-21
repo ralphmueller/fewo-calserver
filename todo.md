@@ -1,5 +1,11 @@
 # todo list
 
+## Home
+
+* list arrivals
+* list departures 
+* list offers
+
 ## Buchung
 * preferred language templates for email to besucher
 * personalize templates with user info 

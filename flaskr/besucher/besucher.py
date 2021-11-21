@@ -122,7 +122,10 @@ def update(besucher_id):
                 besucher.name,
                 besucher.vorname
             ),
-        buchungen=[b for b in buchungen if b.status in ['gebucht', 'abgerechnet']],
+        buchungen=[
+            b for b in buchungen if b.status in [
+                'gebucht',
+                'abgerechnet']],
         besucher=besucher,
         run_mode=current_app.env
     )
