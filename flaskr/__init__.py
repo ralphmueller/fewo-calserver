@@ -10,14 +10,16 @@ Rewrite Oct. 2021
 from babel.numbers import format_decimal, format_percent
 from babel.numbers import format_currency
 from babel.dates import format_date
-from flask import Flask, render_template
+from flask import Flask, render_template, session, g
 from flask_cors import CORS
 from bkormlib.schema import db_connect
 from rmemaillib.email import EmailObject
+from flask_wtf.csrf import CSRFProtect
 
 import config
 
 mailer = EmailObject.from_object(config.EmailConfig)
+csrf = CSRFProtect()
 
 
 def create_app():
@@ -25,10 +27,19 @@ def create_app():
 
     app.config.from_object('config.Config')
     app.config.from_object('config.EmailConfig')
+    print('SESSION_COOKIE_SECURE: ', app.config['SESSION_COOKIE_SECURE'])
 
+    print(app.config.get('FLASK_ENV'), app.config.get('DATABASE'))
     db = db_connect(app.config.get('FLASK_ENV'), app.config.get('DATABASE'))
 
     CORS(app)
+    csrf.init_app(app)
+
+    @app.before_request
+    def fix_missing_csrf_token():
+        if app.config['WTF_CSRF_FIELD_NAME'] not in session:
+            if app.config['WTF_CSRF_FIELD_NAME'] in g:
+                g.pop(app.config['WTF_CSRF_FIELD_NAME'])
 
     app_context = app.app_context()
     app_context.push()

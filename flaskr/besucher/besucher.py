@@ -56,7 +56,7 @@ def index():
         )
     else:
         flash('no visitors found')
-        return(redirect(url_for('home.index')))
+        return(redirect(url_for('home_bp.index')))
 
 
 @besucher_bp.route('/find')

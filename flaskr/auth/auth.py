@@ -12,7 +12,6 @@ from flask import (
     g,
     redirect,
     render_template,
-    request,
     session,
     url_for,
     current_app
@@ -22,8 +21,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from bkormlib import User
 from peewee import DoesNotExist
 
-
-from .auth_forms import LoginForm
+from .auth_forms import LoginForm, RegisterForm
 
 auth_bp = Blueprint(
     'auth_bp',
@@ -36,25 +34,26 @@ auth_bp = Blueprint(
 
 @auth_bp.route('/register', methods=('GET', 'POST'))
 def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        error = None
 
-        if not username:
-            error = 'Username is required.'
-        elif not password:
-            error = 'Password is required.'
+    form = RegisterForm()
 
+    if form.validate_on_submit():
+        username = form.user.data
+        password = form.password.data
         user = User()
         user.username = username
         user.password = generate_password_hash(password)
-
         user.save()
 
-        flash(error)
+        return redirect(url_for('auth_bp.login'))
 
-    return render_template('register.html')
+    return render_template(
+        'register.html',
+        form=form,
+        title='Benutzer anlegen',
+        run_mode=current_app.env,
+        template='form-template'
+    )
 
 
 @auth_bp.route('/login', methods=('GET', 'POST'))

@@ -1,33 +1,34 @@
 /*
+* 
+* JS functions to support with booking related forms
 * @author: Ralph Mueller
 * @date: 25.10.2021
 *
-* datepicker settings
-*
-* requires:
-*
-*   - jquery (js)
-*   - jquery-ui (css)
-*   - jquery-ui (js)
-*   - jquery-ui.i18 (js)
-*
 */
 
-function getBuchungDetails(id, status) {
-	console.log('getBuchungDetails, id= ', id)
-	window.location.href = '/buchung/update_check/' + id;
-	return (t)
-  }
+function checkAvailability() {
+	/* 
+	  check availability of selected apartment and 
+	  - confirm or
+	  - negate with list of available apartments
 
-/*
-$( function() {
-	$.datepicker.setDefaults( $.datepicker.regional[ "de" ] );
-	$( "#abreise" ).datepicker( "option", "dateFormat", "dd.mm.yy" );
-	$( "#abreise" ).datepicker( "option", "dateFormat", "dd.mm.yy" );
-    $('#anreise').datepicker({
-    onSelect: function(dateText, inst) {
-      $("input[name='abreise']").val(dateText);
-    }
+	  author: ralph
+	  date: 23.11.2021
+	*/
+	const anreiseElement = document.querySelector('#anreise');
+	const abreiseElement = document.querySelector('#abreise');
+	const apartmentElement = document.querySelector('#apartment_id');
+	const availabilityElement = document.querySelector('#availability_id');
+	const url = '/rest/apartment/available/' 
+	  + apartmentElement.value 
+	  + '?anreise=' + anreiseElement.value 
+	  + '&abreise=' + abreiseElement.value;
+	$.getJSON(url, function(result){
+	  if (result.avail == true) {
+		availabilityElement.innerHTML = 'Apartment verfügbar';
+	  } else {
+		availabilityElement.innerHTML = 'Apartment nicht verfügbar. Freie Apartments: ' + result.apartments; 
+	  }
 	});
-  } );
-*/
+	return false;
+}

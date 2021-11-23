@@ -5,7 +5,7 @@
 {% block content %}
   <form method="post" action="{{ url_for('auth_bp.login') }}">
 
-    {{ form.csrf_token }}
+    {{ form.hidden_tag()}}
 
     <dl>
       {{ render_field(form.user)}}
@@ -13,6 +13,14 @@
     </dl>
 
     <input type="submit" value="Log In">
+
+    {% if form.errors %}
+    <div class="row">
+      <div class="col-6">
+        {{ form.errors }}
+      </div>
+    </div>
+    {% endif %}
 
   </form>
 {% endblock %}

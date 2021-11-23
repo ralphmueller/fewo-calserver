@@ -16,8 +16,7 @@ load_dotenv(path.join(basedir, '.env'))
 
 class Config:
     """Set Flask config variables."""
-    FLASK_ENV = 'development'
-    TESTING = True
+    FLASK_ENV = 'production'
     STATIC_FOLDER = 'static'
     TEMPLATES_FOLDER = 'templates'
     PERMANENT_SESSION_LIFETIME = datetime.timedelta(days=1)
@@ -25,9 +24,11 @@ class Config:
     DATABASE = environ.get(FLASK_ENV.upper() + '_DATABASE')
 
     if FLASK_ENV == 'development':
+        TESTING = True
         EMAILS_TEAM = ['ralph.mueller.de@gmail.com']
         INFO_EMAIL = ['ralph.mueller.de@gmail.com']
     else:
+        TESTING = False
         EMAILS_TEAM = [
             'ralph.mueller.de@gmail.com',
             'susan.iwai@gmail.com',

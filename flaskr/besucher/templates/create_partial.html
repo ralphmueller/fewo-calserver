@@ -3,7 +3,7 @@
 {% block content %}
   <form method="post" action="{{ url_for('besucher_bp.create') }}">
 
-    {{ form.csrf_token }}
+    {{ form.hidden_tag() }}
 
     <dl>
       {{ render_field(form.anrede)}}

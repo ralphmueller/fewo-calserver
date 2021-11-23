@@ -16,7 +16,7 @@
 
     <form method="post">
 
-      {{ form.csrf_token }}
+      {{ form.hidden_tag() }}
 
       <div class="row">
         <div class="col-6">
@@ -48,9 +48,9 @@
           </div>
         {% endif %}
       </div>
-
-      <input type="submit" value="Weiter">
-
+        <p id='availability_id'></p>
+        <input type="submit" value="Prüfen" onclick="return checkAvailability();">
+        <input type="submit" value="Weiter">
     </form>
 
   </div>
@@ -69,5 +69,4 @@
     });
   </script>
 
-</div>
-{% endblock %}
+  {% endblock %}

@@ -49,3 +49,12 @@ TBD
 ## MarkDown Strike
 
 ~~strike~~ - use double tilde
+
+
+# Bugs
+
+## Susan
+
+* Not a valid integer value
+
+* ~~Prüfen, ob Wohnung frei ist~~ added buttoon and related js to check (buchung.js)

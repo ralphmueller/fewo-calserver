@@ -3,7 +3,7 @@
 <div>
   <form method="post" action="{{ url_for('besucher_bp.update', besucher_id=besucher.id) }}">
 
-    {{ form.csrf_token }}
+    {{ form.hidden_tag() }}
 
       <dl>
         {{ render_field(form.anrede) }}

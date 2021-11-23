@@ -18,5 +18,5 @@ print(path.join(basedir, '.env'))
 class Config:
     """Set  config variables."""
 
-    ENV = 'test'
+    ENV = 'development'
     DATABASE = environ.get(ENV.upper() + '_DATABASE')

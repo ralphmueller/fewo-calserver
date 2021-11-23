@@ -4,10 +4,11 @@ Created on 10 Mar 2019
 @author: ralph
 '''
 import json
+import datetime
 from flask import Blueprint, request
 from playhouse.shortcuts import model_to_dict
 
-from bkormlib.schema import Buchung, Besucher
+from bkormlib.schema import Apartment, Buchung, Besucher
 
 bp = Blueprint('rest', __name__, url_prefix='/rest')
 
@@ -83,3 +84,29 @@ def rest_buchungen_for_besucher(besucher_id):
     return json.dumps(
         [model_to_dict(r) for r in res], ensure_ascii=False, default=str
     )
+
+
+@bp.route('/apartment/available/<apartment_id>')
+def rest_apartment_available(apartment_id):
+    """
+        TODO: Need to get real values here 
+    """
+    anreise = (
+        datetime
+        .datetime
+        .strptime(request.args['anreise'], "%Y-%m-%d").date())
+    abreise = (
+        datetime
+        .datetime
+        .strptime(request.args['abreise'], "%Y-%m-%d").date())
+    apt_available = (
+        Apartment
+        .get_by_id(apartment_id)
+        .check_availability(anreise, abreise))
+    if not apt_available:
+        apts = [
+           apt.name for apt in Apartment.select()
+           if apt.active and apt.check_availability(anreise, abreise)]
+    else:
+        apts = []
+    return json.dumps({'avail': apt_available, 'apartments': apts})
