@@ -27,10 +27,9 @@ def create_app():
 
     app.config.from_object('config.Config')
     app.config.from_object('config.EmailConfig')
-    print('SESSION_COOKIE_SECURE: ', app.config['SESSION_COOKIE_SECURE'])
 
     print(app.config.get('FLASK_ENV'), app.config.get('DATABASE'))
-    db = db_connect(app.config.get('FLASK_ENV'), app.config.get('DATABASE'))
+    _ = db_connect(app.config.get('FLASK_ENV'), app.config.get('DATABASE'))
 
     CORS(app)
     csrf.init_app(app)

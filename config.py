@@ -16,7 +16,7 @@ load_dotenv(path.join(basedir, '.env'))
 
 class Config:
     """Set Flask config variables."""
-    FLASK_ENV = 'production'
+    FLASK_ENV = 'development'
     STATIC_FOLDER = 'static'
     TEMPLATES_FOLDER = 'templates'
     PERMANENT_SESSION_LIFETIME = datetime.timedelta(days=1)

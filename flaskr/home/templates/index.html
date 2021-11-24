@@ -18,7 +18,7 @@
 			<tbody>	
 			{% for buchung in anreisen %}
 				{% if buchung.status in ['abgerechnet', 'gebucht'] %}
-					<tr id=" {{buchung.id}} " onclick=getBuchungDetails(`{{ buchung.id }}`)>
+					<tr id="{{buchung.id}}" onclick=getBuchungDetails(`{{ buchung.id }}`)>
 						<td>{{buchung.anreise | euro_date_short }}</td>
 						<td>{{buchung.abreise | euro_date_short }}</td>
 						<td>{{buchung.apartment.name}}</td>
@@ -50,7 +50,7 @@
 			<tbody>	
 			{% for buchung in abreisen %}
 				{% if buchung.status in ['abgerechnet', 'gebucht'] %}
-					<tr id=" {{buchung.id}} " onclick=getBuchungDetails(`{{ buchung.id }}`)>
+					<tr id="{{buchung.id}}" onclick=getBuchungDetails(`{{ buchung.id }}`)>
 						<td>{{buchung.anreise | euro_date_short }}</td>
 						<td>{{buchung.abreise | euro_date_short }}</td>
 						<td>{{buchung.apartment.name}}</td>
