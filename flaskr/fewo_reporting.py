@@ -218,9 +218,12 @@ def calc_income_and_commission_for_years(years):
                 & (Buchung.abreise <= enddate)
                 & (Buchung.status << ['abgerechnet', 'gebucht'])
             )).scalar(as_tuple=True)
-
-        income.append(float(res[0]))
-        commission.append(float(res[1]))
+        if res[0] is not None:
+            income.append(float(res[0]))
+            commission.append(float(res[1]))
+        else:
+            income.append(0)
+            commission.append(0)
     return income, commission
 
 
