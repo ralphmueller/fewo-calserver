@@ -6,6 +6,18 @@
 *
 */
 
+function getBuchungDetails(id, status) {
+	/* 
+	  re-route to actions available for 
+	  this particular booking
+
+	  author: ralph
+	  date: 23.11.2021
+	*/
+	window.location.href = '/buchung/update_check/' + id;
+	return (t)
+  }
+
 function checkAvailability() {
 	/* 
 	  check availability of selected apartment and 
