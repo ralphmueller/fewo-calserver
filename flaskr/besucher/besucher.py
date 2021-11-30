@@ -112,7 +112,10 @@ def update(besucher_id):
     actions = [
         (
             'Neue Buchung',
-            url_for('buchung_bp.create_buchung', besucher_id=besucher.id))
+            url_for('buchung_bp.create_buchung', besucher_id=besucher.id)),
+        (
+            'Neues Angebot',
+            url_for('buchung_bp.create_angebot', besucher_id=besucher.id))
     ]
     return render_template(
         'update.html',
@@ -126,6 +129,9 @@ def update(besucher_id):
             b for b in buchungen if b.status in [
                 'gebucht',
                 'abgerechnet']],
+        angebote=[
+            b for b in buchungen if b.status in [
+                'angebot']],
         besucher=besucher,
         run_mode=current_app.env
     )

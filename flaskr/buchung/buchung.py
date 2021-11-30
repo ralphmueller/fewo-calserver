@@ -453,7 +453,7 @@ def anzeigen(buchung_id):
         'buchung/anzeigen.html',
         buchung=buchung,
         actions=actions,
-        title='Buchung anzeigen',
+        title='{} anzeigen'.format(buchung.status.capitalize()),
         besucher=buchung.besucher,
         run_mode=current_app.env
     )
@@ -482,3 +482,115 @@ def rechnung(buchung_id):
         title='Buchung anzeigen',
         run_mode=current_app.env
     )
+
+
+@buchung_bp.route('/create_angebot/<int:besucher_id>', methods=('GET', 'POST'))
+@login_required
+def create_angebot(besucher_id):
+    '''
+        Create new offer, step 1
+        - gather offer data
+        at the end of this step:
+        - validate the information
+        - check availability of apartment (flash if not)
+        - contiue to second step (create_buchung_finish)
+    '''
+    form = BuchungForm()
+    form.besucher_id.data = besucher_id
+    besucher = Besucher.get(besucher_id)
+    if form.validate_on_submit():
+        form.besucher_id = besucher_id
+        session_data = form.data
+        session_object = FlaskrSession.from_object(
+            User.get(id=session['user_id']),
+            session_data
+        )
+        session['create_angebot'] = session_object.id
+        if besucher.email == "":
+            flash('Besucher hat keine Email Adresse', 'error')
+        if (
+            Apartment
+            .get_by_id(form.apartment_id.data)
+            .check_availability(form.anreise.data, form.abreise.data)
+        ):
+            flash('Apartment is verfügbar')
+        else:
+            # TODO: Liste der verfügbaren Aprtments
+            flash('Apartment ist nicht verfügbar!', 'error')
+
+        return(redirect(url_for('buchung_bp.create_angebot_finish')))
+
+    return render_template(
+        'buchung/create.html',
+        besucher=besucher,
+        form=form,
+        title='Angebot anlegen',
+        run_mode=current_app.env,
+        template='form-template'
+    )
+
+@buchung_bp.route('/create_angebot_finish', methods=('GET', 'POST'))
+@login_required
+def create_angebot_finish():
+    '''
+        Finalize new booking
+        - check availability of apartment
+        - prepare confirmation text
+        - send emails and finish booking
+    '''
+
+    session_id = session['create_angebot']
+    buchung = Buchung(**FlaskrSession.get(id=session_id).as_object())
+    buchung.recalc(status='angebot')
+    besucher = Besucher.get(buchung.besucher_id)
+    # prepare email_confirmation_email
+    form = Buchung2Form()
+    if request.method == 'GET':
+        form.email_text.data = render_template(
+            'emails/angebot.html',
+            days=(buchung.abreise - buchung.anreise).days,
+            buchung=buchung
+        )
+
+    if form.validate_on_submit():
+        # save booking
+        buchung.id = None
+        buchung.save()
+        # create email record
+        besucher_email = Email()
+        besucher_email.besucher = besucher
+        besucher_email.buchung = buchung
+        besucher_email.header = (
+            'Angebot Apartment {}, {} vom {} bis {}'
+            .format(
+                buchung.apartment.name,
+                buchung.apartment.beschreibung,
+                format_date(buchung.anreise, format='full', locale='de_DE'),
+                format_date(buchung.abreise, format='full', locale='de_DE')))
+        besucher_email.body = form.email_text.data
+        besucher_email.save()
+        # email section
+        # prepare email to besucher
+        mailer.add_email(
+            [besucher.email],
+            current_app.config['EMAILS_TEAM'],
+            besucher_email.header,
+            besucher_email.body,
+            'empty'
+        )
+        # send all emails; email server quits after sending
+        mailer.send_emails()
+        return(
+            redirect(
+                url_for(
+                    'besucher_bp.update',
+                    besucher_id=buchung.besucher.id)))
+
+    return render_template(
+        'buchung/create_part2.html',
+        besucher=buchung.besucher,
+        buchung=buchung,
+        form=form,
+        title='Neues Angebot fertigstellen',
+        run_mode=current_app.env,
+        template='form-template')
