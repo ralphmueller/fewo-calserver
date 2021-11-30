@@ -4,11 +4,6 @@
 
 <h3>Aktionen</h3>
 
-<ul  class="actions">
-    <li class="nav-item"><a class="nav-link" target="_blank" href="https://ferien-in-gersfeld.de">Ferien-in-Gersfeld</a></li>
-    <li class="nav-item"><a class="nav-link" target="_blank" href="https://ferien-in-gersfeld.de/?q=de/content/preise-2022">Preisliste 2022</a></li>
-    <li class="nav-item"><a class="nav-link" target="_blank" href="https://ferien-in-gersfeld.de/?q=de/content/preise-2021">Preisliste 2021</a></li>
-</ul>
 {% if actions %}
     <ul class="actions">
     {% for action in actions %}
@@ -21,5 +16,11 @@
         <li class="nav-item"><a class="nav-link" target="_self" href="#">Buchung finden</a></li>
     </ul>
 {% endif %}
+
+<ul  class="actions">
+    <li class="nav-item"><a class="nav-link" target="_blank" href="https://ferien-in-gersfeld.de">Ferien-in-Gersfeld</a></li>
+    <li class="nav-item"><a class="nav-link" target="_blank" href="https://ferien-in-gersfeld.de/?q=de/content/preise-2022">Preisliste 2022</a></li>
+    <li class="nav-item"><a class="nav-link" target="_blank" href="https://ferien-in-gersfeld.de/?q=de/content/preise-2021">Preisliste 2021</a></li>
+</ul>
 
 {% include 'flash.html' %}

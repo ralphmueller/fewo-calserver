@@ -30,9 +30,13 @@
 				{% include 'context-menu.html' %}
 			</div>
 
-			<div class="col-md-10">
+			{% include 'flash.html' %}
+
+			<div class="col-md-12">
 				<h3>{{title}}</h3>
-				<div id="content">{% block content %}{% endblock %}</div>
+				<div id="content">
+					{% block content %}{% endblock %}
+				</div>
 			</div>
 		</div>
 	</div> <!-- container Seiteninhalt-->

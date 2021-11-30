@@ -36,16 +36,19 @@ def rest_besucher_get(besucher_id):
 @bp.route('/besucher_by_name/<besucher_name>')
 def rest_besucher_by_name(besucher_name):
     '''
-    return list of visitors for given name regex
+    return list of visitors for given name expression
         used in lookup_besucher.js
+        - patterns like "%müller%" return records containing 'müller'
+        - patterns like "müller%" return  records containing '[Mm]üller'
     '''
-    reg = '^' + besucher_name
     res = (
         Besucher
         .select()
-        .where(Besucher.name.regexp(reg))
+        .where(Besucher.name ** besucher_name.lower())
         )
-    return json.dumps([model_to_dict(r) for r in res], ensure_ascii=False, default=str)
+    return json.dumps(
+        [model_to_dict(r) for r in res],
+        ensure_ascii=False, default=str)
 
 
 @bp.route('/rechnung/<besucher_name>')
