@@ -39,7 +39,8 @@ def rest_besucher_by_name(besucher_name):
     return list of visitors for given name expression
         used in lookup_besucher.js
         - patterns like "%müller%" return records containing 'müller'
-        - patterns like "müller%" return  records containing '[Mm]üller'
+        - patterns like "müller%" return records containing '^[Mm]üller'
+        - ** operator in peewee is 'ILIKE'
     '''
     res = (
         Besucher
@@ -57,12 +58,13 @@ def rest_besucherliste_select(besucher_name):
     return list of invoices for given visitor
         used in lookup_invoice.js
     '''
-    reg = '^' + besucher_name
     res = (
         Buchung
         .select()
         .join(Besucher)
-        .where(Besucher.name.regexp(reg) & (Buchung.status == "abgerechnet"))
+        .where(
+            (Besucher.name ** besucher_name.lower()) &
+            (Buchung.status == "abgerechnet"))
         .order_by(Buchung.anreise.desc())
     )
     a = []
