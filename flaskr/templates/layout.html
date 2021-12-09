@@ -29,10 +29,8 @@
 				<!-- left column -->
 				{% include 'context-menu.html' %}
 			</div>
-
-			{% include 'flash.html' %}
-
-			<div class="col-md-12">
+			<div class="col-md-8">
+				{% include 'flash.html' %}
 				<h3>{{title}}</h3>
 				<div id="content">
 					{% block content %}{% endblock %}

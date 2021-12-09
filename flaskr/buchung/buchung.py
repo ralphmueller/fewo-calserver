@@ -183,8 +183,8 @@ def create_buchung_finish():
             '[fig:Neue Buchung {}, {} - {}'
             .format(
                 buchung.apartment.name,
-                format_date(buchung.anreise, format='full', locale='de_DE'),
-                format_date(buchung.abreise, format='full', locale='de_DE')))
+                format_date(buchung.anreise, locale='de_DE'),
+                format_date(buchung.abreise, locale='de_DE')))
 
         mailer.add_email(
             current_app.config['EMAILS_TEAM'],     # team ...
@@ -195,6 +195,16 @@ def create_buchung_finish():
         )
         # send all emails; email server quits after sending
         mailer.send_emails()
+        # flash message
+        flash(
+            'Buchung {} Apt {} vom {} - {} für {}, {} gespeichert'.format(
+                buchung.id, 
+                buchung.apartment.name,
+                format_date(buchung.anreise, format='full', locale='de_DE'),
+                format_date(buchung.abreise, format='full', locale='de_DE'),
+                buchung.besucher.name,
+                buchung.besucher.vorname
+            ))
         return(
             redirect(
                 url_for(
@@ -528,6 +538,7 @@ def create_angebot(besucher_id):
         run_mode=current_app.env,
         template='form-template'
     )
+
 
 @buchung_bp.route('/create_angebot_finish', methods=('GET', 'POST'))
 @login_required

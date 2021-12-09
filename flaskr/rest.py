@@ -94,7 +94,7 @@ def rest_buchungen_for_besucher(besucher_id):
 @bp.route('/apartment/available/<apartment_id>')
 def rest_apartment_available(apartment_id):
     """
-        TODO: Need to get real values here 
+        TODO: Need to get real values here
     """
     anreise = (
         datetime

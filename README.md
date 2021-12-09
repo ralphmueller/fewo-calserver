@@ -20,3 +20,11 @@ uwsgi --http-socket :5000  --module wsgi:app  --virtualenv /Users/ralph/.local/s
 
     pipenv run uwsgi --http-socket :5000  --module wsgi:app
 
+## Besucher Suche
+
+% sind wildcard Zeichen
+
+Müller - findet alle mit Nachnamen Müller
+%Müller - findet alle, deren Namen auf Müller endet (Eide-Müller, Buchmüller)
+Müller% - findet alle, deren Namen mit Müller beginnt (Müller-Waldheim, Müller - Testbenutzer)
+%Müller% - findet alle, in deren Namen das Wort Müller vorkommt (von Müller-Meier, Müller, Müller-Waldheim, Buchmüller)
