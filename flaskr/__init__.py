@@ -45,7 +45,6 @@ def create_app():
 
     @app.template_filter()
     def rabatt(value):
-        print('rabatt', value)
         return '{} %'.format(value)
 
     @app.template_filter()

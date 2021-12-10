@@ -28,14 +28,17 @@ from bkormlib import (
     Apartment,
     User,
     FlaskrSession,
-    Email,
     StaticValuesBuchung)
 
 from .buchung_forms import BuchungForm, Buchung2Form, MeldescheinForm
 
 from flaskr.auth.auth import login_required
-from flaskr.api import update_buchung
-from flaskr import mailer
+from flaskr.api import (
+    update_buchung,
+    send_confirmation_emails,
+    send_angebot_emails,
+    send_update_emails,
+    send_storno_emails)
 
 buchung_bp = Blueprint(
     'buchung_bp',
@@ -88,7 +91,7 @@ def create_buchung(besucher_id):
         - gather booking data
         at the end of this step:
         - validate the information
-        - check availability of apartment (flash if not)
+        - check availability of apartment via 'prüfen' button
         - contiue to second step (create_buchung_finish)
     '''
     form = BuchungForm()
@@ -104,15 +107,6 @@ def create_buchung(besucher_id):
         session['create_buchung'] = session_object.id
         if besucher.email == "":
             flash('Besucher hat keine Email Adresse', 'error')
-        if (
-            Apartment
-            .get_by_id(form.apartment_id.data)
-            .check_availability(form.anreise.data, form.abreise.data)
-        ):
-            flash('Apartment is verfügbar')
-        else:
-            # TODO: Liste der verfügbaren Aprtments
-            flash('Apartment ist nicht verfügbar!', 'error')
 
         return(redirect(url_for('buchung_bp.create_buchung_finish')))
 
@@ -153,55 +147,14 @@ def create_buchung_finish():
         buchung.id = None
         buchung.save()
         # create email record
-        besucher_email = Email()
-        besucher_email.besucher = besucher
-        besucher_email.buchung = buchung
-        besucher_email.header = (
-            'Buchungsbestätigung Apartment {}, {} vom {} bis {}'
-            .format(
-                buchung.apartment.name,
-                buchung.apartment.beschreibung,
-                format_date(buchung.anreise, format='full', locale='de_DE'),
-                format_date(buchung.abreise, format='full', locale='de_DE')))
-        besucher_email.body = form.email_text.data
-        besucher_email.save()
-        # email section
-        # prepare email to besucher
-        mailer.add_email(
-            [besucher.email],
-            current_app.config['EMAILS_TEAM'],
-            besucher_email.header,
-            besucher_email.body,
-            'empty'
-        )
-        # prepare email to team
-        email_html = render_template(
-            'emails/buchung_info_team.html',
-            buchung=buchung
-        )
-        header = (
-            '[fig:Neue Buchung {}, {} - {}'
-            .format(
-                buchung.apartment.name,
-                format_date(buchung.anreise, locale='de_DE'),
-                format_date(buchung.abreise, locale='de_DE')))
-
-        mailer.add_email(
-            current_app.config['EMAILS_TEAM'],     # team ...
-            [],                                 # nobody in cc
-            header,
-            email_html,
-            'empty'
-        )
-        # send all emails; email server quits after sending
-        mailer.send_emails()
+        send_confirmation_emails(buchung, form.email_text.data)
         # flash message
         flash(
             'Buchung {} Apt {} vom {} - {} für {}, {} gespeichert'.format(
-                buchung.id, 
+                buchung.id,
                 buchung.apartment.name,
-                format_date(buchung.anreise, format='full', locale='de_DE'),
-                format_date(buchung.abreise, format='full', locale='de_DE'),
+                format_date(buchung.anreise, format='short', locale='de_DE'),
+                format_date(buchung.abreise, format='short', locale='de_DE'),
                 buchung.besucher.name,
                 buchung.besucher.vorname
             ))
@@ -256,42 +209,7 @@ def update(buchung_id):
         buchung_alt = Buchung.get_by_id(buchung_id)     # save copy
         res = update_buchung(form, buchung)
         if len(res) > 0:                                # changes
-            # send emails
-            if 'vorauszahlung' in res:
-                # send payment confirmation to besucher
-                email_html = render_template(
-                    'emails/buchung_vorauszahlung.html',
-                    buchung=buchung,
-                    buchung_alt=buchung_alt
-                )
-                header = 'Ihre Fewo Buchung bei uns: Vorauszahlung'
-
-                mailer.add_email(
-                    [buchung.besucher.email],              # besucher
-                    current_app.config['INFO_EMAIL'],    # info
-                    header,
-                    email_html,
-                    'empty'
-                )
-
-            # prepare email to team
-            email_html = render_template(
-                'emails/buchung_changed_team.html',
-                buchung=buchung,
-                buchung_alt=buchung_alt
-            )
-            header = '[fig:Buchung geändert]'
-
-            mailer.add_email(
-                current_app.config['EMAILS_TEAM'],     # team ...
-                [],                                    # nobody in cc
-                header,
-                email_html,
-                'empty'
-            )
-
-            mailer.send_emails()
-
+            send_update_emails(buchung, buchung_alt, res)
             # set flash
             flash("Update für {}, {} gespeichert".format(
                 buchung.id, buchung.besucher.name
@@ -351,35 +269,8 @@ def storno(buchung_id):
     buchung = Buchung.get_by_id(buchung_id)
     buchung.status = 'storno'
     buchung.save()
-    # sending emails
-    # email to visitor
-    email_html = render_template(
-        'emails/buchung_storno.html',
-        buchung=buchung
-    )
-    header = 'Ihre Fewo Buchung bei uns: Storno'
-    mailer.add_email(
-        [buchung.besucher.email],            # besucher
-        current_app.config['INFO_EMAIL'],    # info
-        header,
-        email_html,
-        'empty'
-    )
-    # email to team
-    email_html = render_template(
-        'emails/buchung_storno_team.html',
-        buchung=buchung
-    )
-    header = '[fig:Buchung storniert]'
+    send_storno_emails(buchung)
 
-    mailer.add_email(
-        current_app.config['EMAILS_TEAM'],     # team ...
-        [],                                    # nobody in cc
-        header,
-        email_html,
-        'empty'
-    )
-    mailer.send_emails()
     # done, back to visitor
     flash('Buchung {} storniert'.format(buchung_id))
     return redirect(
@@ -450,14 +341,30 @@ def anzeigen(buchung_id):
     buchung = Buchung.get_by_id(buchung_id)
 
     # left side actions
-    actions = [
-        (
-            'Buchung ändern',
-            url_for('buchung_bp.update_vorauszahlung', buchung_id=buchung.id)),
-        (
-            'Rechnung',
-            url_for('buchung_bp.rechnung', buchung_id=buchung.id))
-    ]
+    if buchung.status == 'gebucht':
+        actions = [
+            (
+                'Buchung ändern',
+                url_for(
+                    'buchung_bp.update_vorauszahlung',
+                    buchung_id=buchung.id)),
+            (
+                'Rechnung',
+                url_for('buchung_bp.rechnung', buchung_id=buchung.id))
+        ]
+    else:                 # convert offer to booking, drop angebot
+        actions = [
+            (
+                'Angebot umwandeln',
+                url_for(
+                    'buchung_bp.convert_angebot',
+                    buchung_id=buchung.id)),
+            (
+                'Angebot verwerfen',
+                url_for(
+                    'buchung_bp.drop_angebot',
+                    buchung_id=buchung.id))
+        ]
 
     return render_template(
         'buchung/anzeigen.html',
@@ -553,7 +460,6 @@ def create_angebot_finish():
     session_id = session['create_angebot']
     buchung = Buchung(**FlaskrSession.get(id=session_id).as_object())
     buchung.recalc(status='angebot')
-    besucher = Besucher.get(buchung.besucher_id)
     # prepare email_confirmation_email
     form = Buchung2Form()
     if request.method == 'GET':
@@ -567,30 +473,17 @@ def create_angebot_finish():
         # save booking
         buchung.id = None
         buchung.save()
-        # create email record
-        besucher_email = Email()
-        besucher_email.besucher = besucher
-        besucher_email.buchung = buchung
-        besucher_email.header = (
-            'Angebot Apartment {}, {} vom {} bis {}'
-            .format(
+        send_angebot_emails(buchung, form.email_text.data)
+        # flash message
+        flash(
+            'Angebot {} Apt {} vom {} - {} für {}, {} gespeichert'.format(
+                buchung.id,
                 buchung.apartment.name,
-                buchung.apartment.beschreibung,
-                format_date(buchung.anreise, format='full', locale='de_DE'),
-                format_date(buchung.abreise, format='full', locale='de_DE')))
-        besucher_email.body = form.email_text.data
-        besucher_email.save()
-        # email section
-        # prepare email to besucher
-        mailer.add_email(
-            [besucher.email],
-            current_app.config['EMAILS_TEAM'],
-            besucher_email.header,
-            besucher_email.body,
-            'empty'
-        )
-        # send all emails; email server quits after sending
-        mailer.send_emails()
+                format_date(buchung.anreise, format='short', locale='de_DE'),
+                format_date(buchung.abreise, format='short', locale='de_DE'),
+                buchung.besucher.name,
+                buchung.besucher.vorname
+            ))
         return(
             redirect(
                 url_for(
@@ -605,3 +498,79 @@ def create_angebot_finish():
         title='Neues Angebot fertigstellen',
         run_mode=current_app.env,
         template='form-template')
+
+
+@buchung_bp.route('/convert_angebot/<int:buchung_id>', methods=('GET', 'POST'))
+@login_required
+def convert_angebot(buchung_id):
+    '''
+        Convert offer to booking
+        - prepare confirmation text
+        - send emails and finish booking
+    '''
+    buchung = Buchung.get_by_id(buchung_id)
+    besucher = buchung.besucher
+    form = Buchung2Form()
+    if request.method == 'GET':
+        form.email_text.data = render_template(
+            'emails/buchung_confirmation.html',
+            buchung=buchung
+        )
+
+    if form.validate_on_submit():
+        # save booking
+        buchung.status = 'gebucht'
+        buchung.save()
+        send_confirmation_emails(buchung, form.email_text.data)
+        # flash message
+        flash(
+            'Buchung {} Apt {} vom {} - {} für {}, {} gespeichert'.format(
+                buchung.id,
+                buchung.apartment.name,
+                format_date(buchung.anreise, format='short', locale='de_DE'),
+                format_date(buchung.abreise, format='short', locale='de_DE'),
+                buchung.besucher.name,
+                buchung.besucher.vorname
+            ))
+        return(
+            redirect(
+                url_for(
+                    'besucher_bp.update',
+                    besucher_id=besucher.id)))
+
+    return render_template(
+        'buchung/create_part2.html',
+        besucher=besucher,
+        buchung=buchung,
+        form=form,
+        title='Angebot umwandeln',
+        run_mode=current_app.env,
+        template='form-template')
+
+
+@buchung_bp.route('/drop_angebot/<int:buchung_id>', methods=('GET', 'POST'))
+@login_required
+def drop_angebot(buchung_id):
+    '''
+        Offer was not converted in due time
+        - set status to verworfen
+    '''
+
+    buchung = Buchung.get_by_id(buchung_id)
+    buchung.status = 'verworfen'
+    buchung.save()
+    # flash message
+    flash(
+        'Buchung {} Apt {} vom {} - {} für {}, {} verworfen'.format(
+            buchung.id,
+            buchung.apartment.name,
+            format_date(buchung.anreise, format='short', locale='de_DE'),
+            format_date(buchung.abreise, format='short', locale='de_DE'),
+            buchung.besucher.name,
+            buchung.besucher.vorname
+        ))
+    return(
+        redirect(
+            url_for(
+                'besucher_bp.update',
+                besucher_id=buchung.besucher.id)))
