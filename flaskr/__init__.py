@@ -22,14 +22,16 @@ mailer = EmailObject.from_object(config.EmailConfig)
 csrf = CSRFProtect()
 
 
-def create_app():
+def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=False)
 
-    app.config.from_object('config.Config')
-    app.config.from_object('config.EmailConfig')
-
-    print(app.config.get('FLASK_ENV'), app.config.get('DATABASE'))
-    _ = db_connect(app.config.get('FLASK_ENV'), app.config.get('DATABASE'))
+    if test_config is None:
+        app.config.from_object('config.Config')
+        app.config.from_object('config.EmailConfig')
+        print(app.config.get('FLASK_ENV'), app.config.get('DATABASE'))
+        _ = db_connect(app.config.get('FLASK_ENV'), app.config.get('DATABASE'))
+    else:
+        app.config.update(test_config)
 
     CORS(app)
     csrf.init_app(app)

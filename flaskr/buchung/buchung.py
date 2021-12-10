@@ -346,13 +346,13 @@ def anzeigen(buchung_id):
             (
                 'Buchung ändern',
                 url_for(
-                    'buchung_bp.update_vorauszahlung',
+                    'buchung_bp.update',
                     buchung_id=buchung.id)),
             (
                 'Rechnung',
                 url_for('buchung_bp.rechnung', buchung_id=buchung.id))
         ]
-    else:                 # convert offer to booking, drop angebot
+    elif buchung.status == 'angebot':  # convert offer -> booking, drop angebot
         actions = [
             (
                 'Angebot umwandeln',
@@ -363,6 +363,19 @@ def anzeigen(buchung_id):
                 'Angebot verwerfen',
                 url_for(
                     'buchung_bp.drop_angebot',
+                    buchung_id=buchung.id))
+        ]
+    elif buchung.status == 'abgerechnet':   # print or inptut prepayment
+        actions = [
+            (
+                'Drucken',
+                url_for(
+                    'buchung_bp.rechnung',
+                    buchung_id=buchung.id)),
+            (
+                'Vorauszahlung',
+                url_for(
+                    'buchung_bp.update_vorauszahlung',
                     buchung_id=buchung.id))
         ]
 
@@ -383,7 +396,7 @@ def rechnung(buchung_id):
 
     actions = [
         (
-            'Rechnung Drucken',
+            'Vorauszahlung',
             url_for('buchung_bp.update_vorauszahlung', buchung_id=buchung.id)),
         (
             'Rechnung',
