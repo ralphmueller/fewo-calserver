@@ -477,7 +477,7 @@ def create_angebot_finish():
     form = Buchung2Form()
     if request.method == 'GET':
         form.email_text.data = render_template(
-            'emails/angebot.html',
+            'emails/{}/angebot.html'.format(buchung.besucher.language),
             days=(buchung.abreise - buchung.anreise).days,
             buchung=buchung
         )
@@ -526,7 +526,8 @@ def convert_angebot(buchung_id):
     form = Buchung2Form()
     if request.method == 'GET':
         form.email_text.data = render_template(
-            'emails/buchung_confirmation.html',
+            'emails/{}/buchung_confirmation.html'.format(
+                buchung.besucher.language),
             buchung=buchung
         )
 
