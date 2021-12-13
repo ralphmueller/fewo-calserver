@@ -1,0 +1,130 @@
+<!-- 
+    Created: Ralph, 20.10.2021
+
+    Template für Bestätigungs Email
+        - renering durch Jinja2 Engine
+
+-->
+
+{% extends "emails/layout.html" %}
+
+{% block content %}
+
+<p>Sehr 
+    
+    {% if buchung.besucher.anrede == 'Herr' %}
+        geehrter
+    {% else %}
+        geehrte
+    {% endif %}
+    {{buchung.besucher.anrede}} {{buchung.besucher.name}} - </p>
+
+<p>
+	gerne bestätigen wir Ihre Buchung für unsere Wohnung {{buchung.apartment.name}}, {{buchung.apartment.beschreibung}} 
+    vom {{buchung.get_anreise() |euro_date}} - {{buchung.get_abreise() |euro_date}}. 
+</p>
+<p>
+	Bettwäsche, Handtücher und Internetnutzung werden kostenfrei gestellt. Durch die Nutzung des offenen Internet Zugangs 
+	(SSID: Ferien-in-Gersfeld-Gast) verpflichten Sie sich, diesen Zugang nur im Rahmen der gesetzlichen Bestimmungen und insbesondere 
+	nicht für den illegalen Upload und Download von Inhalten zu verwenden. 
+</p>	
+<p>
+	<strong>Besucherdaten</strong>: Wir sind verpflichtet, die Daten aller unserer Besucher an die Stadt Gersfeld zu melden. 
+	Bitte teilen Sie uns vor Anreise Namen, Vornamen, Adresse und Geburtsdatum aller anreisenden Personen mit.
+</p>
+<p>
+	<strong>Anreise</strong>: Die Wohnung kann zwischen 15:00 und 18:00 am Anreisetag bezogen werden. Den Schlüssel 
+	erhalten Sie gegen Bezahlung des offenen Mietpreises inklusive Kurtaxe bei Frau Möller, An der Gärtnerei 4. 
+	Im Rahmen der Corona-Bestimmungen müssen wir Sie bitten, Ihre Betten selbst zu beziehen. 
+	Bettwäsche und Handtücher finden Sie in Plastikboxen in der Wohnung vor.
+</p>
+<p>
+	<strong>Abreise</strong>: Die Abreise soll spätestens bis 10:00 Uhr erfolgen. Wir bitten Sie, die Wohnung sauber zu hinterlassen. 
+	Im Rahmen der Corona-Bestimmungen bitten wir Sie weiterhin, Handtücher und Bettwäsche in den Plastikboxen zu packen. 
+	Bitte vergessen Sie nicht, den Schlüssel auf dem Küchentisch zu hinterlassen.
+</p>
+
+<p>
+	<strong>Bezahlung</strong> Wir bitten um Bezahlung des Mietpreises und der Kurtaxe möglichst 5 Werktage vor 
+	Ihrer Ankunft per Banküberweisung oder PayPal. Sollte Ihnen dies nicht möglich sein, dann wird der Betrag 
+	in bar bei Anreise fällig.
+</p>
+
+<p>Unsere Bankdaten:<br>
+	Ralph Müller<br>
+	Sparkasse Bensheim<br>
+	IBAN/BIC: DE12 50950068 0001621572/HELADEF1BEN<br>
+	PayPal: ralph.mueller.de@gmail.com
+</p>
+
+<p>
+	<strong>Stornierungsbedingungen</strong>: Sollten Sie den Urlaub bei uns nicht antreten können, ist eine Stornierung bis 7 Tage 
+	vor dem Anreisetermin kostenfrei. Danach berechnen wir eine Gebühr von 50% des Mietpreises.
+</p>
+
+<p>
+	Bitte beachten Sie, dass wir wegen Covid-19 (Corona Pandemie) bestimmte Maßnahmen einführen mußten. 
+	Wir mussten alle Kissen und Decken im Wohnbereich entfernen. In den gemeinsam benutzten Durchgangsräumen 
+	in der Flieger- und Gartenstraße haben wir für Sie Desinfektionsmittel bereitgestellt.
+</p>
+
+<p>Für weitere Fragen stehen wir Ihnen gerne telefonisch oder per Email zur Verfügung.</p>
+
+<p>Wir freuen uns auf Ihren Besuch!</p>
+
+{% include 'emails/mfg.html' %}
+
+<p><strong>Ihre Buchung in der Zusammenfassung</strong></p>
+
+<table  class="table table-bordered table-striped col-2-table">
+	<tr>
+		<td>Wohnung</td>			
+		<td class="text-right">{{buchung.apartment.name}}</td></tr>
+	<tr>
+		<td>Anreise</td>			
+		<td class="text-right">{{buchung.get_anreise() | euro_date}}</td></tr>
+	<tr>
+		<td>Abreise</td>			
+		<td class="text-right">{{buchung.get_abreise() | euro_date}}</td></tr>		
+	<tr>
+		<td>Preis/Nacht</td>		
+		<td class="text-right">{{buchung.get_preis_nacht() | euro_currency}}</td></tr>			
+	<tr>
+		<td>Zusatzkosten</td>		
+		<td class="text-right">{{buchung.get_zusatzkosten() |euro_currency}}</td></tr>
+	<tr>
+		<td>Miete</td>				
+		<td class="text-right">{{buchung.get_miete() |euro_currency}}</td></tr>					
+	<tr>
+		<td>Kurtaxe Vollzahler</td>	
+		<td class="text-right">{{buchung.get_kurtaxe_vz()}}</td></tr>		
+	<tr>
+		<td>Kurtaxe Halbzahler</td>	
+		<td class="text-right">{{buchung.get_kurtaxe_hz()}}</td></tr>	
+	<tr>
+		<td>Kinder</td>
+		<td class="text-right">{{buchung.get_kurtaxe_kinder()}}</td></tr>	
+	<tr>
+		<td>Kurtaxe befreit</td>	
+		<td class="text-right">{{buchung.get_kurtaxe_nz()}}</td></tr>	
+	<tr>
+		<td>Kurtaxe gesamt</td>		
+		<td class="text-right">{{buchung.get_kurtaxe() |euro_currency}}</td></tr>		
+	<tr>
+		<td>Summe</td>				
+		<td class="text-right">{{buchung.get_summe() |euro_currency}}</td></tr>						
+</table>
+<p>Erläuterungen zur Tabelle:</p>
+<ul>
+	<li>
+		Die Kurtaxe beträgt seit dem 2. März 2019 € 2,40 / Nacht für Besucher, die das 14. Lebensjahr beendet haben (Vollzahler) und € 1,20 
+		für Besucher zwischen dem 10. und 15. Lebensjahr (Halbzahler). Kinder vor Vollendung des 10. Lebensjahres 
+		zahlen keine Kurtaxe.
+	</li>	
+	<li>
+		Von der Kurtaxe befreit sind Personen, die  Gersfeld aus beruflichen Gründen (auch Fortbildung) besuchen.
+	</li>		
+</ul>
+
+
+{% endblock %}
