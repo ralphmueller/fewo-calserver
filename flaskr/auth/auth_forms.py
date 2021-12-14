@@ -7,7 +7,7 @@ WTF for auth
 '''
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, EqualTo, Length
 
 
 class LoginForm(FlaskForm):
@@ -32,3 +32,12 @@ class RegisterForm(FlaskForm):
         'Password',
         [DataRequired()]
     )
+
+
+class ChangePasswordForm(FlaskForm):
+    new_password = PasswordField('Neues Password', [
+        DataRequired(),
+        Length(min=8, message='Mindestens 8 Zeichen'),
+        EqualTo('confirm', message='Passwörter müssen gleich sein!')
+    ])
+    confirm = PasswordField('Wiederholen')

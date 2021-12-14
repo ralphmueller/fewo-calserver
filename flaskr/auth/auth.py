@@ -21,7 +21,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from bkormlib import User
 from peewee import DoesNotExist
 
-from .auth_forms import LoginForm, RegisterForm
+from .auth_forms import LoginForm, RegisterForm, ChangePasswordForm
 
 auth_bp = Blueprint(
     'auth_bp',
@@ -30,30 +30,6 @@ auth_bp = Blueprint(
     template_folder='templates',
     static_folder='static'
 )
-
-
-@auth_bp.route('/register', methods=('GET', 'POST'))
-def register():
-
-    form = RegisterForm()
-
-    if form.validate_on_submit():
-        username = form.user.data
-        password = form.password.data
-        user = User()
-        user.username = username
-        user.password = generate_password_hash(password)
-        user.save()
-
-        return redirect(url_for('auth_bp.login'))
-
-    return render_template(
-        'register.html',
-        form=form,
-        title='Benutzer anlegen',
-        run_mode=current_app.env,
-        template='form-template'
-    )
 
 
 @auth_bp.route('/login', methods=('GET', 'POST'))
@@ -105,7 +81,51 @@ def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
-            flash('Login Required')
+            flash('Bitte anmelden')
             return redirect(url_for('auth_bp.login'))
         return view(**kwargs)
     return wrapped_view
+
+
+@auth_bp.route('/profile', methods=('GET', 'POST'))
+@login_required
+def change_password():
+    user_id = session.get('user_id')
+    user = User.get_by_id(user_id)
+    form = ChangePasswordForm()
+
+    if form.validate_on_submit():
+        user.password = generate_password_hash(form.new_password.data)
+        user.save()
+        flash('Passwort geändert')
+        return redirect(url_for('home_bp.index'))
+
+    return render_template(
+        'change_password.html',
+        form=form,
+        user=user,
+        title='Password ändern',
+        run_mode=current_app.env,
+        template='form-template')
+
+
+@auth_bp.route('/register', methods=('GET', 'POST'))
+@login_required
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        username = form.user.data
+        password = form.password.data
+        user = User()
+        user.username = username
+        user.password = generate_password_hash(password)
+        user.save()
+        return redirect(url_for('auth_bp.login'))
+
+    return render_template(
+        'register.html',
+        form=form,
+        title='Benutzer anlegen',
+        run_mode=current_app.env,
+        template='form-template'
+    )
