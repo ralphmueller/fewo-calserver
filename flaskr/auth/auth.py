@@ -120,7 +120,8 @@ def register():
         user.username = username
         user.password = generate_password_hash(password)
         user.save()
-        return redirect(url_for('auth_bp.login'))
+        flash('Neuer Benutzer angelegt')
+        return redirect(url_for('home_bp.index'))
 
     return render_template(
         'register.html',
