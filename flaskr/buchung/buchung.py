@@ -138,7 +138,7 @@ def create_buchung_finish():
     form = Buchung2Form()
     if request.method == 'GET':
         form.email_text.data = render_template(
-            'emails/buchung_confirmation.html',
+            'emails/{}/buchung_confirmation.html'.format(besucher.language),
             buchung=buchung
         )
 
