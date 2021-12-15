@@ -42,10 +42,11 @@ def rest_besucher_by_name(besucher_name):
         - patterns like "müller%" return records containing '^[Mm]üller'
         - ** operator in peewee is 'ILIKE'
     '''
+    print('/besucher_by_name/: ', besucher_name.replace('*', '%'))
     res = (
         Besucher
         .select()
-        .where(Besucher.name ** besucher_name.lower())
+        .where(Besucher.name ** besucher_name.lower().replace('*', '%'))
         )
     return json.dumps(
         [model_to_dict(r) for r in res],

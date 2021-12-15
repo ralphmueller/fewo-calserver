@@ -29,12 +29,18 @@ def create_app(test_config=None):
         app.config.from_object('config.Config')
         app.config.from_object('config.EmailConfig')
         print(app.config.get('FLASK_ENV'), app.config.get('DATABASE'))
-        _ = db_connect(app.config.get('FLASK_ENV'), app.config.get('DATABASE'))
+        db = db_connect(app.config.get('FLASK_ENV'), app.config.get('DATABASE'))
+        app.config['DB'] = db
     else:
         app.config.update(test_config)
 
     CORS(app)
     csrf.init_app(app)
+
+    @app.before_request
+    def _database_connect():
+        db = app.config['DB']
+        db.connection().ping(reconnect=True)
 
     @app.before_request
     def fix_missing_csrf_token():

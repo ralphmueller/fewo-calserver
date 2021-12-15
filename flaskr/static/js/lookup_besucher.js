@@ -35,7 +35,6 @@ function getBuchungenForBesucher(t, h4Text, stat){
 
 
 function getBesucherDetails(t) {
-	console.log('getBesucherDetails, id= ', t)
 	window.location.href = '/besucher/update/' + t;
 	return (t)
   }
