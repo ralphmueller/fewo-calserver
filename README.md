@@ -10,21 +10,41 @@ uwsgi --http-socket :5000  --module wsgi:app  --virtualenv /Users/ralph/.local/s
     master = true
     processes = 5
 
-    socket = /path-to-socket/flaskr.sock
+    socket = /tmp/flaskr.sock
     chmod-socket = 660
     vacuum = true
 
 ## nginx conf
 
-    server {
-        listen <port>;
-        server_name server_domain_or_IP;
+server {
+    listen 80;
+    server_name server_domain_or_IP;
 
-        location / {
-            include uwsgi_params;
-            uwsgi_pass unix:/path-to-socket/flaskr.sock;
-        }
+    location / {
+        include uwsgi_params;
+        uwsgi_pass unix:/tmp/flaskr.sock;
     }
+}
+
+## /etc/systemd/system/fewo-calserver.service
+
+[Unit]
+Description=uWSGI fewo-calserver
+After=syslog.target
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/fewo-calserver
+ExecStart=/home/pi/.local/bin/pipenv run uwsgi --ini /home/pi/fewo-calserver/flaskr.ini
+# Requires systemd version 211 or newer
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+StandardError=syslog
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target
 
 ## get fewo-calendar code
 
