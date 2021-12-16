@@ -45,6 +45,12 @@
 
 ## Run as service /etc/systemd/system/fewo-calserver.service
 
+Comments
+
+Type=idle    - waits for everything else being started .. [link](https://superuser.com/questions/544399/how-do-you-make-a-systemd-service-as-the-last-service-on-boot/573761#573761)
+
+Source
+
     [Unit]
     Description=uWSGI fewo-calserver
     After=syslog.target
@@ -52,11 +58,12 @@
     [Service]
     User=pi
     WorkingDirectory=/home/pi/fewo-calserver
+
     ExecStart=/home/pi/.local/bin/pipenv run uwsgi --ini /home/pi/fewo-calserver/flaskr.ini
     # Requires systemd version 211 or newer
     Restart=always
     KillSignal=SIGQUIT
-    Type=notify
+    Type=idle
     StandardError=syslog
     NotifyAccess=all
 
