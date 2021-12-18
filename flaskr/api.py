@@ -246,7 +246,7 @@ def send_storno_emails(buchung):
     # email to visitor
     email_html = render_template(
         'emails/{}/buchung_storno.html'
-        .format(language_for_key(buchung.besucher.language)),
+        .format(language_for_key(buchung.besucher.language).lower()),
         buchung=buchung
     )
     header = 'Ihre Fewo Buchung bei uns: Storno'
@@ -301,7 +301,7 @@ def send_update_emails(buchung, buchung_alt, res):
         # send payment confirmation to besucher
         email_html = render_template(
             'emails/{}/buchung_vorauszahlung.html'
-            .format(language_for_key(buchung.besucher.language)),
+            .format(language_for_key(buchung.besucher.language).lower()),
             buchung=buchung,
             buchung_alt=buchung_alt
         )

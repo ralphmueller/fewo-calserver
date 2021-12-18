@@ -140,7 +140,7 @@ def create_buchung_finish():
     if request.method == 'GET':
         form.email_text.data = render_template(
             'emails/{}/buchung_confirmation.html'
-            .format(language_for_key(besucher.language)),
+            .format(language_for_key(besucher.language).lower()),
             buchung=buchung
         )
 
@@ -480,7 +480,7 @@ def create_angebot_finish():
     if request.method == 'GET':
         form.email_text.data = render_template(
             'emails/{}/angebot.html'
-            .format(language_for_key(buchung.besucher.language)),
+            .format(language_for_key(buchung.besucher.language).lower()),
             days=(buchung.abreise - buchung.anreise).days,
             buchung=buchung
         )
@@ -530,7 +530,7 @@ def convert_angebot(buchung_id):
     if request.method == 'GET':
         form.email_text.data = render_template(
             'emails/{}/buchung_confirmation.html'
-            .format(language_for_key(besucher.language)),
+            .format(language_for_key(besucher.language).lower()),
             buchung=buchung
         )
 
