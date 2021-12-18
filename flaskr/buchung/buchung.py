@@ -38,7 +38,8 @@ from flaskr.api import (
     send_confirmation_emails,
     send_angebot_emails,
     send_update_emails,
-    send_storno_emails)
+    send_storno_emails,
+    language_for_key)
 
 buchung_bp = Blueprint(
     'buchung_bp',
@@ -138,7 +139,8 @@ def create_buchung_finish():
     form = Buchung2Form()
     if request.method == 'GET':
         form.email_text.data = render_template(
-            'emails/{}/buchung_confirmation.html'.format(besucher.language),
+            'emails/{}/buchung_confirmation.html'
+            .format(language_for_key(besucher.language)),
             buchung=buchung
         )
 
@@ -477,7 +479,8 @@ def create_angebot_finish():
     form = Buchung2Form()
     if request.method == 'GET':
         form.email_text.data = render_template(
-            'emails/{}/angebot.html'.format(buchung.besucher.language),
+            'emails/{}/angebot.html'
+            .format(language_for_key(buchung.besucher.language)),
             days=(buchung.abreise - buchung.anreise).days,
             buchung=buchung
         )
@@ -526,8 +529,8 @@ def convert_angebot(buchung_id):
     form = Buchung2Form()
     if request.method == 'GET':
         form.email_text.data = render_template(
-            'emails/{}/buchung_confirmation.html'.format(
-                buchung.besucher.language),
+            'emails/{}/buchung_confirmation.html'
+            .format(language_for_key(besucher.language)),
             buchung=buchung
         )
 
