@@ -96,6 +96,7 @@ def create_buchung(besucher_id):
         - contiue to second step (create_buchung_finish)
     '''
     form = BuchungForm()
+    form.user_id.data = session.get('user_id')
     form.besucher_id.data = besucher_id
     besucher = Besucher.get(besucher_id)
     if form.validate_on_submit():
@@ -209,9 +210,9 @@ def update(buchung_id):
 
     if form.validate_on_submit():
         buchung_alt = Buchung.get_by_id(buchung_id)     # save copy
-        res = update_buchung(form, buchung)
-        if len(res) > 0:                                # changes
-            send_update_emails(buchung, buchung_alt, res)
+        dirty_fields = update_buchung(form, buchung)
+        if len(dirty_fields) > 0:                                # changes
+            send_update_emails(buchung, buchung_alt, dirty_fields)
             # set flash
             flash("Update für {}, {} gespeichert".format(
                 buchung.id, buchung.besucher.name
@@ -274,7 +275,8 @@ def storno(buchung_id):
     send_storno_emails(buchung)
 
     # done, back to visitor
-    flash('Buchung {} storniert'.format(buchung_id))
+    flash(
+        'Buchung {}, {} storniert'.format(buchung_id, buchung.besucher.name))
     return redirect(
         url_for(
             'besucher_bp.update',
@@ -428,6 +430,7 @@ def create_angebot(besucher_id):
         - contiue to second step (create_buchung_finish)
     '''
     form = BuchungForm()
+    form.user_id.data = session.get('user_id')
     form.besucher_id.data = besucher_id
     besucher = Besucher.get(besucher_id)
     if form.validate_on_submit():

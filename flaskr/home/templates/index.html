@@ -12,7 +12,7 @@
 		<table class="table table-bordered table-condensed table-hover">
 			<thead>
 				<tr>
-					<th>Anreise</th><th>Abreise</th><th>Apartment</th><th>Miete</th><th>Kurtaxe</th><th>Summe</th><th>Vorauszahlung</th><th>Status</th><th>Besucher</th>
+					<th>Anreise</th><th>Abreise</th><th>Wohnung</th><th>Besucher</th><th>Miete</th><th>Kurtaxe</th><th>Summe</th><th>Vorauszahlung</th><th>Status</th>
 				</tr>
 			</thead>
 			<tbody>	
@@ -22,12 +22,12 @@
 						<td>{{buchung.anreise | euro_date_short }}</td>
 						<td>{{buchung.abreise | euro_date_short }}</td>
 						<td>{{buchung.apartment.name}}</td>
+						<td>{{buchung.besucher.name}}, {{buchung.besucher.vorname}}</td>
 						<td>{{buchung.miete | euro_currency }}</td>
 						<td>{{buchung.kurtaxe | euro_currency }}</td>
 						<td>{{buchung.summe | euro_currency }}</td>
 						<td>{{buchung.vorauszahlung | euro_currency }}</td>
 						<td>{{buchung.status}}</td>
-						<td>{{buchung.besucher.name}}, {{buchung.besucher.vorname}}</td>
 					</tr>
 				{% endif %}
 			{% endfor %}
@@ -44,7 +44,7 @@
 		<table class="table table-bordered table-condensed table-hover">
 			<thead>
 				<tr>
-					<th>Anreise</th><th>Abreise</th><th>Apartment</th><th>Miete</th><th>Kurtaxe</th><th>Summe</th><th>Vorauszahlung</th><th>Status</th><th>Besucher</th>
+					<th>Anreise</th><th>Abreise</th><th>Wohnung</th><th>Besucher</th><th>Miete</th><th>Kurtaxe</th><th>Summe</th><th>Vorauszahlung</th><th>Status</th>
 				</tr>
 			</thead>
 			<tbody>	
@@ -54,12 +54,12 @@
 						<td>{{buchung.anreise | euro_date_short }}</td>
 						<td>{{buchung.abreise | euro_date_short }}</td>
 						<td>{{buchung.apartment.name}}</td>
+						<td>{{buchung.besucher.name}}, {{buchung.besucher.vorname}}</td>
 						<td>{{buchung.miete | euro_currency }}</td>
 						<td>{{buchung.kurtaxe | euro_currency }}</td>
 						<td>{{buchung.summe | euro_currency }}</td>
 						<td>{{buchung.vorauszahlung | euro_currency }}</td>
 						<td>{{buchung.status}}</td>
-						<td>{{buchung.besucher.name}}, {{buchung.besucher.vorname}}</td>
 					</tr>
 				{% endif %}
 			{% endfor %}

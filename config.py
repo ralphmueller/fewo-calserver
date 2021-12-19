@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 import datetime
 
 basedir = path.abspath(path.dirname(__file__))
+print('basedir: ', basedir)
 load_dotenv(path.join(basedir, '.env'))
 
 

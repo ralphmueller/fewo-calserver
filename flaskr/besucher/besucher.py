@@ -77,10 +77,10 @@ def create():
     form = BesucherForm()
     form.user_id.data = session.get('user_id')
     if form.validate_on_submit():
-        besucher_id, name, vorname = create_besucher_from_form(form)
+        besucher = create_besucher_from_form(form)
         flash(
-            'Neuer Besucher gespeichert: {} {}, {}'
-            .format(besucher_id, name, vorname)
+            'Neuer Besucher angelegt: {} {}, {}'
+            .format(besucher.id, besucher.name, besucher.vorname)
         )
         return(redirect(url_for('besucher_bp.index')))
 

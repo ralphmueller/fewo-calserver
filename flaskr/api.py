@@ -7,7 +7,7 @@ API to models and helper functions
 '''
 
 from peewee import fn
-from bkormlib import Besucher, Buchung, Apartment, Email
+from bkormlib import Besucher, Buchung, Apartment, Email, User
 
 from babel.dates import format_date
 
@@ -54,6 +54,7 @@ def fetch_visitors():
 def create_besucher_from_form(form):
     ''' create new visitor from form data '''
     besucher = Besucher()
+    besucher.user = User.get_by_id(form.user_id.data)
     besucher.anrede = anrede_for_key(form.anrede.data)
     besucher.name = form.name.data
     besucher.vorname = form.vorname.data
@@ -67,7 +68,7 @@ def create_besucher_from_form(form):
     besucher.vermerk = form.vermerk.data
     besucher.language = form.language.data
     besucher.save()
-    return besucher.id, besucher.name, besucher.vorname
+    return besucher
 
 
 def fetch_besucher_for_update(besucher_id):

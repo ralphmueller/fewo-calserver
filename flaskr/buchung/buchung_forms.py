@@ -39,6 +39,8 @@ class BuchungForm(FlaskForm):
 
     id = HiddenField()
 
+    user_id = HiddenField()
+
     besucher_id = HiddenField()
 
     apartment_id = SelectField(

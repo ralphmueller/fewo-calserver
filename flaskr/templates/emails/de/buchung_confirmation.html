@@ -21,7 +21,7 @@
 
 <p>
 	gerne bestätigen wir Ihre Buchung für unsere Wohnung {{buchung.apartment.name}}, {{buchung.apartment.beschreibung}} 
-    vom {{buchung.get_anreise() |euro_date}} - {{buchung.get_abreise() |euro_date}}. 
+    vom {{buchung.get_anreise() |euro_date_short}} - {{buchung.get_abreise() |euro_date_short}}. 
 </p>
 <p>
 	Bettwäsche, Handtücher und Internetnutzung werden kostenfrei gestellt. Durch die Nutzung des offenen Internet Zugangs 
@@ -82,10 +82,10 @@
 		<td class="text-right">{{buchung.apartment.name}}</td></tr>
 	<tr>
 		<td>Anreise</td>			
-		<td class="text-right">{{buchung.get_anreise() | euro_date}}</td></tr>
+		<td class="text-right">{{buchung.get_anreise() | euro_date_short}}</td></tr>
 	<tr>
 		<td>Abreise</td>			
-		<td class="text-right">{{buchung.get_abreise() | euro_date}}</td></tr>		
+		<td class="text-right">{{buchung.get_abreise() | euro_date_short}}</td></tr>		
 	<tr>
 		<td>Preis/Nacht</td>		
 		<td class="text-right">{{buchung.get_preis_nacht() | euro_currency}}</td></tr>			

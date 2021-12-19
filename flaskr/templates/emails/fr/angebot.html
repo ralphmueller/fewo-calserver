@@ -10,48 +10,6 @@
 
 {% block content %}
 
-<p>Sehr 
-    
-    {% if buchung.besucher.anrede == 'Herr' %}
-        geehrter
-    {% else %}
-        geehrte
-    {% endif %}
-    {{buchung.besucher.anrede}} {{buchung.besucher.name}}, </p>
-<p>
-
-<p>vielen Dank für Ihre Anfrage! </p>
-
-<p>
-    Die Wohnung {{buchung.apartment.name}}, {{buchung.apartment.beschreibung}} ist für Sie 
-    vom {{buchung.anreise | euro_date_short}} - {{buchung.abreise | euro_date_short}} verfügbar.</p>
-<p> Die Kosten werden wie folgt aussehen:<br>
-    {{buchung.apartment.name}} ({{days}} Nächte - € {{buchung.preis_nacht | euro_currency }}/Nacht für {{buchung.kurtaxe_vz}} Personen) 
-    Endpreis € {{buchung.miete | euro_currency}}  zzgl. Kurtaxe {{buchung.kurtaxe  | euro_currency }}. 
-</p>
-
-<p>
-    <abbr>Sollte Ihnen unser Angebot zusagen, bitten wir um eine Buchungsbestätigung per Email. Wir würden uns 
-    freuen, wenn Sie sich für uns entscheiden!</strong>
-</p>
-<p>
-    Dieser Preis beinhaltet Bettwäsche, Handtücher, Nutzung WLan, usw. Ebenso finden Sie eine gut 
-    ausgestattete Küche vor mit den gängigsten Gewürzen auf Vorrat. Waschmaschine und Trockner stehen 
-    Ihnen kostenfrei zur Verfügung. Es fallen keine weiteren Kosten an.
-    Eine ausführliche Beschreibung der Wohnung finden Sie auch auf unserer Webseite.
-</p>
-<p>
-    Stornierungsbedingungen: Sollten Sie den Urlaub bei uns nicht antreten können, 
-    ist eine Stornierung bis 7 Tage vor Anreisetermin kostenfrei. 
-    Danach berechnen wir eine Gebühr von 50% des Mietpreises.
-</p>
-<p>
-    Für weitere Fragen stehen wir Ihnen natürlich per Email oder Telefon (0700 - 789 333 44) zur Verfügung. 
-    Oder schauen Sie mal auf unserer Webseite in der 
-    <a href="http://ferien-in-gersfeld.de/?q=de/FragenUndAntworten">Fragen&Antworten Sektion</a> vorbei. 
-    Dort finden Sie auch ausführliche Beschreibungen der Ferienwohnungen. 
-</p> 
-
-{% include 'emails/mfg.html' %}
+<p>MUSS ÜBERSETZT WERDEN</p>
 
 {% endblock %}
