@@ -49,9 +49,21 @@ def index():
         .order_by(Buchung.abreise)
     )
 
+    angebote = (
+        Buchung
+        .select()
+        .join(Apartment)
+        .switch(Buchung)
+        .join(Besucher)
+        .where(
+            Buchung.status.in_(['angebot']))
+        .order_by(Buchung.abreise)
+    )
+
     return render_template(
         'index.html',
         title='',
         anreisen=list(anreisen),
         abreisen=list(abreisen),
+        angebote=list(angebote),
         run_mode=current_app.env)
