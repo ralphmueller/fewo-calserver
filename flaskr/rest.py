@@ -42,7 +42,6 @@ def rest_besucher_by_name(besucher_name):
         - patterns like "müller%" return records containing '^[Mm]üller'
         - ** operator in peewee is 'ILIKE'
     '''
-    print('/besucher_by_name/: ', besucher_name.replace('*', '%'))
     res = (
         Besucher
         .select()

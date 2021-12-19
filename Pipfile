@@ -18,6 +18,7 @@ wtforms = "*"
 cd = "*"
 rneu = {path = "."}
 uwsgi = "*"
+pythonpacks = {path = "./pythonpacks-0.10l.tar.gz"}
 
 [dev-packages]
 flake8 = "*"
