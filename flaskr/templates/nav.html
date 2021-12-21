@@ -20,11 +20,23 @@
                 Besucher
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="/besucher">Liste</a>
-                <a class="dropdown-item" href="/besucher/create">Neu</a>
-                <a class="dropdown-item" href="/besucher/find">Finden</a>
+                <a class="dropdown-item" href="{{ url_for('besucher_bp.index') }}">Liste</a>
+                <a class="dropdown-item" href="{{ url_for('besucher_bp.create') }}">Neu</a>
+                <a class="dropdown-item" href="{{ url_for('besucher_bp.find') }}">Finden</a>
             </div>
         </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              Buchungen
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="/buchung?status=abgerechnet&limit=100">Rechnungen</a>
+              <a class="dropdown-item" href="/buchung?status=gebucht&limit=100">Buchungen</a>
+              <a class="dropdown-item" href="/buchung?status=angebot&limit=100">Angebote</a>
+              <a class="dropdown-item" href="/suchen">Suche</a>
+          </div>
+      </li>        
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
               data-bs-toggle="dropdown" aria-expanded="false">

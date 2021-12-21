@@ -116,3 +116,18 @@ def rest_apartment_available(apartment_id):
     else:
         apts = []
     return json.dumps({'avail': apt_available, 'apartments': apts})
+
+
+@bp.route('/by_years')
+def by_years():
+    """
+        SELECT year(anreise), COUNT(*), sum(miete), sum(kurtaxe) from Buchung
+            where status in ('abgerechnet', 'gebucht') group by year(anreise);
+    """
+    db = Buchung._meta.database
+    cursor = db.execute_sql('SELECT year(anreise), COUNT(*), sum(miete), sum(kurtaxe) from Buchung where status in ("abgerechnet", "gebucht") group by year(anreise);')
+    res = [row for row in cursor.fetchall()]
+
+    return json.dumps(
+        res, ensure_ascii=False, default=str
+    )
