@@ -61,7 +61,7 @@ def index():
 
 @besucher_bp.route('/find')
 @login_required
-def besucher_find():
+def find():
     return render_template(
         'besucher_find.html',
         title="Finde Besucher",
@@ -82,7 +82,7 @@ def create():
             'Neuer Besucher angelegt: {} {}, {}'
             .format(besucher.id, besucher.name, besucher.vorname)
         )
-        return(redirect(url_for('besucher_bp.index')))
+        return(redirect(url_for('besucher_bp.update', besucher_id=besucher.id)))
 
     return render_template(
         'create.html',
@@ -133,5 +133,6 @@ def update(besucher_id):
             b for b in buchungen if b.status in [
                 'angebot']],
         besucher=besucher,
+        list_type='long',
         run_mode=current_app.env
     )

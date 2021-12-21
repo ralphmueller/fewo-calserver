@@ -54,28 +54,41 @@ buchung_bp = Blueprint(
 @login_required
 def index():
     # list all bookings that have status field as described in request args
-    request_params = request.args.get('where')
-    if request_params is not None:
-        where_list = request_params.split()
+    # get only 'limit' bookings if set
+    request_params_status = request.args.get('status')
+    if request_params_status is not None:
+        where_list = request_params_status.split(',')
     else:
         where_list = [
             'gebucht',
             'abgerechnet'
         ]
+    if request.args.get('year') is None:
+        year = datetime.date.today().year
+    else:
+        year = int(request.args.get('year'))
     query = (
         Buchung
         .select()
         .join(Apartment)
         .switch(Buchung)
         .join(Besucher)
-        .where(Buchung.status.in_(where_list))
-        .order_by(Buchung.anreise)
+        .where(
+            Buchung.status.in_(where_list) &
+            Buchung.anreise.between(
+                datetime.date(year, 1, 1),
+                datetime.date(year + 1, 1, 1))
+        )
+        .order_by(Buchung.anreise.desc())
     )
     if len(list(query)) > 0:
         return render_template(
             'buchung/index.html',
             number_buchung=len(list(query)),
-            title='Buchungsliste',
+            title='Buchungen (Status = {}, Jahr = {}, Anzahl = {})'.format(
+                request_params_status,
+                year,
+                len(list(query))),
             buchungen=query,
             run_mode=current_app.env
         )
