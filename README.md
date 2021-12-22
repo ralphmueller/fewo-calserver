@@ -10,6 +10,12 @@
 
 ## pythonpacks
 
+### create wheel 
+
+### install on target
+
+    pipenv install --skip-lock pythonpacks-0.11.tar.gz
+
 ## node_modules
 
 ## .env file

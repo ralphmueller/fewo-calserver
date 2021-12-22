@@ -7,7 +7,7 @@
 {% block content %}
 
 {% if anreisen | length > 0 %}
-	<div class="table-responsive">
+	<div class="row table-responsive">
 		<h3>Anreisen</h3>
 		<table class="table table-bordered table-condensed table-hover">
 			<thead>
@@ -39,7 +39,7 @@
 {% endif %}
 
 {% if abreisen | length > 0 %}
-	<div class="table-responsive">
+	<div class="row table-responsive">
 		<h3>Abreisen</h3>
 		<table class="table table-bordered table-condensed table-hover">
 			<thead>
@@ -67,11 +67,11 @@
 		</table>
 	</div>
 {% else %}
-	<p>Keine Abreisen in den nächsten 10 Tagen</p>
+	<p>Keine Abreisen in den nächsten 5 Tagen</p>
 {% endif %}
 
 {% if angebote | length > 0 %}
-	<div class="table-responsive">
+	<div class="row table-responsive">
 		<h3>Angebote</h3>
 		<table class="table table-bordered table-condensed table-hover">
 			<thead>

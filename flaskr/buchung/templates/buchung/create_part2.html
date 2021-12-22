@@ -43,6 +43,7 @@
         </div>
         <div class="col-4">
           <dl>
+            {{ render_label_data("Nächte", buchung.get_nights()) }}
             {{ render_label_data("Miete", buchung.get_miete() | euro_currency) }}
             {{ render_label_data("Kurtaxe", buchung.get_kurtaxe() | euro_currency) }}
             {{ render_label_data("Summe", buchung.get_summe() | euro_currency) }}

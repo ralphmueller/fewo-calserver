@@ -93,8 +93,8 @@ def index():
             run_mode=current_app.env
         )
     else:
-        flash('no bookings found for status ', where_list)
-        return(redirect(url_for('home.index')))
+        flash('Keine Buchungen mit Status {} gefunden'.format(where_list[0]))
+        return(redirect(url_for('home_bp.index')))
 
 
 @buchung_bp.route('/create/<int:besucher_id>', methods=('GET', 'POST'))
