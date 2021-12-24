@@ -9,31 +9,42 @@
 <div class="row">
 	<div class="col-12">
 
-		<table class="table table-bordered table-condensed table-hover">
-			<thead>
-				<tr>
-					<th>Anreise</th><th>Abreise</th><th>Apartment</th><th>Besucher</th><th>Miete</th><th>Kurtaxe</th><th>Summe</th><th>Vorauszahlung</th><th>Status</th>
-				</tr>
-			</thead>
-			<tbody>	
-			{% for buchung in buchungen %}
-				{% if buchung.status in ['abgerechnet', 'gebucht', 'angebot'] %}
-					<tr id=" {{buchung.id}} " onclick=getBuchungDetails(`{{ buchung.id }}`)>
-						<td>{{buchung.anreise | euro_date_short }}</td>
-						<td>{{buchung.abreise | euro_date_short }}</td>
-						<td>{{buchung.apartment.name}}</td>
-						<td>{{buchung.besucher.name}}, {{buchung.besucher.vorname}}</td>
-						<td>{{buchung.miete | euro_currency }}</td>
-						<td>{{buchung.kurtaxe | euro_currency }}</td>
-						<td>{{buchung.summe | euro_currency }}</td>
-						<td>{{buchung.vorauszahlung | euro_currency }}</td>
-						<td>{{buchung.status}}</td>
-					</tr>
+		<ul class="flex-horizontal">
+			{% for y in years %}
+				{% if y == year %}
+					{% set highlight = 'highlight' %}
 				{% endif %}
-			 {% endfor %}
-			 </tbody>
-		</table>
-
+				<li class="nav-item {{highlight}}"><a class="nav-link" target="_self" href="{{url_for('buchung_bp.index', year=y, status=status)}}">{{y}}</a></li>
+			{% endfor %}
+		</ul>
+		{% if buchungen | length > 0 %}
+			<table class="table table-bordered table-condensed table-hover">
+				<thead>
+					<tr>
+						<th>Anreise</th><th>Abreise</th><th>Apartment</th><th>Besucher</th><th>Miete</th><th>Kurtaxe</th><th>Summe</th><th>Vorauszahlung</th><th>Status</th>
+					</tr>
+				</thead>
+				<tbody>	
+				{% for buchung in buchungen %}
+					{% if buchung.status in ['abgerechnet', 'gebucht', 'angebot'] %}
+						<tr id=" {{buchung.id}} " onclick=getBuchungDetails(`{{ buchung.id }}`)>
+							<td>{{buchung.anreise | euro_date_short }}</td>
+							<td>{{buchung.abreise | euro_date_short }}</td>
+							<td>{{buchung.apartment.name}}</td>
+							<td>{{buchung.besucher.name}}, {{buchung.besucher.vorname}}</td>
+							<td>{{buchung.miete | euro_currency }}</td>
+							<td>{{buchung.kurtaxe | euro_currency }}</td>
+							<td>{{buchung.summe | euro_currency }}</td>
+							<td>{{buchung.vorauszahlung | euro_currency }}</td>
+							<td>{{buchung.status}}</td>
+						</tr>
+					{% endif %}
+				{% endfor %}
+				</tbody>
+			</table>
+		{% else %}
+			<p class="text-center">Keine Buchungen gefunden</p>
+		{% endif %}
 	</div>
 </div>
 

@@ -34,7 +34,7 @@ from .buchung_forms import BuchungForm, Buchung2Form, MeldescheinForm
 
 from flaskr.auth.auth import login_required
 from flaskr.api import (
-    SystemInfo, 
+    SystemInfo,
     update_buchung,
     send_confirmation_emails,
     send_angebot_emails,
@@ -56,7 +56,6 @@ buchung_bp = Blueprint(
 def index():
     # list all bookings that have status field as described in request args
     # get only 'limit' bookings if set
-    s = SystemInfo.get_years()
     request_params_status = request.args.get('status')
     if request_params_status is not None:
         where_list = request_params_status.split(',')
@@ -83,20 +82,18 @@ def index():
         )
         .order_by(Buchung.anreise.desc())
     )
-    if len(list(query)) > 0:
-        return render_template(
-            'buchung/index.html',
-            number_buchung=len(list(query)),
-            title='Buchungen (Status = {}, Jahr = {}, Anzahl = {})'.format(
-                request_params_status,
-                year,
-                len(list(query))),
-            buchungen=query,
-            run_mode=current_app.env
-        )
-    else:
-        flash('Keine Buchungen mit Status {} gefunden'.format(where_list[0]))
-        return(redirect(url_for('home_bp.index')))
+    return render_template(
+        'buchung/index.html',
+        number_buchung=len(list(query)),
+        title='Buchungen (Status = {}, Anzahl = {})'.format(
+            request_params_status,
+            len(list(query))),
+        buchungen=query,
+        year=year,
+        status=request_params_status,
+        years=SystemInfo.get_years(),
+        run_mode=current_app.env)
+
 
 
 @buchung_bp.route('/create/<int:besucher_id>', methods=('GET', 'POST'))
