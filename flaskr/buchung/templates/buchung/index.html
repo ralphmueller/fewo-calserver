@@ -17,7 +17,7 @@
 			</thead>
 			<tbody>	
 			{% for buchung in buchungen %}
-				{% if buchung.status in ['abgerechnet', 'gebucht'] %}
+				{% if buchung.status in ['abgerechnet', 'gebucht', 'angebot'] %}
 					<tr id=" {{buchung.id}} " onclick=getBuchungDetails(`{{ buchung.id }}`)>
 						<td>{{buchung.anreise | euro_date_short }}</td>
 						<td>{{buchung.abreise | euro_date_short }}</td>

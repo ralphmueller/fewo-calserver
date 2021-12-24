@@ -34,6 +34,7 @@ from .buchung_forms import BuchungForm, Buchung2Form, MeldescheinForm
 
 from flaskr.auth.auth import login_required
 from flaskr.api import (
+    SystemInfo, 
     update_buchung,
     send_confirmation_emails,
     send_angebot_emails,
@@ -55,6 +56,7 @@ buchung_bp = Blueprint(
 def index():
     # list all bookings that have status field as described in request args
     # get only 'limit' bookings if set
+    s = SystemInfo.get_years()
     request_params_status = request.args.get('status')
     if request_params_status is not None:
         where_list = request_params_status.split(',')

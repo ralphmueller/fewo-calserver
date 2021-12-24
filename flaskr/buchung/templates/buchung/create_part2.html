@@ -20,7 +20,7 @@
       {{ form.hidden_tag() }}
 
       <div class="row">
-        <div class="col-4">
+        <div class="col-4 grey-text">
           <dl>
             {{ render_label_data("Anreise", buchung.get_anreise() | euro_date) }}
             {{ render_label_data("Wohnung", buchung.apartment.name) }}
@@ -31,7 +31,7 @@
             {{ render_label_data("Notiz", buchung.get_notiz()) }}
           </dl>
         </div>
-        <div class="col-4">
+        <div class="col-4 grey-text">
           <dl>
             {{ render_label_data("Abreise", buchung.get_abreise() | euro_date) }}
             {{ render_label_data("Portal", buchung.portal.name) }}
@@ -41,7 +41,7 @@
             {{ render_label_data("Beruflich", buchung.get_kurtaxe_nz()) }}
           </dl>
         </div>
-        <div class="col-4">
+        <div class="col-4 grey-text">
           <dl>
             {{ render_label_data("Nächte", buchung.get_nights()) }}
             {{ render_label_data("Miete", buchung.get_miete() | euro_currency) }}

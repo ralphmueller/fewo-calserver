@@ -19,6 +19,24 @@
 
 body { 
 
+	h3 {
+		padding-top: 20px;
+		padding-bottom: 20px;
+		text-align: center;
+		color:grey;
+		&.align-left{
+			text-align: left;
+		}
+	}
+
+	div {
+		&.grey-text {
+			color: grey;
+		}
+	}
+
+
+
 	font-size: 1em !important;
 	color: #000 !important;
 	font-family: Arial !important;
@@ -29,6 +47,7 @@ body {
 			font-weight: normal;
 		}
 	}
+
 
 	.float-right{
 		float: right;
@@ -107,80 +126,100 @@ body {
 			}
 		}
 	}
-		
 
-	table#calendar {
-		tr {
-			&.color-code {
-				background-color: @belegt; 
+	div#calendar {
+		h3 {
+
+			a {
+				vertical-align: 3px;
+				color:grey;
+				text-decoration: none; 
+				font-size: 20px;
+			}
+			span {
+				&.fixed-width-box {
+					padding-left:10px;
+					padding-right:10px;
+					text-align:center;
+					width:170px;
+					max-width:170px;
+					min-width:170px;
+					display: inline-block;
+				}
 			}
 		}
-
-		td {
-			text-align: center;
-			font-size: 0.6rem;
-			height: 1.1rem;
-			width: 0.8rem;
-			margin:0;
-			padding:0;
-
-			/* apartment colors */
-			&.g1 {
-				background-color: @g1;
-				color: @g1;
-			}
-		
-			&.g2 {
-				background-color: @g2;
-				color: @g2;
-			}
-			&.f1 {
-				background-color: @f1;
-				color: @f1;
-			}
-			&.f2 {
-				background-color: @f2;
-				color: @f2;
-			}
-			&.f4 {
-				background-color: @f4;
-				color: @f4;
-			}
-			&.f5 {
-				background-color: @f5;
-				color: @f5;
-			}
-			&.m1 {
-				background-color: @m1;
-				color: @m1;
-			}
-			&.m2 {
-				background-color: @m2;
-				color: @m2;
+		table {
+			tr {
+				&.color-code {
+					background-color: @belegt; 
+				}
 			}
 
-			/* day of week colors */
-			&.background_Sa, &.background_So  {
-				background-color: @weekend;
-			}
-			&.background_today {
-				background-color: @today;
-			}
+			td {
+				text-align: center;
+				font-size: 0.6rem;
+				height: 1.1rem;
+				width: 0.8rem;
+				margin:0;
+				padding:0;
 
-			/* arrival-, departure day colors */
-			&.an {
-				background-color: @an;
-				color: @an;
-			}
-			&.ab {
-				background-color: @ab;
-				color: @ab;
-			}
-			&.aban {
-				background-color: @an;
-				color: @ab;
+				/* apartment colors */
+				&.g1 {
+					background-color: @g1;
+					color: @g1;
+				}
+			
+				&.g2 {
+					background-color: @g2;
+					color: @g2;
+				}
+				&.f1 {
+					background-color: @f1;
+					color: @f1;
+				}
+				&.f2 {
+					background-color: @f2;
+					color: @f2;
+				}
+				&.f4 {
+					background-color: @f4;
+					color: @f4;
+				}
+				&.f5 {
+					background-color: @f5;
+					color: @f5;
+				}
+				&.m1 {
+					background-color: @m1;
+					color: @m1;
+				}
+				&.m2 {
+					background-color: @m2;
+					color: @m2;
+				}
+
+				/* day of week colors */
+				&.background_Sa, &.background_So  {
+					background-color: @weekend;
+				}
+				&.background_today {
+					background-color: @today;
+				}
+
+				/* arrival-, departure day colors */
+				&.an {
+					background-color: @an;
+					color: @an;
+				}
+				&.ab {
+					background-color: @ab;
+					color: @ab;
+				}
+				&.aban {
+					background-color: @an;
+					color: @ab;
+				}
 			}
 		}
 	}
-
 }

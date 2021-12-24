@@ -1,12 +1,13 @@
-{% extends "layout.html" %}
-
-<-- 
-	partial für Abgerechnete Besuche pro Jahr / Monat / Apartment
+<!-- 
+	partial für gebuchte / abgerechnete  Besuche für einen  Monat
 -->
 
+{% extends "layout.html" %}
+
 {% block content %}
-	<h2><a href="/calendar/month?year={{around[0][1]}}&month={{around[0][0]}}">&lt&nbsp;</a> {{month}} / {{year}} <a href="/calendar/month?year={{around[1][1]}}&month={{around[1][0]}}">&nbsp;&gt</a></h2>
-	<table id="calendar" class="table table-bordered table-condensed table-hover 80percent">
+<div id="calendar">
+	<h3><a href="/calendar/month?year={{around[0][1]}}&month={{around[0][0]}}">&#x25c0;</a><span class="fixed-width-box"> {{month}} / {{year}} </span><a href="/calendar/month?year={{around[1][1]}}&month={{around[1][0]}}">&#x25b6;</a></h2>
+	<table class="table table-bordered table-condensed table-hover 80percent">
 		<tr>
 			<td></td>
 			{% for day in days %} 
@@ -22,7 +23,7 @@
 		</tr>
 		{% endfor %}
 	</table>
-
-	<script src="/static/js/buchung.js"></script>
+</div>
+<script src="/static/js/buchung.js"></script>
 
 {% endblock %}

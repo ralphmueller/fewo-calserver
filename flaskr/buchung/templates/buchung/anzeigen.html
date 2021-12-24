@@ -11,14 +11,13 @@
 
 <div class="row">
     <div class="col-12">
-        <p>
-            {{buchung.besucher.vorname}} {{buchung.besucher.name}} <br />
-            {{buchung.besucher.strasse}} {{buchung.besucher.plz}} {{buchung.besucher.stadt}}</p>
+        <a href="{{url_for('besucher_bp.update', besucher_id=besucher.id)}}">{{besucher.vorname}} {{besucher.name}}</a><br />
+        {{besucher.strasse}} {{besucher.plz}} {{besucher.stadt}}</p>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-3">
+    <div class="col-3 grey-text">
         <dl>
         {{ render_label_data("Anreise", buchung.get_anreise() | euro_date) }}
         {{ render_label_data("Apartment", buchung.apartment.name) }}
@@ -29,7 +28,7 @@
         {{ render_label_data("Status", buchung.status) }}
         </dl>
     </div>
-    <div class="col-3">
+    <div class="col-3 grey-text">
         <dl>
         {{ render_label_data("Abreise", buchung.get_abreise() | euro_date) }}
         {{ render_label_data("Portal", buchung.portal.name) }}
@@ -40,7 +39,7 @@
         {{ render_label_data("Meldeschein", buchung.meldeschein_nummer) }}
         </dl>
     </div>
-    <div class="col-3">
+    <div class="col-3 grey-text">
         <dl>
             {{ render_label_data("Nächte", buchung.get_nights()) }}
             {{ render_label_data("Miete", buchung.get_miete() | euro_currency) }}
@@ -52,7 +51,7 @@
     </div>
 </div>
 <div class="row">
-     <div class="col-12">
+     <div class="col-12 grey-text">
             <dl>{{ render_label_data("Notizen", buchung.notiz) }}</dl>
 
     </div>

@@ -21,28 +21,30 @@
     <title>FewoApp Extensions</title>
 </head>
 <body>
+	<div class="container">
 	{% include 'nav.html' %}
+	</div>
 	<!-- Seiteninhalt -->	
 	<div class="container">
 		<div class="row g-3 top70">
-			<div class="col-md-2">
+			<div id="context-menu" class="col-md-2">
 				<!-- left column -->
 				{% include 'context-menu.html' %}
 			</div>
-			<div class="col-md-10">
+			<div id="content" class="col-md-10">
 				{% include 'flash.html' %}
-				<h3>{{title}}</h3>
-				<div id="content">
-					{% block content %}{% endblock %}
-				</div>
+				{% if title %}
+					<h3>{{title}}</h3>
+				{% endif %}
+				{% block content %}{% endblock %}
 			</div>
 		</div>
 	</div> <!-- container Seiteninhalt-->
 
 	<!-- Footer -->	
-	<div class="container container-fluid top-70">
+	<div id="footer" class="container">
 		<div class="row">
-			<h3>Blueprint Info</h3>
+			<h3 class="align-left">Blueprint Info</h3>
 			<ul class="page-properties">
 			  <li><span class="attribute-title">Blueprint:</span> <span class="attribute-value">{{ request.blueprint }}</span></li>
 			  <li><span class="attribute-title">Template:</span> <span class="attribute-value">{{ self._TemplateReference__context.name }}</span></li>

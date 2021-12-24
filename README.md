@@ -12,9 +12,11 @@
 
 ### create wheel 
 
+    pipenv run  python setup.py sdist
+
 ### install on target
 
-    pipenv install --skip-lock pythonpacks-0.11.tar.gz
+    pipenv install --skip-lock pythonpacks-<version>.tar.gz
 
 ## node_modules
 

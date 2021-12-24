@@ -3,7 +3,7 @@
     RM 10.09.2021
 -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <div class="container">
+
     <a class="navbar-brand" href="{{ url_for('home_bp.index') }}">FEWO-V2</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -31,9 +31,9 @@
               Buchungen
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="/buchung?status=abgerechnet&limit=100">Rechnungen</a>
-              <a class="dropdown-item" href="/buchung?status=gebucht&limit=100">Buchungen</a>
-              <a class="dropdown-item" href="/buchung?status=angebot&limit=100">Angebote</a>
+              <a class="dropdown-item" href="/buchung?status=abgerechnet">Rechnungen</a>
+              <a class="dropdown-item" href="/buchung?status=gebucht">Buchungen</a>
+              <a class="dropdown-item" href="/buchung?status=angebot">Angebote</a>
           </div>
       </li>        
         <li class="nav-item dropdown">
@@ -75,5 +75,5 @@
       </ul>
     </div>
     <div class="nav-link float-right">Runmode: {{run_mode}}</div>
-  </div>
+
 </nav>

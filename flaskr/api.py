@@ -6,6 +6,7 @@ API to models and helper functions
 @author: ralph
 '''
 
+from typing import ClassVar
 from peewee import fn
 from bkormlib import Besucher, Buchung, Apartment, Email, User
 
@@ -14,7 +15,22 @@ from babel.dates import format_date
 from flask import current_app, render_template
 from flaskr import mailer
 
-# choices and helper fucntions for dropdowns in Besucher forms
+
+class SystemInfo():
+
+    years_in_operation = []
+
+    @classmethod
+    def get_years(cls):
+        if len(cls.years_in_operation) == 0:
+            db = Buchung._meta.database
+            cursor = db.execute_sql('SELECT year(anreise), COUNT(*), sum(miete), sum(kurtaxe) from Buchung where status in ("abgerechnet", "gebucht") group by year(anreise);')
+            res = [row for row in cursor.fetchall()]
+            cls.years_in_operation = [year[0] for year in res]
+        return cls.years_in_operation
+
+
+# choices and helper functions for dropdowns in Besucher forms
 ANREDE = [('1', 'Fam.'), ('2', 'Herr'), ('3', 'Frau'), ('4', 'Firma')]
 LANGUAGE = [('1', 'DE'), ('2', 'EN'), ('3', 'FR')]
 
