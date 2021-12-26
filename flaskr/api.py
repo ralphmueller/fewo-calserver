@@ -24,7 +24,7 @@ class SystemInfo():
     def get_years(cls):
         if len(cls.years_in_operation) == 0:
             db = Buchung._meta.database
-            cursor = db.execute_sql('SELECT year(anreise), COUNT(*), sum(miete), sum(kurtaxe) from Buchung where status in ("abgerechnet", "gebucht") group by year(anreise);')
+            cursor = db.execute_sql('SELECT year(anreise), COUNT(*), sum(miete), sum(kurtaxe) from buchung where status in ("abgerechnet", "gebucht") group by year(anreise);')
             res = [row for row in cursor.fetchall()]
             cls.years_in_operation = [year[0] for year in res]
         return cls.years_in_operation
