@@ -10,6 +10,30 @@
 
 {% block content %}
 
-<p>MUSS ÜBERSETZT WERDEN</p>
+<p>Sehr 
+    
+    {% if buchung.besucher.anrede == 'Herr' %}
+        geehrter
+    {% else %}
+        geehrte
+    {% endif %}
+    {{buchung.besucher.anrede}} {{buchung.besucher.name}} - </p>
+
+<p>
+	We are pleased to confirm the receipt of your prepayment in the amount of 
+     {{buchung.get_vorauszahlung() | euro_currency}} for your reservation with Ferien-in-Gersfeld.
+
+   Here are the details of your reservation:
+</p>
+<ul>
+    <li>Apartment: {{buchung.apartment.name}}</li>
+    <li>Dates: {{buchung.get_anreise() |euro_date}} - {{buchung.get_abreise() |euro_date}}</li>
+    <li>Rent and Spa tax: {{buchung.get_summe() | euro_currency}}</li>
+    <li>Total amount: {{buchung.get_offener_betrag() | euro_currency}}</li>
+</ul>
+
+<p>We look forward to your stay!</p>
+
+{% include 'emails/mfg.html' %}
 
 {% endblock %}
