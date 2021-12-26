@@ -244,10 +244,10 @@ def update(buchung_id):
     # left side actions
     actions = [
         (
-            'Buchung stornieren',
+            'Stornieren',
             url_for('buchung_bp.storno', buchung_id=buchung.id)),
         (
-            'Buchung abrechnen',
+            'Abrechnen',
             url_for('buchung_bp.abrechnen', buchung_id=buchung.id))
     ]
     return render_template(
@@ -360,7 +360,7 @@ def anzeigen(buchung_id):
     if buchung.status == 'gebucht':
         actions = [
             (
-                'Buchung ändern',
+                'Ändern',
                 url_for(
                     'buchung_bp.update',
                     buchung_id=buchung.id)),
@@ -371,12 +371,12 @@ def anzeigen(buchung_id):
     elif buchung.status == 'angebot':  # convert offer -> booking, drop angebot
         actions = [
             (
-                'Angebot umwandeln',
+                'Umwandeln',
                 url_for(
                     'buchung_bp.convert_angebot',
                     buchung_id=buchung.id)),
             (
-                'Angebot verwerfen',
+                'Verwerfen',
                 url_for(
                     'buchung_bp.drop_angebot',
                     buchung_id=buchung.id))

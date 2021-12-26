@@ -222,6 +222,26 @@ body {
 			}
 		}
 	}
+	ul.flex-vertical {
+		text-align: left;
+		display: flex;
+		flex-direction: column;
+		align-items: left;
+		justify-content: left;
+		li {
+			&.highlight {
+				background-color: yellow;
+			}
+			padding-left: 0px;
+			a {
+				padding-left: 0px;
+				vertical-align: 3px;
+				color:grey;
+				text-decoration: none; 
+				font-size: 20px;
+			}
+		}
+	}
 	ul.flex-horizontal {
 		display: flex;
 		flex-direction: row;

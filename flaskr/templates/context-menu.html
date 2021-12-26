@@ -5,18 +5,18 @@
 <h3 class="align-left">Aktionen</h3>
 
 {% if actions %}
-    <ul class="actions">
+    <ul class="flex-vertical">
     {% for action in actions %}
     <li class="nav-item"><a class="nav-link" target="_self" href={{action[1]}}>{{action[0]}}</a></li>
     {% endfor %}
     </ul>
 {% else %}		
-    <ul class="actions"> 
+    <ul class="flex-vertical"> 
         <li class="nav-item"><a class="nav-link" target="_self" href="{{url_for('besucher_bp.find')}}">Besucher finden</a></li>
         <!-- <li class="nav-item"><a class="nav-link" target="_self" href="#">Buchung finden</a></li> --> 
     </ul>
 {% endif %}
 
-<ul  class="actions">
+<ul  class="flex-vertical">
     <li class="nav-item"><a class="nav-link" target="_blank" href="https://ferien-in-gersfeld.de/?q=de/content/preise-2022">Preisliste 2022</a></li>
 </ul>
