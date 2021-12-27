@@ -10,14 +10,7 @@
 
 {% block content %}
 
-<p>Sehr 
-    
-    {% if buchung.besucher.anrede == 'Herr' %}
-        geehrter
-    {% else %}
-        geehrte
-    {% endif %}
-    {{buchung.besucher.anrede}} {{buchung.besucher.name}} - </p>
+{% include 'emails/de/greeting.html' %}
 
 <p>
 	gerne bestätigen wir Ihre Buchung für unsere Wohnung {{buchung.apartment.name}}, {{buchung.apartment.beschreibung}} 
@@ -85,7 +78,7 @@
 
 <p>Wir freuen uns auf Ihren Besuch!</p>
 
-{% include 'emails/mfg.html' %}
+{% include 'emails/de/mfg.html' %}
 
 <p><strong>Ihre Buchung in der Zusammenfassung</strong></p>
 

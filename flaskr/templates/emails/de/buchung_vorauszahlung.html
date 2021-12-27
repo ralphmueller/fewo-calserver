@@ -1,7 +1,7 @@
 <!-- 
     Created: Ralph, 20.10.2021
 
-    Template für Bestätigungs Email
+    Template für Vorauszahlungs-Email
         - renering durch Jinja2 Engine
 
 -->
@@ -10,14 +10,7 @@
 
 {% block content %}
 
-<p>Sehr 
-    
-    {% if buchung.besucher.anrede == 'Herr' %}
-        geehrter
-    {% else %}
-        geehrte
-    {% endif %}
-    {{buchung.besucher.anrede}} {{buchung.besucher.name}} - </p>
+{% include 'emails/de/greeting.html' %}
 
 <p>
 	gerne bestätigen wir den Eingang einer Vorauszahlung von {{buchung.get_vorauszahlung() | euro_currency}} für Ihre Buchung bei uns.
@@ -33,6 +26,6 @@
 
 <p>Wir freuen uns auf Ihren Besuch!</p>
 
-{% include 'emails/mfg.html' %}
+{% include 'emails/de/mfg.html' %}
 
 {% endblock %}

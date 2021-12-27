@@ -1,0 +1,17 @@
+<!-- 
+    Created: Ralph, 27.12.2021
+
+    Greeting fragment German 
+        - rendering durch Jinja2 Engine
+
+-->
+
+<p>Sehr 
+    
+    {% if buchung.besucher.anrede == 'Herr' %}
+        geehrter
+    {% else %}
+        geehrte
+    {% endif %}
+    {{buchung.besucher.anrede}} {{buchung.besucher.name}}, 
+</p>
