@@ -9,6 +9,29 @@
 
 {% block content %}
 
-<p>MUSS ÜBERSETZT WERDEN</p>
+<p>Sehr 
+    
+    {% if buchung.besucher.anrede == 'Herr' %}
+        geehrter
+    {% else %}
+        geehrte
+    {% endif %}
+    {{buchung.besucher.anrede}} {{buchung.besucher.name}} - </p>
+
+<p>
+	We hereby confirm the cancellation of your booking with Ferien-in-Gersfeld. 
+
+    Here are the details of the cancelled booking:
+</p>
+<ul>
+    <li>Apartment: {{buchung.apartment.name}}</li>
+    <li>Dates: {{buchung.get_anreise() |euro_date}} - {{buchung.get_abreise() |euro_date}}</li>
+    <li>Rent and Spa tax: {{buchung.get_summe() | euro_currency}}</li>
+    <li>Total amount: {{buchung.get_offener_betrag() | euro_currency}}</li>
+</ul>
+
+<p>We're sorry it didn't work out this time, but hope we'll be able to welcome you in the future!</p>
+
+{% include 'emails/mfg.html' %}
 
 {% endblock %}
