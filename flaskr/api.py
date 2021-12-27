@@ -68,7 +68,7 @@ class SystemInfo():
         if letter_type not in cls.letter_types:
             raise ValueError
         return (
-            cls.header_strings[language_for_key(buchung.besucher.language)][letter_type]
+            cls.header_strings[buchung.besucher.language][letter_type]
             .format(
                 buchung.apartment.name,
                 buchung.apartment.beschreibung,
@@ -77,29 +77,10 @@ class SystemInfo():
 
 
 # choices and helper functions for dropdowns in Besucher forms
-ANREDE = [('1', 'Fam.'), ('2', 'Herr'), ('3', 'Frau'), ('4', 'Firma')]
-LANGUAGE = [('1', 'de'), ('2', 'en'), ('3', 'fr')]
-
-
-def anrede_for_key(key):
-    # TODO : check for out of index
-    return [item for item in ANREDE if item[0] == key][0][1]
-
-
-def language_for_key(key):
-    # TODO : check for out of index
-    print('key: ', key, type(key))
-    return [item for item in LANGUAGE if item[0] == str(key)][0][1]
-
-
-def key_for_anrede(anrede):
-    # TODO : check for out of index
-    return [item for item in ANREDE if item[1] == anrede][0][0]
-
-
-def key_for_language(language):
-    # TODO : check for out of index
-    return [item for item in LANGUAGE if item[1] == language.lower()][0][0]
+ANREDE = [
+    ('Fam.', 'Fam.'), ('Herr', 'Herr'), ('Frau', 'Frau'), ('Firma', 'Firma')]
+LANGUAGE = [
+    ('de', 'de'), ('en', 'en'), ('fr', 'fr')]
 
 
 def fetch_visitors():
@@ -118,9 +99,10 @@ def create_besucher_from_form(form):
     ''' create new visitor from form data '''
     besucher = Besucher()
     besucher.user = User.get_by_id(form.user_id.data)
-    besucher.anrede = anrede_for_key(form.anrede.data)
+    besucher.anrede = form.anrede.data
     besucher.name = form.name.data
     besucher.vorname = form.vorname.data
+    besucher.firmenname = form.firmenname.data
     besucher.email = form.email.data
     besucher.tel = form.tel.data
     besucher.plz = form.plz.data
@@ -134,51 +116,18 @@ def create_besucher_from_form(form):
     return besucher
 
 
-def fetch_besucher_for_update(besucher_id):
-    """ """
-    besucher = Besucher.get_by_id(besucher_id)
-    buchungen = (
-        Buchung
-        .select(Buchung, Apartment)
-        .join(Apartment)
-        .where(Buchung.besucher == besucher).order_by(Buchung.anreise.desc())
-    )
-    return besucher, list(buchungen)
-
-
-def delete_besucher(besucher_id):
-    """ delete besucher if no related objects exist"""
-    besucher = Besucher.get_by_id(besucher_id)
-    no_buchungen = (
-        Buchung
-        .select(fn.Count(Buchung.id))
-        .alias('count')
-        .where(Buchung.besucher == besucher).scalar()
-    )
-
-    if no_buchungen > 0:
-        return (
-            'Besucher {}, {} wurde nicht gelöscht, da {} Buchungen existieren!'
-            .format(besucher.name, besucher.vorname, no_buchungen)
-        )
-    else:
-        besucher.delete_instance()
-        return (
-            'Besucher {}, {} gelöscht'.
-            format(besucher.name, besucher.vorname)
-        )
-
-
 def update_besucher(form, besucher):
     '''
         update besucher: check which fields need updating
     '''
-    if besucher.anrede != anrede_for_key(form.anrede.data):
-        besucher.anrede = anrede_for_key(form.anrede.data)
+    if besucher.anrede != form.anrede.data:
+        besucher.anrede = form.anrede.data
     if besucher.name != form.name.data:
         besucher.name = form.name.data
     if besucher.vorname != form.vorname.data:
         besucher.vorname = form.vorname.data
+    if besucher.firmenname != form.firmenname.data:
+        besucher.firmenname = form.firmenname.data
     if besucher.tel != form.tel.data:
         besucher.tel = form.tel.data
     if besucher.email != form.email.data:
@@ -252,6 +201,41 @@ def update_buchung(form, buchung):
         return []
 
 
+def fetch_besucher_for_update(besucher_id):
+    """ """
+    besucher = Besucher.get_by_id(besucher_id)
+    buchungen = (
+        Buchung
+        .select(Buchung, Apartment)
+        .join(Apartment)
+        .where(Buchung.besucher == besucher).order_by(Buchung.anreise.desc())
+    )
+    return besucher, list(buchungen)
+
+
+def delete_besucher(besucher_id):
+    """ delete besucher if no related objects exist"""
+    besucher = Besucher.get_by_id(besucher_id)
+    no_buchungen = (
+        Buchung
+        .select(fn.Count(Buchung.id))
+        .alias('count')
+        .where(Buchung.besucher == besucher).scalar()
+    )
+
+    if no_buchungen > 0:
+        return (
+            'Besucher {}, {} wurde nicht gelöscht, da {} Buchungen existieren!'
+            .format(besucher.name, besucher.vorname, no_buchungen)
+        )
+    else:
+        besucher.delete_instance()
+        return (
+            'Besucher {}, {} gelöscht'.
+            format(besucher.name, besucher.vorname)
+        )
+
+
 def send_confirmation_emails(buchung, email_text):
     # create email record
     besucher_email = Email()
@@ -299,7 +283,7 @@ def send_storno_emails(buchung):
     # email to visitor
     email_html = render_template(
         'emails/{}/buchung_storno.html'
-        .format(language_for_key(buchung.besucher.language).lower()),
+        .format(buchung.besucher.language.lower()),
         buchung=buchung
     )
     header = SystemInfo.get_email_header(
@@ -358,7 +342,7 @@ def send_update_emails(buchung, buchung_alt, res):
         # send payment confirmation to besucher
         email_html = render_template(
             'emails/{}/buchung_vorauszahlung.html'
-            .format(language_for_key(buchung.besucher.language).lower()),
+            .format(buchung.besucher.language.lower()),
             buchung=buchung,
             buchung_alt=buchung_alt
         )
