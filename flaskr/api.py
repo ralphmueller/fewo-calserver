@@ -18,21 +18,67 @@ from flaskr import mailer
 
 class SystemInfo():
 
-    years_in_operation = []
+    version_tag = 'alpha.9'
+
+    letter_types = [
+        'angebot',
+        'buchung_confirmation',
+        'buchung_storno',
+        'buchung_vorauszahlung']
+
+    header_strings = {
+        'de': {
+            'angebot':
+                'Buchungsbestätigung {}, {} {} bis {}',
+            'buchung_confirmation':
+                'Buchungsbestätigung {}, {} {} bis {}',
+            'buchung_storno':
+                'Storno für Ihre Buchung {}, {} {} bis {}',
+            'buchung_vorauszahlung':
+                'Vorauszahlung eingegangen für Ihre Buchung {}, {} {} bis {}'
+        },
+        'en': {
+            'angebot': 'TBD',
+            'buchung_confirmation': 'TBD',
+            'buchung_storno': 'TBD',
+            'buchung_vorauszahlung': 'TBD'
+        },
+        'fr': {
+            'angebot': 'TBD',
+            'buchung_confirmation': 'TBD',
+            'buchung_storno': 'TBD',
+            'buchung_vorauszahlung': 'TBD'
+        }
+    }
 
     @classmethod
     def get_years(cls):
-        if len(cls.years_in_operation) == 0:
-            db = Buchung._meta.database
-            cursor = db.execute_sql('SELECT year(anreise), COUNT(*), sum(miete), sum(kurtaxe) from buchung where status in ("abgerechnet", "gebucht") group by year(anreise);')
-            res = [row for row in cursor.fetchall()]
-            cls.years_in_operation = [year[0] for year in res]
-        return cls.years_in_operation
+        db = Buchung._meta.database
+        cursor = db.execute_sql('SELECT year(anreise), COUNT(*), sum(miete), sum(kurtaxe) from buchung where status in ("abgerechnet", "gebucht") group by year(anreise);')
+        res = [row for row in cursor.fetchall()]
+        years_in_operation = [year[0] for year in res]
+        return years_in_operation
+
+    @classmethod
+    def get_versiontag(cls):
+        return cls.version_tag
+
+    @classmethod
+    def get_email_header(cls, letter_type, buchung):
+        if letter_type not in cls.letter_types:
+            raise ValueError
+        return (
+            cls.header_strings[language_for_key(buchung.besucher.language)][letter_type]
+            .format(
+                buchung.apartment.name,
+                buchung.apartment.beschreibung,
+                format_date(buchung.anreise, format='short', locale='de_DE'),
+                format_date(buchung.abreise, format='short', locale='de_DE')))
 
 
 # choices and helper functions for dropdowns in Besucher forms
 ANREDE = [('1', 'Fam.'), ('2', 'Herr'), ('3', 'Frau'), ('4', 'Firma')]
-LANGUAGE = [('1', 'DE'), ('2', 'EN'), ('3', 'FR')]
+LANGUAGE = [('1', 'de'), ('2', 'en'), ('3', 'fr')]
 
 
 def anrede_for_key(key):
@@ -42,7 +88,8 @@ def anrede_for_key(key):
 
 def language_for_key(key):
     # TODO : check for out of index
-    return [item for item in LANGUAGE if item[0] == key][0][1]
+    print('key: ', key, type(key))
+    return [item for item in LANGUAGE if item[0] == str(key)][0][1]
 
 
 def key_for_anrede(anrede):
@@ -52,7 +99,7 @@ def key_for_anrede(anrede):
 
 def key_for_language(language):
     # TODO : check for out of index
-    return [item for item in LANGUAGE if item[1] == language][0][0]
+    return [item for item in LANGUAGE if item[1] == language.lower()][0][0]
 
 
 def fetch_visitors():
@@ -205,24 +252,13 @@ def update_buchung(form, buchung):
         return []
 
 
-def construct_email_header(starter, buchung):
-    return (
-            '{} Apartment {}, {} von {} bis {}'
-            .format(
-                starter,
-                buchung.apartment.name,
-                buchung.apartment.beschreibung,
-                format_date(buchung.anreise, format='short', locale='de_DE'),
-                format_date(buchung.abreise, format='short', locale='de_DE')))
-
-
 def send_confirmation_emails(buchung, email_text):
     # create email record
     besucher_email = Email()
     besucher_email.besucher = buchung.besucher
     besucher_email.buchung = buchung
-    besucher_email.header = construct_email_header(
-        'Buchungsbestätigung',
+    besucher_email.header = SystemInfo.get_email_header(
+        'buchung_confirmation',
         buchung)
 
     besucher_email.body = email_text
@@ -266,7 +302,9 @@ def send_storno_emails(buchung):
         .format(language_for_key(buchung.besucher.language).lower()),
         buchung=buchung
     )
-    header = 'Ihre Fewo Buchung bei uns: Storno'
+    header = SystemInfo.get_email_header(
+        'buchung_storno',
+        buchung)
     mailer.add_email(
         [buchung.besucher.email],            # besucher
         current_app.config['INFO_EMAIL'],    # info
@@ -296,7 +334,9 @@ def send_angebot_emails(buchung, email_text):
     besucher_email = Email()
     besucher_email.besucher = buchung.besucher
     besucher_email.buchung = buchung
-    besucher_email.header = construct_email_header('Angebot', buchung)
+    besucher_email.header = SystemInfo.get_email_header(
+        'angebot',
+        buchung)
     besucher_email.body = email_text
     besucher_email.save()
     # email section
@@ -322,7 +362,9 @@ def send_update_emails(buchung, buchung_alt, res):
             buchung=buchung,
             buchung_alt=buchung_alt
         )
-        header = 'Ihre Fewo Buchung bei uns: Vorauszahlung'
+        header = SystemInfo.get_email_header(
+            'buchung_vorauszahlung',
+            buchung)
 
         mailer.add_email(
             [buchung.besucher.email],              # besucher

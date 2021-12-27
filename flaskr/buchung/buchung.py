@@ -149,6 +149,9 @@ def create_buchung_finish():
     buchung.recalc(status='gebucht')
     besucher = Besucher.get(buchung.besucher_id)
     # prepare email_confirmation_email
+    print(
+            'emails/{}/buchung_confirmation.html'
+            .format(language_for_key(besucher.language).lower()))
     form = Buchung2Form()
     if request.method == 'GET':
         form.email_text.data = render_template(
