@@ -118,7 +118,7 @@ class Buchung2Form(FlaskForm):
     """
 
     email_text = TextAreaField(
-        'Buchungsbestätigung',
+        '',
         render_kw={'rows': "50", 'cols': "80"}
     )
 

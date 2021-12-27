@@ -82,7 +82,8 @@ def create():
             'Neuer Besucher angelegt: {} {}, {}'
             .format(besucher.id, besucher.name, besucher.vorname)
         )
-        return(redirect(url_for('besucher_bp.update', besucher_id=besucher.id)))
+        return(redirect(
+            url_for('besucher_bp.update', besucher_id=besucher.id)))
 
     return render_template(
         'create.html',
@@ -106,7 +107,8 @@ def update(besucher_id):
         flash(
             res
         )
-        return(redirect(url_for('besucher_bp.index')))
+        return(redirect(
+            url_for('besucher_bp.update', besucher_id=besucher.id)))
 
     # left side actions
     actions = [

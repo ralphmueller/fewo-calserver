@@ -13,7 +13,9 @@
 
   <div class="col-12">
 
-    <p>{{besucher.vorname}} {{besucher.name}} <br />{{besucher.strasse}} {{besucher.plz}} {{besucher.stadt}}</p>
+    <p>
+      <a href="{{url_for('besucher_bp.update', besucher_id=besucher.id)}}">{{besucher.vorname}} {{besucher.name}}</a><br />
+      {{besucher.strasse}} {{besucher.plz}} {{besucher.stadt}}</p>
 
     <form method="post">
 
@@ -22,7 +24,7 @@
       <div class="row">
         <div class="col-4 grey-text">
           <dl>
-            {{ render_label_data("Anreise", buchung.get_anreise() | euro_date) }}
+            {{ render_label_data("Anreise", buchung.get_anreise() | euro_date) }}
             {{ render_label_data("Wohnung", buchung.apartment.name) }}
             {{ render_label_data("Preis/Nacht", buchung.get_preis_nacht() | euro_currency) }}
             {{ render_label_data("Zusatzkosten", buchung.get_zusatzkosten() | euro_currency) }}
