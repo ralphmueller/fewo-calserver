@@ -6,18 +6,18 @@
 -->
 
 <p>
-    Sehr 
+    Dear 
     
     {% if buchung.besucher.anrede == 'Herr' %}
-        Sehr geehrter Herr {{buchung.besucher.name}}, 
+        Dear Mr. {{buchung.besucher.name}}, 
     {% endif %}
     {% if buchung.besucher.anrede == 'Frau' %}
-        Sehr geehrte Frau {{buchung.besucher.name}}, 
+        Dear Mrs. {{buchung.besucher.name}}, 
     {% endif %}
     {% if buchung.besucher.anrede == 'Fam.' %}
-        Sehr geehrte Familie {{buchung.besucher.name}}, 
+        Dear {{buchung.besucher.name}} family, 
     {% endif %}
     {% if buchung.besucher.anrede == 'Firma' %}
-        Sehr geehrte Damen und Herren, 
+        Dear ladies and gentlemen, 
     {% endif %}
 </p>

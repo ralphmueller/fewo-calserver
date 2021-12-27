@@ -95,7 +95,6 @@ def index():
         run_mode=current_app.env)
 
 
-
 @buchung_bp.route('/create/<int:besucher_id>', methods=('GET', 'POST'))
 @login_required
 def create_buchung(besucher_id):

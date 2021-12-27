@@ -29,13 +29,13 @@ class SystemInfo():
     header_strings = {
         'de': {
             'angebot':
-                'Buchungsbestätigung {}, {} {} bis {}',
+                'Angebot {}, {} {} bis {}',
             'buchung_confirmation':
                 'Buchungsbestätigung {}, {} {} bis {}',
             'buchung_storno':
                 'Storno für Ihre Buchung {}, {} {} bis {}',
             'buchung_vorauszahlung':
-                'Vorauszahlung eingegangen für Ihre Buchung {}, {} {} bis {}'
+                'Vorauszahlung eingegangen für Buchung {}, {} {} bis {}'
         },
         'en': {
             'angebot': 'TBD',
