@@ -132,3 +132,14 @@ class MeldescheinForm(FlaskForm):
         'Meldeschein',
         default=''
     )
+
+
+class VorauszahlungForm(FlaskForm):
+    """
+        Erfassen Vorauszahlung
+    """
+
+    vorauszahlung = DecimalField(
+        'Vorauszahlung',
+        default=0.0
+    )

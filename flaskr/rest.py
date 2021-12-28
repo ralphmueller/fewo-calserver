@@ -33,8 +33,8 @@ def rest_besucher_get(besucher_id):
     return json.dumps(model_to_dict(besucher), ensure_ascii=False, default=str)
 
 
-@bp.route('/besucher_by_name/<besucher_name>')
-def rest_besucher_by_name(besucher_name):
+@bp.route('/besucher_by_name/<search_string>')
+def rest_besucher_by_name(search_string):
     '''
     return list of visitors for given name expression
         used in lookup_besucher.js
@@ -45,8 +45,10 @@ def rest_besucher_by_name(besucher_name):
     res = (
         Besucher
         .select()
-        .where(Besucher.name ** besucher_name.lower().replace('*', '%'))
-        )
+        .where(
+            Besucher.name ** search_string.lower().replace('*', '%') |
+            Besucher.vorname ** search_string.lower().replace('*', '%')
+        ))
     return json.dumps(
         [model_to_dict(r) for r in res],
         ensure_ascii=False, default=str)

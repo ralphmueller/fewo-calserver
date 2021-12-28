@@ -38,10 +38,14 @@ class SystemInfo():
                 'Vorauszahlung eingegangen für Buchung {}, {} {} bis {}'
         },
         'en': {
-            'angebot': 'TBD',
-            'buchung_confirmation': 'TBD',
-            'buchung_storno': 'TBD',
-            'buchung_vorauszahlung': 'TBD'
+            'angebot':
+            'Offer letter {}, {} {} to {}',
+            'buchung_confirmation':
+                'Booking confirmation {}, {} {} to {}',
+            'buchung_storno':
+                'Cancelation notice {}, {} {} to {}',
+            'buchung_vorauszahlung':
+                'Prepayment received for booking{}, {} {} to {}'
         },
         'fr': {
             'angebot': 'TBD',
@@ -192,6 +196,24 @@ def update_buchung(form, buchung):
 
     if buchung.get_notiz() != form.notiz.data:
         buchung.notiz = form.notiz.data
+
+    if buchung.is_dirty():
+        dirty_fields = [df.column_name for df in buchung.dirty_fields]
+        buchung.recalc(buchung.status).save()
+        return dirty_fields
+    else:
+        return []
+
+
+def calc_prepayment(form, buchung):
+    """
+        check the relevant buchung fields, recalc and save if needed
+        Note: change in vorauszahlung has to be handled differntly
+              with an email notice to visitor
+    """
+
+    if buchung.get_vorauszahlung() != form.vorauszahlung.data:
+        buchung.vorauszahlung = form.vorauszahlung.data
 
     if buchung.is_dirty():
         dirty_fields = [df.column_name for df in buchung.dirty_fields]

@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+
+<!-- 
+	partial für Buchung ändern
+-->
+
+{% from "_macros.html" import render_field %}
+{% from "_macros.html" import render_label_data %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-12">
+    <p><a href="{{url_for('besucher_bp.update', besucher_id=buchung.besucher.id)}}">{{buchung.besucher.vorname}} {{buchung.besucher.name}}</a><br />
+      {{buchung.besucher.strasse}} {{buchung.besucher.plz}} {{buchung.besucher.stadt}}</p>
+    <form method="post">
+      {{ form.hidden_tag() }}
+      <div class="row">
+        <div class="col-3">
+          <dl>
+            {{ render_label_data("Anreise", buchung.get_anreise() | euro_date) }}
+            {{ render_label_data("Apartment", buchung.apartment.name) }}
+            {{ render_label_data("Preis/Nacht", buchung.get_preis_nacht() | euro_currency) }}
+            {{ render_label_data("Zusatzkostent", buchung.get_zusatzkosten() | euro_currency) }}
+            {{ render_label_data("Rabatt", buchung.get_rabatt() | euro_decimal | rabatt ) }}
+            {{ render_label_data("Vorauszahlung", buchung.get_vorauszahlung() | euro_currency ) }}
+        </dl>
+        </div>
+        <div class="col-3">
+          <dl>
+            {{ render_label_data("Abreise", buchung.get_abreise() | euro_date) }}
+            {{ render_label_data("Portal", buchung.portal.name) }}
+            {{ render_label_data("Kurtaxe 15+", buchung.get_kurtaxe_vz()) }}
+            {{ render_label_data("Kurtaxe 10-14", buchung.get_kurtaxe_hz()) }}
+            {{ render_label_data("Kurtaxe Kinder", buchung.get_kurtaxe_kinder()) }}
+            {{ render_label_data("Kurtaxe 0", buchung.get_kurtaxe_nz()) }}
+          </dl>
+        </div>
+        <div class="col-3">
+            <dl>
+              {{ render_label_data("Nächte", buchung.get_nights()) }}
+              {{ render_label_data("Miete", buchung.get_miete() | euro_currency) }}
+              {{ render_label_data("Kurtaxe", buchung.get_kurtaxe() | euro_currency) }}
+              {{ render_label_data("Summe", buchung.get_summe() | euro_currency) }}
+              {{ render_label_data("Vorauszahlung", buchung.get_vorauszahlung() | euro_currency) }}
+              {{ render_label_data("Restbetrag", buchung.get_offener_betrag() | euro_currency) }}
+              {{ render_label_data("Status", buchung.status) }}
+            </dl>
+          </div>
+          <div class="row">
+            <div class="col-3">
+              <dl>
+                {{ render_label_data("Notiz", buchung.notiz) }}
+                {{ render_field(form.vorauszahlung) }}
+              </dl>
+            </div>
+          </div>
+        {% if form.errors %}
+          <div class="row">
+            <div class="col-6">
+              {{ form.errors }}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+      <input type="submit" value="Eintragen">
+    </form>
+  </div>
+</div>
+{% endblock %}

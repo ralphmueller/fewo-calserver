@@ -30,12 +30,14 @@ from bkormlib import (
     FlaskrSession,
     StaticValuesBuchung)
 
-from .buchung_forms import BuchungForm, Buchung2Form, MeldescheinForm
+from .buchung_forms import BuchungForm, Buchung2Form, MeldescheinForm, VorauszahlungForm
 
 from flaskr.auth.auth import login_required
+
 from flaskr.api import (
     SystemInfo,
     update_buchung,
+    calc_prepayment,
     send_confirmation_emails,
     send_angebot_emails,
     send_update_emails,
@@ -259,22 +261,6 @@ def update(buchung_id):
         besucher=buchung.besucher,
         run_mode=current_app.env
     )
-
-
-@buchung_bp.route('/vorauszahlung/<int:buchung_id>', methods=('GET', 'POST'))
-@login_required
-def update_vorauszahlung(buchung_id):
-    """
-        received vorauszahlung for a buchung with status 'abgerechnet'
-        - enter repaid amount
-        - TODO: enter payment method (transfer, paypal)
-        - send receipt email to besucher
-        - update buchung
-        - actions:
-            - print invoice
-    """
-    flash('buchung vorauszahlung not implemented yet')
-    return(redirect(url_for('home_bp.index')))
 
 
 @buchung_bp.route('/storno/<int:buchung_id>')
@@ -605,3 +591,56 @@ def drop_angebot(buchung_id):
             url_for(
                 'besucher_bp.update',
                 besucher_id=buchung.besucher.id)))
+
+
+@buchung_bp.route('/vorauszahlung/<int:buchung_id>', methods=('GET', 'POST'))
+@login_required
+def update_vorauszahlung(buchung_id):
+    """
+        received vorauszahlung for a buchung with status 'abgerechnet'
+        - enter repaid amount
+        - TODO: enter payment method (transfer, paypal)
+        - send receipt email to besucher
+        - update buchung
+        - actions:
+            - print invoice
+    """
+    buchung = Buchung.get_by_id(buchung_id)
+    if buchung.status in ['storno', 'verworfen']:
+        flash(
+            'Buchung {} mit Status {} kann nicht abgerechnet werden!'
+            .format(buchung.id, buchung.status), 'error')
+        return(redirect(url_for('home_bp.index')))
+
+    form = VorauszahlungForm(obj=buchung)
+
+    if form.validate_on_submit():
+        # save and recalc
+        # send email to besucher
+        buchung_alt = Buchung.get_by_id(buchung_id)              # save copy
+        dirty_fields = calc_prepayment(form, buchung)
+        if len(dirty_fields) > 0:                                # changes
+            send_update_emails(buchung, buchung_alt, dirty_fields)
+            # set flash
+            flash("Vorauszahlung für {}, {} gespeichert".format(
+                buchung.id, buchung.besucher.name
+                ))
+        else:
+            # set flash
+            flash("Keine Änderung für {}, {} gespeichert".format(
+                buchung.id, buchung.besucher.name
+                ))
+
+        return(
+            redirect(
+                url_for(
+                    'besucher_bp.update',
+                    besucher_id=buchung.besucher.id)))
+
+    return render_template(
+        'buchung/vorauszahlung.html',
+        buchung=buchung,
+        form=form,
+        title='Vorauszahlung erfassen',
+        run_mode=current_app.env,
+        template='form-template')

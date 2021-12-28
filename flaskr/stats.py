@@ -20,7 +20,9 @@ from .fewo_reporting import (
     calc_income_apartment
 )
 
-YEARS = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022]
+from flaskr.api import SystemInfo
+
+YEARS = SystemInfo.get_years()
 APTS = [a.name for a in Apartment.select().order_by(Apartment.name)]
 
 bp = Blueprint('stats', __name__, url_prefix='/stats')
