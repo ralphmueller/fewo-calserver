@@ -76,6 +76,10 @@ def create_app(test_config=None):
     def euro_date_short(value):
         return format_date(value, locale='de_DE', format="short")
 
+    @app.template_filter()
+    def en_date(value):
+        return format_date(value, locale='en')
+
     """
     from flask_debugtoolbar import DebugToolbarExtension
     _ = DebugToolbarExtension(app)
