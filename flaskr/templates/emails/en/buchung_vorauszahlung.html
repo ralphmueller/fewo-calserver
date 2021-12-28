@@ -10,16 +10,8 @@
 
 {% block content %}
 
-<p>Sehr 
-    
-    {% if buchung.besucher.anrede == 'Herr' %}
-        geehrter
-    {% else %}
-        geehrte
-    {% endif %}
-    {{buchung.besucher.anrede}} {{buchung.besucher.name}} - </p>
+{% include 'emails/en/greeting.html' %}
 
-<p>
 	We are pleased to confirm the receipt of your prepayment in the amount of 
      {{buchung.get_vorauszahlung() | euro_currency}} for your reservation with Ferien-in-Gersfeld.
 
@@ -34,6 +26,6 @@
 
 <p>We look forward to your stay!</p>
 
-{% include 'emails/mfg.html' %}
+{% include 'emails/en/mfg.html' %}
 
 {% endblock %}

@@ -10,15 +10,7 @@
 
 {% block content %}
 
-<p>Dear 
-    
-    {% if buchung.besucher.anrede == 'Herr' %}
-        Mr.
-    {% else %}
-        Mrs.
-    {% endif %}
-    {{buchung.besucher.name}}, 
-</p>
+{% include 'emails/en/greeting.html' %}
 
 <p>Thank you for requesting an offer for a Ferien-in-Gersfeld vacation apartment.</p>
 
@@ -56,6 +48,6 @@
     <!-- NOT TRANSLATED - seems redundant Dort finden Sie auch ausführliche Beschreibungen der Ferienwohnungen. -->
 </p> 
 
-{% include 'emails/mfg.html' %}
+{% include 'emails/en/mfg.html' %}
 
 {% endblock %}
