@@ -9,14 +9,7 @@
 
 {% block content %}
 
-<p>Sehr 
-    
-    {% if buchung.besucher.anrede == 'Herr' %}
-        geehrter
-    {% else %}
-        geehrte
-    {% endif %}
-    {{buchung.besucher.anrede}} {{buchung.besucher.name}} - </p>
+{% include 'emails/en/greeting.html' %}
 
 <p>
 	We hereby confirm the cancellation of your booking with Ferien-in-Gersfeld. 
@@ -32,6 +25,6 @@
 
 <p>We're sorry it didn't work out this time, but hope we'll be able to welcome you in the future!</p>
 
-{% include 'emails/mfg.html' %}
+{% include 'emails/en/mfg.html' %}
 
 {% endblock %}

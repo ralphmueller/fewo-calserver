@@ -10,6 +10,128 @@
 
 {% block content %}
 
-<p>MUSS ÜBERSETZT WERDEN</p>
+{% include 'emails/en/greeting.html' %}
+
+<p>
+	We are pleased to confirm your reservation for {{buchung.apartment.name}}, {{buchung.apartment.beschreibung}} 
+    vom {{buchung.get_anreise() |euro_date_short}} - {{buchung.get_abreise() |euro_date_short}}. 
+</p>
+<p>
+	Bed linens, towels and internet access are provided free of charge. By using the internet access provided,
+	(SSID: Ferien-in-Gersfeld-Gast) you agree to use this access only within the bounds of regulations and in particular, 
+	not to use it for illegal upload and download of content. 
+</p>
+<p>
+	<strong>Current Corona Regulations Hessen</strong>: The 
+	<a href="https://www.hessen.de/sites/hessen.hessen.de/files/2021-12/silvester-corona-regeln_hessen_161221_v3.pdf">Corona Regulations of 
+	the state of Hessen</a> apply. Please note that other rules may apply upon your arrival date.. 
+</p>
+<ul>
+	<li>2G obligation for overnight touristic guests; otherwise 3G with
+		daily tests
+	</li>
+	<li>2G for the use of common facilities (dining halls,
+		swimming pools etc.)
+	</li>
+</ul>	
+
+<p>
+	<strong>Visitor Data</strong>: We are obliged to report the data of all our visitors to the city of Gersfeld. 
+	Please provide us with the last name, first name, address and date of birth of all overnight guests before arrival.
+</p>
+<p>
+	<strong>Arrival</strong>: We are ready to greet you between 15:00 and 18:00 on the day of arrival. You will receive 
+	the keys to the apartment when you pay the rent due and any Spa tax due upon arrival. You can make payment and 
+	pick up the keys from our manager, Mrs. Bianka Moeller at 4 An der Gärtnerei, Gersfeld. Due to Corona regulations 
+	we are obliged to ask you to make your own beds. You'll find bed linen and towels in plastic boxes in the apartment. 
+</p>
+<p>
+	<strong>Departure</strong>: Departure should be no later than 10:00. We ask you to leave the apartment clean. 
+	In accordance with Corona regulations we ask you to pack towels and bed linens back into the plastic boxes. 
+	Please do not forget to leave the keys on the kitchen table.
+</p>
+
+<p>
+	<strong>Payment</strong>: We ask for payment of the rental price and Spa tax, if possible, by bank transfer or PayPal, 
+	5 working days prior to your arrival. If this is not possible, then the amount is due in cash upon arrival.
+</p>
+
+<p>Payment information:<br>
+	Ralph Müller<br>
+	Sparkasse Bensheim<br>
+	IBAN/BIC: DE12 50950068 0001621572/HELADEF1BEN<br>
+	PayPal: ralph.mueller.de@gmail.com
+</p>
+
+<p>
+	<strong>Cancellation Terms</strong>: Confirmed bookings can be cancelled free of charge up to 7 days before arrival. For cancellations 
+    during the week prior to the arrival date we will charge a fee equivalent to 50% of the rental fee.
+</p>
+
+<p>
+	Please note that due to Covid-19 (Corona Pandemic) we have been required to implement 
+	certain additional measures. We have removed all extra pillows and blankets in the living areas. 
+	In the shared entranceways to the Flieger- and Gartenstraße apartments we have provided 
+	hand disinfectant for use.
+</p>
+
+<p>If you have questions or need additional information, please feel free to contact us via email or 
+    telephone.</p>
+
+<p>We look forward to hosting you!</p>
+
+{% include 'emails/en/mfg.html' %}
+
+<p><strong>Your reservation details</strong></p>
+
+<table  class="table table-bordered table-striped col-2-table">
+	<tr>
+		<td>Apartment</td>			
+		<td class="text-right">{{buchung.apartment.name}}</td></tr>
+	<tr>
+		<td>Arrival</td>			
+		<td class="text-right">{{buchung.get_anreise() | euro_date_short}}</td></tr>
+	<tr>
+		<td>Departure</td>			
+		<td class="text-right">{{buchung.get_abreise() | euro_date_short}}</td></tr>		
+	<tr>
+		<td>Price/Night</td>		
+		<td class="text-right">{{buchung.get_preis_nacht() | euro_currency}}</td></tr>			
+	<tr>
+		<td>Additional costs</td>		
+		<td class="text-right">{{buchung.get_zusatzkosten() |euro_currency}}</td></tr>
+	<tr>
+		<td>Rent</td>				
+		<td class="text-right">{{buchung.get_miete() |euro_currency}}</td></tr>					
+	<tr>
+		<td>Spa tax 100%</td>	
+		<td class="text-right">{{buchung.get_kurtaxe_vz()}}</td></tr>		
+	<tr>
+		<td>Spa tax 50%</td>	
+		<td class="text-right">{{buchung.get_kurtaxe_hz()}}</td></tr>	
+	<tr>
+		<td>Children</td>
+		<td class="text-right">{{buchung.get_kurtaxe_kinder()}}</td></tr>	
+	<tr>
+		<td>Spa tax exempt</td>	
+		<td class="text-right">{{buchung.get_kurtaxe_nz()}}</td></tr>	
+	<tr>
+		<td>Total Spa tax</td>		
+		<td class="text-right">{{buchung.get_kurtaxe() |euro_currency}}</td></tr>		
+	<tr>
+		<td>Total</td>				
+		<td class="text-right">{{buchung.get_summe() |euro_currency}}</td></tr>						
+</table>
+<p>Spa tax notes:</p>
+<ul>
+	<li>
+		The Spa tax is, since March 2, 2019, € 2.40 / night for visitors over the age of 14 (100%) and € 1.20 
+		for visitors between the ages of 10 and 15 (50%). Children below the age of 10 
+		do not pay Spa tax.
+	</li>	
+	<li>
+		Persons visiting Gersfeld for business reasons (including further education) are exempt from the Spa tax.
+	</li>		
+</ul>
 
 {% endblock %}
