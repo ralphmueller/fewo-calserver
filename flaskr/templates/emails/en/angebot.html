@@ -20,10 +20,14 @@
 </p>
 
 <p> The price is as follows:<br>
-    {{buchung.apartment.name}} ({{days}} Nights - € {{buchung.preis_nacht | euro_currency }}/Night for {{buchung.kurtaxe_vz}} Persons) 
-    Total € {{buchung.miete | euro_currency}}  plus Gersfeld city spa tax {{buchung.kurtaxe  | euro_currency }}. 
+    {{buchung.apartment.name}} ({{days}} Nights - {{buchung.preis_nacht | euro_currency }}/Night for {{buchung.kurtaxe_vz}} Persons) 
+    Total {{buchung.miete | euro_currency}}  plus Gersfeld city spa tax {{buchung.kurtaxe  | euro_currency }}. 
 </p>
-
+{% if buchung.get_rabatt() > 0 %}
+    <p>
+        The total includes a rebate of {{buchung.get_rabatt() }} %.
+    </p>
+{% endif %}
 <p>
     <strong>To accept this offer and confirm your booking, please reply to this email. We would be very pleased
         to host you in Gersfeld!    
