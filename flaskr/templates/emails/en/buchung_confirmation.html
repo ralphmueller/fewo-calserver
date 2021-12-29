@@ -100,12 +100,11 @@
 	<tr>
 		<td>Additional costs</td>		
 		<td class="text-right">{{buchung.get_zusatzkosten() |euro_currency}}</td></tr>
-	<tr>
-		{%  if buchung.get_rabatt() > 0 %}
+	{%  if buchung.get_rabatt() > 0 %}
+		<tr>
 			<td>Rebate</td>				
-			<td class="text-right">{{buchung.get_rabatt()}} %</td>
-	</tr>	
-			{%  endif %}	
+			<td class="text-right">{{buchung.get_rabatt()}} %</td></tr>	
+	{%  endif %}
 	<tr>
 		<td>Rent</td>				
 		<td class="text-right">{{buchung.get_miete() |euro_currency}}</td>
