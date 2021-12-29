@@ -1,9 +1,9 @@
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
     <h3>Nachrichten</h3>
-    <ul class=flashes>
+    <ul class="flash">
     {% for category, message in messages %}
-      <li class="{{ category }}">{{ message }}</li>
+      <li class="{{ category }} flash">{{ message }}</li>
     {% endfor %}
     </ul>
   {% endif %}

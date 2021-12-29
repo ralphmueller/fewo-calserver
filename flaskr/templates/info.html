@@ -1,0 +1,19 @@
+<!-- 
+	system info page
+
+    author: ralph
+    date: 28.12.2021
+-->
+
+{% extends "layout.html" %}
+
+
+{% block content %}
+
+<p>Version: {{sysinfo.version_tag}}</p>
+<p>Environment: {{config.FLASK_ENV}}</p>
+<p>Database: {{config.DATABASE}}</p>
+<p>Emails Team: {{config.EMAILS_TEAM}}</p>
+<p>Info Email: {{config.INFO_EMAIL}}</p>
+
+{% endblock %}

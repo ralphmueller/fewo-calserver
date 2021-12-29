@@ -103,6 +103,7 @@ def create_app(test_config=None):
         from . import stats
         from .calendar import calendar
         from . import json_routes
+        from . import info
 
         app.register_error_handler(404, page_not_found)
         app.register_error_handler(500, internal_error)
@@ -115,6 +116,7 @@ def create_app(test_config=None):
         app.register_blueprint(stats.bp)
         app.register_blueprint(calendar.calendar_bp)
         app.register_blueprint(json_routes.bp)
+        app.register_blueprint(info.info_bp)
 
     """        @app.route("/resetinvoice/")
             @login_required

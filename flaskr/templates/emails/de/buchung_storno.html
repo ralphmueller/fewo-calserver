@@ -18,7 +18,7 @@
 </p>
 <ul>
     <li>Apartment: {{buchung.apartment.name}}</li>
-    <li>Datum: {{buchung.get_anreise() |euro_date}} - {{buchung.get_abreise() |euro_date}}</li>
+    <li>Datum: {{buchung.get_anreise() |euro_date_short}} - {{buchung.get_abreise() |euro_date_short}}</li>
     <li>Miete und Kurtaxe: {{buchung.get_summe() | euro_currency}}</li>
     <li>Restbetrag: {{buchung.get_offener_betrag() | euro_currency}}</li>
 </ul>

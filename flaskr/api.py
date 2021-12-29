@@ -5,7 +5,6 @@ API to models and helper functions
 
 @author: ralph
 '''
-
 from typing import ClassVar
 from peewee import fn
 from bkormlib import Besucher, Buchung, Apartment, Email, User
@@ -45,7 +44,7 @@ class SystemInfo():
             'buchung_storno':
                 'Cancelation notice {}, {} {} to {}',
             'buchung_vorauszahlung':
-                'Prepayment received for booking{}, {} {} to {}'
+                'Prepayment received for booking {}, {} {} to {}'
         },
         'fr': {
             'angebot': 'TBD',

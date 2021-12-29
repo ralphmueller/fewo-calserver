@@ -1,0 +1,26 @@
+'''
+Created on 28.12.2021
+
+@author: ralph
+'''
+from flask import Blueprint, render_template, current_app
+from flaskr.api import SystemInfo
+import config
+
+info_bp = Blueprint(
+    'info_bp',
+    __name__,
+    url_prefix='/info',
+    template_folder='templates',
+    static_folder='static'
+)
+
+
+@info_bp.route('/')
+def info():
+    return render_template(
+        'info.html',
+        title='Info',
+        sysinfo=SystemInfo,
+        config=config.Config,
+        run_mode=current_app.env)

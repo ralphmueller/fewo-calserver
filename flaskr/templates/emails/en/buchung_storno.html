@@ -18,7 +18,7 @@
 </p>
 <ul>
     <li>Apartment: {{buchung.apartment.name}}</li>
-    <li>Dates: {{buchung.get_anreise() |euro_date}} - {{buchung.get_abreise() |euro_date}}</li>
+    <li>Dates: {{buchung.get_anreise() |euro_date_short}} - {{buchung.get_abreise() |euro_date_short}}</li>
     <li>Rent and Spa tax: {{buchung.get_summe() | euro_currency}}</li>
     <li>Total amount due: {{buchung.get_offener_betrag() | euro_currency}}</li>
 </ul>

@@ -100,7 +100,12 @@
 		<td class="text-right">{{buchung.get_zusatzkosten() |euro_currency}}</td></tr>
 	<tr>
 		<td>Miete</td>				
-		<td class="text-right">{{buchung.get_miete() |euro_currency}}</td></tr>					
+		<td class="text-right">{{buchung.get_miete() |euro_currency}}</td></tr>				
+		<tr>
+	{%  if buchung.get_rabatt() > 0 %}
+			<td>Rabatt</td>				
+			<td class="text-right">{{buchung.get_rabatt()}} %</td></tr>	
+	{%  endif %}	
 	<tr>
 		<td>Kurtaxe Vollzahler</td>	
 		<td class="text-right">{{buchung.get_kurtaxe_vz()}}</td></tr>		
