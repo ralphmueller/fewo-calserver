@@ -7,6 +7,7 @@ Rewrite Oct. 2021
 
 @author: ralph
 '''
+import re
 from babel.numbers import format_decimal, format_percent
 from babel.numbers import format_currency
 from babel.dates import format_date
@@ -79,6 +80,10 @@ def create_app(test_config=None):
     @app.template_filter()
     def en_date(value):
         return format_date(value, locale='en')
+
+    @app.template_filter()
+    def filter_db_url(db_url):
+        return re.sub(r":\.+@", ":_______@", db_url)
 
     """
     from flask_debugtoolbar import DebugToolbarExtension

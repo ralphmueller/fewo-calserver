@@ -19,7 +19,7 @@
     vom {{buchung.anreise | euro_date_short}} - {{buchung.abreise | euro_date_short}} verfügbar.</p>
 <p> Die Kosten werden wie folgt aussehen:<br>
     {{buchung.apartment.name}} ({{days}} Nächte - {{buchung.preis_nacht | euro_currency }}/Nacht für {{buchung.kurtaxe_vz}} Personen) 
-    Endpreis € {{buchung.miete | euro_currency}}  zzgl. Kurtaxe {{buchung.kurtaxe  | euro_currency }}. 
+    Endpreis {{buchung.miete | euro_currency}}  zzgl. Kurtaxe {{buchung.kurtaxe  | euro_currency }}. 
 </p>
 
 {% if buchung.get_rabatt() > 0 %}
