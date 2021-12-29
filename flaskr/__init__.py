@@ -83,7 +83,7 @@ def create_app(test_config=None):
 
     @app.template_filter()
     def filter_db_url(db_url):
-        return re.sub(r":\.+@", ":_______@", db_url)
+        return re.sub(r":\w+@", ":_______@", db_url)
 
     """
     from flask_debugtoolbar import DebugToolbarExtension
