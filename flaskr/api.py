@@ -55,6 +55,14 @@ class SystemInfo():
     }
 
     @classmethod
+    def get_number_of_visitors(cls):
+        return Besucher.select(fn.Count(Besucher.id)).scalar()
+
+    @classmethod
+    def get_number_of_bookings(cls):
+        return (Buchung.select(fn.Count(Buchung.id)).scalar())
+
+    @classmethod
     def get_years(cls):
         db = Buchung._meta.database
         cursor = db.execute_sql('SELECT year(anreise), COUNT(*), sum(miete), sum(kurtaxe) from buchung where status in ("abgerechnet", "gebucht") group by year(anreise);')
