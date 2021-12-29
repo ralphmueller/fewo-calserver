@@ -9,15 +9,15 @@
     Dear 
     
     {% if buchung.besucher.anrede == 'Herr' %}
-        Dear Mr. {{buchung.besucher.name}}, 
+        Mr. {{buchung.besucher.name}}, 
     {% endif %}
     {% if buchung.besucher.anrede == 'Frau' %}
-        Dear Mrs. {{buchung.besucher.name}}, 
+        Mrs. {{buchung.besucher.name}}, 
     {% endif %}
     {% if buchung.besucher.anrede == 'Fam.' %}
-        Dear {{buchung.besucher.name}} family, 
+        {{buchung.besucher.name}} family, 
     {% endif %}
     {% if buchung.besucher.anrede == 'Firma' %}
-        Dear Sir or Madam, 
+        Sir or Madam, 
     {% endif %}
 </p>
