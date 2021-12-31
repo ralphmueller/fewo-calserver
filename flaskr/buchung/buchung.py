@@ -34,7 +34,7 @@ from .buchung_forms import BuchungForm, Buchung2Form, MeldescheinForm, Vorauszah
 
 from flaskr.auth.auth import login_required
 
-from flaskr.api import (
+from flaskr.utils.api import (
     SystemInfo,
     update_buchung,
     calc_prepayment,

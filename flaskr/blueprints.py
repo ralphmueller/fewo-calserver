@@ -9,15 +9,15 @@ collect all blueprints in a file outside of __init__.py
 
 from flask import current_app as app
 
-from .home import home
-from .auth import auth
-from .besucher import besucher
-from .buchung import buchung
-from . import rest
-from . import stats
-from .calendar import calendar
-from . import json_routes
-from . import info
+from flaskr.home import home
+from flaskr.auth import auth
+from flaskr.besucher import besucher
+from flaskr.buchung import buchung
+from flaskr import rest
+from flaskr import stats
+from flaskr.calendar import calendar
+from flaskr import json_routes
+from flaskr import info
 
 app.register_blueprint(home.home_bp)
 app.register_blueprint(auth.auth_bp)

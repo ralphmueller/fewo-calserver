@@ -8,7 +8,7 @@ collect all blueprints in a file outside of __init__.py
 '''
 from flask import request, render_template
 from flask import current_app as app
-from flaskr.api import SystemInfo
+from flaskr.utils.api import SystemInfo
 
 
 def internal_error(e):

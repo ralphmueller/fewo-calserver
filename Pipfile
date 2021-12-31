@@ -17,7 +17,7 @@ wtforms = "*"
 cd = "*"
 rneu = {path = "."}
 uwsgi = "*"
-pythonpacks = {path = "./pythonpacks-0.10l.tar.gz"}
+flask-assets = "*"
 
 [dev-packages]
 flake8 = "*"
@@ -25,6 +25,7 @@ rope = "*"
 ipykernel = "*"
 autopep8 = "*"
 flask-debugtoolbar = "*"
+flask-assets = "*"
 
 [requires]
 python_version = "3.9"

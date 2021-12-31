@@ -8,15 +8,16 @@
 <html lang="de">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">	
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="/static/node_modules/bootstrap/dist/css/bootstrap.css">
-	<link rel="stylesheet" href="/static/css/myapp.css">	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">	
 	<link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
-	<script src="/static/node_modules/jquery/dist/jquery.js"></script>
-	<script src="/static/node_modules/bootstrap/dist/js/bootstrap.js"></script>
-	<script src="/static/node_modules/chart.js/dist/chart.js"></script>
-	<script src="/static/js/chart_functions.js"></script>
-	<script src="/static/js/buchung.js"></script>
+
+	{% assets "all_css" %}
+		<link rel="stylesheet" href="{{ ASSET_URL }}">
+	{% endassets %}		
+
+	{% assets "all_js" %}
+		<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+	{% endassets %}
 	
     <title>FewoApp Extensions</title>
 </head>
@@ -53,6 +54,6 @@
 			</ul>
 		  </div>
 	</div> <!-- container Footer-->
-	
+
 </body>
 </html>

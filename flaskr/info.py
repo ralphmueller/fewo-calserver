@@ -4,7 +4,7 @@ Created on 28.12.2021
 @author: ralph
 '''
 from flask import Blueprint, render_template, current_app
-from flaskr.api import SystemInfo
+from flaskr.utils.api import SystemInfo
 import config
 
 info_bp = Blueprint(

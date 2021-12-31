@@ -1,37 +1,4 @@
-function getBuchungenForBesucher(t, h4Text, stat){
-	
-	var createTable = function (data) {
-		var header_row = $('<tr>').html('<th>ID</th><th>Apt</th><th>Anreise</th><th>Abreise</th><th>Miete</th><th>Kurtaxe</th><th>Summe</th>');
-		var body = $('<body>/').html();
-		var table = $('<table id="someClass" class="table table-bordered table-condensed table-hover 80percent">/')
-			.append(body)
-			.append(header_row)
-    		.append ($.map(data, function (v) {return $('<tr>').html(
-	  			`<td><span class="badge badge-dark">${v.id}</span></td>
-				<td>${v.apartment.name}</td>
-				<td>${new Date(v.anreise).toLocaleDateString()}</td>
-				<td>${new Date(v.abreise).toLocaleDateString()}</td>
-				<td>${v.miete}</td>
-				<td>${v.kurtaxe}</td>
-				<td>${v.summe}</td>` 
-	  			);
-			}))
-			
-			return(table);
-	}
-	
-	Rx.Observable.fromPromise(fetch('/rest/buchungen/besucher/' + t + '?status=' + stat).then(res => res.json()))
-	.subscribe(data => {
-		var results = $("#besucher-" + stat);
-		results.empty();
-		if (data.length > 0) {			// show rechnungen
-			results
-				.show()
-				.append($('<h4>').text(h4Text))	
-				.append(createTable(data))
-		}
-	});
-}
+
 
 
 function getBesucherDetails(t) {

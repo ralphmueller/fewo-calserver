@@ -8,7 +8,7 @@ WTF for auth
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, HiddenField, EmailField
 from wtforms.validators import DataRequired, Email
-from flaskr.api import ANREDE, LANGUAGE
+from flaskr.utils.api import ANREDE, LANGUAGE
 
 
 class BesucherForm(FlaskForm):

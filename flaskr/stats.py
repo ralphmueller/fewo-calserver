@@ -20,7 +20,7 @@ from .fewo_reporting import (
     calc_income_apartment
 )
 
-from flaskr.api import SystemInfo
+from flaskr.utils.api import SystemInfo
 
 YEARS = SystemInfo.get_years()
 APTS = [a.name for a in Apartment.select().order_by(Apartment.name)]

@@ -7,8 +7,7 @@ Rewrite Oct. 2021
 
 @author: ralph
 '''
-
-from flask import Flask, render_template, session, g
+from flask import Flask, session, g
 from flask_cors import CORS
 from bkormlib.schema import db_connect
 from rmemaillib.email import EmailObject
@@ -36,6 +35,7 @@ def create_app(test_config=None):
     CORS(app)
     csrf.init_app(app)
 
+
     @app.before_request
     def _database_connect():
         db = app.config['DB']
@@ -56,9 +56,9 @@ def create_app(test_config=None):
     """
 
     with app.app_context():
-
-        import flaskr.custom_filters
+        import flaskr.utils.assets
+        import flaskr.utils.custom_filters
         import flaskr.blueprints
-        import flaskr.error_handlers
+        import flaskr.utils.error_handlers
 
     return app

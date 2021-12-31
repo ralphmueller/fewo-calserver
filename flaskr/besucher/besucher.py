@@ -22,7 +22,7 @@ from flask import (
 from .besucher_forms import BesucherForm
 
 from flaskr.auth.auth import login_required
-from flaskr.api import (
+from flaskr.utils.api import (
     fetch_visitors,
     fetch_besucher_for_update,
     create_besucher_from_form,
@@ -63,7 +63,7 @@ def index():
 @login_required
 def find():
     return render_template(
-        'besucher_find.html',
+        'besucher/find.html',
         title="Finde Besucher",
         run_mode=current_app.env)
 
@@ -86,7 +86,7 @@ def create():
             url_for('besucher_bp.update', besucher_id=besucher.id)))
 
     return render_template(
-        'create.html',
+        'besucher/create.html',
         form=form,
         title='Neuen Besucher anlegen',
         run_mode=current_app.env,
@@ -120,7 +120,7 @@ def update(besucher_id):
             url_for('buchung_bp.create_angebot', besucher_id=besucher.id))
     ]
     return render_template(
-        'update.html',
+        'besucher/update.html',
         form=form,
         actions=actions,
         title='{}, {}'.format(

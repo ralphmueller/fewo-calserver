@@ -24,6 +24,11 @@ class Config:
     SECRET_KEY = environ.get('SECRET_KEY')
     DATABASE = environ.get(FLASK_ENV.upper() + '_DATABASE')
 
+    # for the assets pipeline
+    LESS_BIN = '/usr/local/bin/lessc'
+    ASSETS_DEBUG = False
+    ASSETS_AUTO_BUILD = True
+
     if FLASK_ENV == 'development':
         TESTING = True
         EMAILS_TEAM = ['ralph.mueller.de@gmail.com']
