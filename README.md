@@ -6,7 +6,17 @@
 
     git clone https://ralph_mueller@bitbucket.org/ralph_mueller/fewo-calserver.git
 
+## node modules
+
+    cd flaskr/static
+    npm install
+
 ## pipenv
+
+create pipenv for the defined python version (=> 3.8) and install
+
+    pipenv --python 3.x
+    ppipenv install
 
 ## pythonpacks
 
@@ -28,15 +38,24 @@
 
 ## uwsgi conf (flaskr.ini)
 
+Important: To avoid error like [mysql out of sync](https://github.com/PyMySQL/PyMySQL/issues/563) see link (https://stackoverflow.com/questions/22752521/uwsgi-flask-sqlalchemy-and-postgres-ssl-error-decryption-failed-or-bad-reco) use the fix below
+
     [uwsgi]
     module = wsgi
 
     master = true
     processes = 5
 
+    # the fix
+    lazy = true
+    lazy-apps = true
+
     socket = /tmp/flaskr.sock
     chmod-socket = 660
     vacuum = true
+
+Notes: 
+
 
 
 ## nginx conf
@@ -64,10 +83,10 @@ Source
     After=syslog.target
 
     [Service]
-    User=pi
-    WorkingDirectory=/home/pi/fewo-calserver
+    User=<user>
+    WorkingDirectory=/home/<dir>/fewo-calserver
 
-    ExecStart=/home/pi/.local/bin/pipenv run uwsgi --ini /home/pi/fewo-calserver/flaskr.ini
+    ExecStart=/home/<dir>/.local/bin/pipenv run uwsgi --ini /home/<dir>/fewo-calserver/flaskr.ini
     # Requires systemd version 211 or newer
     Restart=always
     KillSignal=SIGQUIT

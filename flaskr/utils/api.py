@@ -17,7 +17,7 @@ from flaskr import mailer
 
 class SystemInfo():
 
-    version_tag = 'alpha.14'
+    version_tag = 'alpha.15'
 
     letter_types = [
         'angebot',

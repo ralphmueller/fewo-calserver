@@ -18,6 +18,8 @@ cd = "*"
 rneu = {path = "."}
 uwsgi = "*"
 flask-assets = "*"
+cssmin = "*"
+jsmin = "*"
 
 [dev-packages]
 flake8 = "*"
