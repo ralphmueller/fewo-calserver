@@ -35,7 +35,6 @@ def create_app(test_config=None):
     CORS(app)
     csrf.init_app(app)
 
-
     @app.before_request
     def _database_connect():
         db = app.config['DB']
@@ -56,9 +55,9 @@ def create_app(test_config=None):
     """
 
     with app.app_context():
-        import flaskr.utils.assets
-        import flaskr.utils.custom_filters
+        from .utils import assets
+        from .utils import custom_filters
         import flaskr.blueprints
-        import flaskr.utils.error_handlers
+        from .utils import error_handlers
 
     return app

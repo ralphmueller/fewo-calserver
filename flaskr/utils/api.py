@@ -5,7 +5,7 @@ API to models and helper functions
 
 @author: ralph
 '''
-from typing import ClassVar
+# from typing import ClassVar
 from peewee import fn
 from bkormlib import Besucher, Buchung, Apartment, Email, User
 
@@ -17,7 +17,7 @@ from flaskr import mailer
 
 class SystemInfo():
 
-    version_tag = 'alpha.13'
+    version_tag = 'alpha.14'
 
     letter_types = [
         'angebot',

@@ -30,7 +30,8 @@ from bkormlib import (
     FlaskrSession,
     StaticValuesBuchung)
 
-from .buchung_forms import BuchungForm, Buchung2Form, MeldescheinForm, VorauszahlungForm
+from .buchung_forms import (
+    BuchungForm, Buchung2Form, MeldescheinForm, VorauszahlungForm)
 
 from flaskr.auth.auth import login_required
 
@@ -83,6 +84,7 @@ def index():
         )
         .order_by(Buchung.anreise.desc())
     )
+
     return render_template(
         'buchung/index.html',
         number_buchung=len(list(query)),
