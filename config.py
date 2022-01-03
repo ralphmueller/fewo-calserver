@@ -17,7 +17,7 @@ load_dotenv(path.join(basedir, '.env'))
 
 class Config:
     """Set Flask config variables."""
-    FLASK_ENV = 'development'
+    FLASK_ENV = environ.get('FLASK_ENV')
     STATIC_FOLDER = 'static'
     TEMPLATES_FOLDER = 'templates'
     PERMANENT_SESSION_LIFETIME = datetime.timedelta(days=1)
@@ -25,7 +25,6 @@ class Config:
     DATABASE = environ.get(FLASK_ENV.upper() + '_DATABASE')
 
     # for the assets pipeline
-    LESS_BIN = '/usr/local/bin/lessc'
     ASSETS_DEBUG = False
     ASSETS_AUTO_BUILD = True
 
@@ -33,7 +32,11 @@ class Config:
         TESTING = True
         EMAILS_TEAM = ['ralph.mueller.de@gmail.com']
         INFO_EMAIL = ['ralph.mueller.de@gmail.com']
-    else:
+    if FLASK_ENV == 'staging':
+        TESTING = True
+        EMAILS_TEAM = ['ralph.mueller.de@gmail.com']
+        INFO_EMAIL = ['ralph.mueller.de@gmail.com']
+    if FLASK_ENV == 'production':
         TESTING = False
         EMAILS_TEAM = [
             'ralph.mueller.de@gmail.com',

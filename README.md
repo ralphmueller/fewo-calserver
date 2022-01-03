@@ -38,7 +38,7 @@ create pipenv for the defined python version (=> 3.8) and install
 
 ## uwsgi conf (flaskr.ini)
 
-Important: To avoid error like [mysql out of sync](https://github.com/PyMySQL/PyMySQL/issues/563) see link (https://stackoverflow.com/questions/22752521/uwsgi-flask-sqlalchemy-and-postgres-ssl-error-decryption-failed-or-bad-reco) use the fix below
+Important: To avoid error like [mysql out of sync](https://github.com/PyMySQL/PyMySQL/issues/563) see link (https://stackoverflow.com/questions/22752521/uwsgi-flask-sqlalchemy-and-postgres-ssl-error-decryption-failed-or-bad-reco) use the fix below.
 
     [uwsgi]
     module = wsgi
@@ -53,10 +53,6 @@ Important: To avoid error like [mysql out of sync](https://github.com/PyMySQL/Py
     socket = /tmp/flaskr.sock
     chmod-socket = 660
     vacuum = true
-
-Notes: 
-
-
 
 ## nginx conf
 

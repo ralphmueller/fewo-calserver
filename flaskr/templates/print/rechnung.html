@@ -17,8 +17,9 @@
 	<!-- Kurtaxe geändert 2017-01-05 -->
 	<!-- Neue Variable mwst_satz: Eingeführt, um COVID VAT Senkung zu berücksichtigen! 2020-06-28 -->
 
-    <link rel="stylesheet" href="/static/node_modules/bootstrap/dist/css/bootstrap.css">
-    <link rel="stylesheet" href="/static/css/print.css">
+	{% assets "print_css" %}
+		<link rel="stylesheet" href="{{ ASSET_URL }}">
+	{% endassets %}
 	<link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
 
 </head>
@@ -26,7 +27,7 @@
 <body>
 	<div class="container">
 	    <div id="header">
-			<div class="image">
+			<div class="fewologo">
 				<img src="{{ url_for('static', filename='img/fewologo.jpg') }}">
 			</div>
 			<div class="header-text">
@@ -34,33 +35,31 @@
 				<p>Ferien-in-Gersfeld</p>
 			</div>
 		</div> <!-- header -->
-
 		<div id="address-date">
 			<!-- Anschrift -->
-			<div id="address">
+			<div class="address-block">
 				{{ buchung.besucher.anrede}} <br>
 				<strong>{{ buchung.besucher.vorname}}&nbsp;{{ buchung.besucher.name}}</strong> <br>
 				{{ buchung.besucher.firmenname}}<br>
 				{{ buchung.besucher.strasse}}<br>
-				{{ buchung.besucher.plz}}&nbsp;{{ buchung.besucher.stadt}}
+				{{ buchung.besucher.plz }}&nbsp;{{ buchung.besucher.stadt}}
 			</div> <!-- address -->
 
 			<!-- Datum, Rechnungs-Nr. -->
 
-			<div id="date">
+			<div class="date-block">
 				<p>Gersfeld, den {{ buchung.rechnungsdatum | euro_date_short }}<br>
 				Rechnung Nr. {{ buchung.rechnungs_nummer }}</p>
-			</div>  <!-- date -->
-		
+			</div>  <!-- date -->	
 		</div>	<!-- address-date -->
 		<div id="visit-description">
-			<p>
+			<h2>
 				Ihr Aufenthalt Ferienwohnung {{ buchung.apartment.name }} vom 
 				{{ buchung.anreise | euro_date_short }} bis  {{ buchung.abreise | euro_date_short }}
-			</p>
+			</h2>
 		</div>
 		<div id="invoice-data">
-			<table id="rechnung">
+			<table>
 				<tr id="table-header">
 					<th class="long">Beschreibung</th><th class="long">Menge</th><th class="medium">Einzelbetrag</th><th class="medium">Summe</th>
 				</tr>
@@ -107,9 +106,7 @@
 					
 					<td class="medium"> {{ buchung.offener_betrag | euro_currency}} </td>		
 				</tr>
-			</table>
-			<p id="filename">&nbsp;<br>Dateiname: {{ buchung.rechnungs_nummer }}-{{ buchung.besucher.name }}<p>			
-			<p>&nbsp;</p>	
+			</table>		
 		</div> <!-- invoice-data -->
 		<div id="kurtaxe-text">
 			<p>Berechnung der Kurtaxe:</p> 
@@ -138,6 +135,7 @@
 			</p>
 		</div> <!-- footer -->	
 		<div id="weiter-button">
+			<p id="filename">&nbsp;<br>Dateiname: {{ buchung.rechnungs_nummer }}-{{ buchung.besucher.name }}<p>	
 			<input type="submit" value="Drucken" onclick="window.print('')">
 			<input type="submit" value="Weiter" onclick="location.href='/besucher/update/{{buchung.besucher_id}}'">
 		</div>

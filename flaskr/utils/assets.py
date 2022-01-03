@@ -26,7 +26,12 @@ bundles = {
         'node_modules/bootstrap/dist/css/bootstrap.css',
         'css/myapp.css',
         output='dist/all.css',
-        filters='cssmin')}
+        filters='cssmin'),
+    'print_css': Bundle(
+        'node_modules/bootstrap/dist/css/bootstrap.css',
+        'css/print.css',
+        output='dist/print.css',
+        filters='cssmin')
+    }
 
 assets.register(bundles)
-

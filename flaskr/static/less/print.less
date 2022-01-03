@@ -1,0 +1,129 @@
+// out: ../css/print.css, compress: true, sourceMap: false
+/*
+
+Ralph Mueller
+19.11.2021
+
+css file display/print rechnung
+
+*/
+
+
+@media print {
+  .clear {
+    clear: both;
+  }
+
+  @page  { 
+    size: a4 portrait;
+    margin-right: 2.0cm;
+    margin-left: 2.0cm;
+    margin-top: 1.0cm;
+    margin-bottom: 1.0cm;
+  }
+
+  body {
+    font-family: "Times New Roman",arial,serif;
+    font-size: 14px;
+    background: transparent !important;
+    color: black !important;    /* Black prints faster: h5bp.com/s */
+    text-shadow: none !important;
+    filter: none !important;
+
+    #vielen-dank, #mfg, #kurtaxe-text, #visit-description, #invoice-data {
+      clear: both;
+    }
+
+    #visit-description, #invoice-data, #kurtaxe-text, #address-date {
+      padding-top: 1cm;
+    }
+    h1 {
+      font-size: 42px;
+    }
+    h2 {
+      font-size: 24px;
+      margin-bottom: 0px;
+    }
+    #header {
+      .fewologo {
+        float: left;
+        padding-right: 100px;
+        padding-bottom: 0px;
+          img {
+            padding-top: 20px;
+            width: 200px;
+          }
+      }
+      .header-text {
+        float: right;
+        text-align: right;
+      }
+    }
+
+    #footer {
+      margin-top: 2.0cm;
+      border-top: 2px solid black;
+      text-align: left;
+      font-size: 12px;
+      p {
+        margin-top: 10px;
+      }
+    }
+    #address-date {
+      clear: both;
+      .address-block {
+        float: left;
+      }
+      .date-block {
+        float: right;
+        text-align: right;
+      }
+    }
+    #invoice-data {
+      td, th {
+        border: 1px solid black;
+        padding-right: 5px;
+        padding-left: 5px;
+        padding-top: 5px;
+      }
+      td {
+        padding-right: 5px;
+        padding-left: 5px;
+        padding-top: 5px;
+      }
+      .medium {
+        width: 200px;
+        text-align: right;
+      }
+      .long {
+        width: 300px;
+        text-align: left;
+      }
+    }
+
+    #weiter-button {
+      display: none;
+    }
+
+    #filename {
+      height: 0px;
+      visibility: hidden;
+    }
+  }
+}
+
+@media screen {
+  body {
+    h2 {
+      font-size: 16px;
+    }
+    #kurtaxe-text, #footer, #mfg {
+      display: none;
+    }
+    .fewologo {
+      display: none;
+    }
+  }
+}
+
+  
