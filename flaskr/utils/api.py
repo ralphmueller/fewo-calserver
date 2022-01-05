@@ -5,19 +5,20 @@ API to models and helper functions
 
 @author: ralph
 '''
-# from typing import ClassVar
 from peewee import fn
 from bkormlib import Besucher, Buchung, Apartment, Email, User
 
 from babel.dates import format_date
 
 from flask import current_app, render_template
-from flaskr import mailer
+from config import Config
+
+mailer = Config.MAILER
 
 
 class SystemInfo():
 
-    version_tag = 'alpha.15'
+    version_tag = 'beta.1'
 
     letter_types = [
         'angebot',

@@ -9,13 +9,8 @@ Rewrite Oct. 2021
 '''
 from flask import Flask, session, g
 from flask_cors import CORS
-from bkormlib.schema import db_connect
-from rmemaillib.email import EmailObject
 from flask_wtf.csrf import CSRFProtect
 
-import config
-
-mailer = EmailObject.from_object(config.EmailConfig)
 csrf = CSRFProtect()
 
 
@@ -25,10 +20,6 @@ def create_app(test_config=None):
     if test_config is None:
         app.config.from_object('config.Config')
         app.config.from_object('config.EmailConfig')
-        print(app.config.get('FLASK_ENV'), app.config.get('DATABASE'))
-        db = db_connect(
-            app.config.get('FLASK_ENV'), app.config.get('DATABASE'))
-        app.config['DB'] = db
     else:
         app.config.update(test_config)
 

@@ -13,8 +13,8 @@
 <p>Version: {{sysinfo.version_tag}}</p>
 <p>Environment: {{config.FLASK_ENV}}</p>
 <p>Database: {{config.DATABASE | filter_db_url }}</p>
-<p>Emails Team: {{config.EMAILS_TEAM}}</p>
-<p>Info Email: {{config.INFO_EMAIL}}</p>
+<p>Emails Team: {{','.join(config.EMAILS_TEAM)}}</p>
+<p>Info Email: {{','.join(config.INFO_EMAIL)}}</p>
 <p>Anzahl gespeicherte Besucher: {{ no_besucher }} </p>
 <p>Anzahl gespeicherte Buchungen: {{ no_buchungen }} </p>
 {% endblock %}
