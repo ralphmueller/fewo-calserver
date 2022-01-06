@@ -49,7 +49,7 @@ class Config:
         INFO_EMAIL = ['ralph.mueller.de@gmail.com']
     if FLASK_ENV == 'staging':
         TESTING = True
-        SERVER_NAME = 'http://garten4a.dyndns-remote.com:8082'
+        SERVER_NAME = 'garten4a.dyndns-remote.com'
         EMAILS_TEAM = ['ralph.mueller.de@gmail.com']
         INFO_EMAIL = ['ralph.mueller.de@gmail.com']
     if FLASK_ENV == 'production':

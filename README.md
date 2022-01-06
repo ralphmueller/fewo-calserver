@@ -82,7 +82,11 @@ Source
     User=<user>
     WorkingDirectory=/home/<dir>/fewo-calserver
 
-    ExecStart=/home/<dir>/.local/bin/pipenv run uwsgi --ini /home/<dir>/fewo-calserver/flaskr.ini
+    # Linux Server Gersfeld
+    ExecStart=/home/rmueller/.local/bin/pipenv run uwsgi --ini /home/rmueller/fewo-calserver/flaskr.ini
+    # Rapspi
+    # ExecStart=/home/pi/.local/bin/pipenv run uwsgi --ini /home/pi/fewo-calserver/flaskr.ini
+
     # Requires systemd version 211 or newer
     Restart=always
     KillSignal=SIGQUIT
