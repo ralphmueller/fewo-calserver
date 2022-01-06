@@ -13,7 +13,7 @@ from flaskr.utils.api import SystemInfo
 
 def internal_error(e):
     # note that we set the 500 status explicitly
-    return render_template('500.html'), 500
+    return render_template('500.html', e=e), 500
 
 
 def page_not_found(e):

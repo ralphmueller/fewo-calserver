@@ -31,6 +31,7 @@ def create_app(test_config=None):
         db = app.config['DB']
         db.connection().ping(reconnect=True)
 
+
     @app.before_request
     def fix_missing_csrf_token():
         if app.config['WTF_CSRF_FIELD_NAME'] not in session:

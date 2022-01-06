@@ -32,7 +32,7 @@ class Config:
     FLASK_ENV = environ.get('FLASK_ENV')
     STATIC_FOLDER = 'static'
     TEMPLATES_FOLDER = 'templates'
-    PERMANENT_SESSION_LIFETIME = datetime.timedelta(days=1)
+    PERMANENT_SESSION_LIFETIME = datetime.timedelta(minutes=30)
     SECRET_KEY = environ.get('SECRET_KEY')
     DATABASE = environ.get(FLASK_ENV.upper() + '_DATABASE')
     print('database: ', re.sub(r":\w+@", ":_______@", DATABASE))
