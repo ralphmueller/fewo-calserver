@@ -1,0 +1,5 @@
+include Pipfile
+include wsgi.py
+recursive-include flaskr/templates *
+recursive-include flaskr/static 
+exclude flaskr/static/node_modules/*

@@ -1,12 +1,21 @@
 from setuptools import find_packages, setup
 
 setup(
-    name='rneu',
-    version='0.1',
+    name='rneu v2',
+    author='Ralph Mueller',
+    version='beta.1',
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
     install_requires=[
         'flask',
+        'flask-wtf',
+        'flask_cors',
+        'email-validator',
+        'babel',
+        'flask-assets',
+        'python-dotenv',
+        'cssmin',
+        'jsmin'
     ],
 )

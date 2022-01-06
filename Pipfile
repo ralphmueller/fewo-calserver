@@ -5,19 +5,18 @@ name = "pypi"
 
 [packages]
 peewee = "*"
-flask = "*"
+flask = ">="
 pymysql = "*"
-flask-wtf = "*"
+flask-wtf = ">=1.0"
 email-validator = "*"
 babel = "*"
 pytest = "*"
 python-dotenv = "*"
-flask-cors = "*"
+flask-cors = ">=3.0"
 wtforms = "*"
 cd = "*"
-rneu = {path = "."}
 uwsgi = "*"
-flask-assets = "*"
+flask-assets = ">=2.0"
 cssmin = "*"
 jsmin = "*"
 
@@ -27,7 +26,6 @@ rope = "*"
 ipykernel = "*"
 autopep8 = "*"
 flask-debugtoolbar = "*"
-flask-assets = "*"
 
 [requires]
-python_version = "3.9"
+python_version = ">=3.8"

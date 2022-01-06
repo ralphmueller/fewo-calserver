@@ -18,7 +18,7 @@ mailer = Config.MAILER
 
 class SystemInfo():
 
-    version_tag = 'beta.1'
+    version_tag = 'beta.2'
 
     letter_types = [
         'angebot',
@@ -174,6 +174,9 @@ def update_buchung(form, buchung):
 
     if buchung.abreise != form.abreise.data:
         buchung.abreise = form.abreise.data
+
+    if buchung.apartment_id != form.apartment_id.data:
+        buchung.apartment_id = form.apartment_id.data
 
     if buchung.get_preis_nacht() != form.preis_nacht.data:
         buchung.preis_nacht = form.preis_nacht.data

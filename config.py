@@ -49,12 +49,22 @@ class Config:
         INFO_EMAIL = ['ralph.mueller.de@gmail.com']
     if FLASK_ENV == 'staging':
         TESTING = True
+        SERVER_NAME = 'http://garten4a.dyndns-remote.com:8082/'
         EMAILS_TEAM = ['ralph.mueller.de@gmail.com']
         INFO_EMAIL = ['ralph.mueller.de@gmail.com']
     if FLASK_ENV == 'production':
+        SERVER_NAME = 'http://garten4a.dyndns-remote.com:82/'
         TESTING = False
         EMAILS_TEAM = [
             'ralph.mueller.de@gmail.com',
             'susan.iwai@gmail.com',
             'bianka.moeller73@googlemail.com']
         INFO_EMAIL = ['info@ferien-in-gersfeld.de']
+
+
+def get_db(cls=Config):
+    return cls.DB
+
+
+def get_mailer(cls=EmailConfig):
+    return cls.MAILER
