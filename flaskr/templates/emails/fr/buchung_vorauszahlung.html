@@ -2,6 +2,22 @@
 
 {% block content %}
 
-<p>MUSS ÜBERSETZT WERDEN</p>
+{% include 'emails/fr/greeting.html' %}
+<p>
+	Nous avons le plaisir de vous confirmer la réception de votre prépaiement d'un montant de 
+     {{buchung.get_vorauszahlung() | euro_currency}} pour votre réservation auprès de Ferien-in-Gersfeld.
+
+     Voici les détails de votre réservation :
+</p>
+<ul>
+    <li>Appartement : {{buchung.apartment.name}}</li>
+    <li>Dates : {{buchung.get_anreise() |euro_date_short}} - {{buchung.get_abreise() |euro_date_short}}</li>
+    <li>Loyer et taxe de séjour : {{buchung.get_summe() | euro_currency}}</li>
+    <li>Montant total dû : {{buchung.get_offener_betrag() | euro_currency}}</li>
+</ul>
+
+<p>Nous nous réjouissons de votre séjour !</p>
+
+{% include 'emails/fr/mfg.html' %}
 
 {% endblock %}

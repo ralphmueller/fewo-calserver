@@ -10,47 +10,56 @@
 
 {% block content %}
 
-<p>Sehr 
-    
-    {% if buchung.besucher.anrede == 'Herr' %}
-        geehrter
-    {% else %}
-        geehrte
-    {% endif %}
-    {{buchung.besucher.anrede}} {{buchung.besucher.name}} - </p>
+{% include 'emails/fr/greeting.html' %}
 
 <p>
-	gerne bestätigen wir Ihre Buchung für unsere Wohnung {{buchung.apartment.name}}, {{buchung.apartment.beschreibung}} 
-    vom {{buchung.get_anreise() |euro_date}} - {{buchung.get_abreise() |euro_date}}. 
+	Nous avons le plaisir de vous confirmer votre réservation pour l’appartement {{buchung.apartment.name}}, 
+	{{buchung.apartment.beschreibung}} 
+    du {{buchung.get_anreise() |euro_date_short}} au {{buchung.get_abreise() |euro_date_short}}. 
 </p>
 <p>
-	Bettwäsche, Handtücher und Internetnutzung werden kostenfrei gestellt. Durch die Nutzung des offenen Internet Zugangs 
-	(SSID: Ferien-in-Gersfeld-Gast) verpflichten Sie sich, diesen Zugang nur im Rahmen der gesetzlichen Bestimmungen und insbesondere 
-	nicht für den illegalen Upload und Download von Inhalten zu verwenden. 
-</p>	
-<p>
-	<strong>Besucherdaten</strong>: Wir sind verpflichtet, die Daten aller unserer Besucher an die Stadt Gersfeld zu melden. 
-	Bitte teilen Sie uns vor Anreise Namen, Vornamen, Adresse und Geburtsdatum aller anreisenden Personen mit.
+	Le linge de lit, les serviettes et l'accès à Internet sont fournis gratuitement. En utilisant l'accès 
+	Internet mis à disposition (SSID : Ferien-in-Gersfeld-Gast), vous vous engagez à n'utiliser cet accès 
+	que dans le cadre des réglementations en vigueur et, en particulier, à ne pas l'utiliser pour le 
+	téléchargement illégal de contenus. 
 </p>
 <p>
-	<strong>Anreise</strong>: Die Wohnung kann zwischen 15:00 und 18:00 am Anreisetag bezogen werden. Den Schlüssel 
-	erhalten Sie gegen Bezahlung des offenen Mietpreises inklusive Kurtaxe bei Frau Möller, An der Gärtnerei 4. 
-	Im Rahmen der Corona-Bestimmungen müssen wir Sie bitten, Ihre Betten selbst zu beziehen. 
-	Bettwäsche und Handtücher finden Sie in Plastikboxen in der Wohnung vor.
+	<strong>Règlement Corona actuel Hessen</strong> : Le 
+	<a href="https://www.hessen.de/sites/hessen.hessen.de/files/2021-12/silvester-corona-regeln_hessen_161221_v3.pdf">
+		règlement Corona du Land de Hesse</a>  s'applique. Veuillez noter que d'autres règles peuvent s'appliquer 
+		à votre date d'arrivée… 
+</p>
+<ul>
+	<li>obligation de 2G pour les hôtes touristiques qui passent la nuit Entièrement (Entièrement vaccinés ou guéris, peut exiger 
+		en plus une 3e vaccination ou un test rapide négatif) 
+	</li>
+	<!-- <li>2G pour l'utilisation des installations communes (réfectoires, piscines, etc.)
+	</li> -->
+</ul>	
+
+<p>
+	<strong>Données visiteurs</strong>: Nous sommes tenus de communiquer les données de tous nos visiteurs de la ville de Gersfeld. 
+	Veuillez nous fournir le nom, le prénom, l'adresse et la date de naissance de tous les visiteurs avant leur arrivée.
 </p>
 <p>
-	<strong>Abreise</strong>: Die Abreise soll spätestens bis 10:00 Uhr erfolgen. Wir bitten Sie, die Wohnung sauber zu hinterlassen. 
-	Im Rahmen der Corona-Bestimmungen bitten wir Sie weiterhin, Handtücher und Bettwäsche in den Plastikboxen zu packen. 
-	Bitte vergessen Sie nicht, den Schlüssel auf dem Küchentisch zu hinterlassen.
+	<strong>Arrivée</strong> : Nous sommes prêts à vous accueillir entre 15h00 et 18h00 le jour de votre arrivée. Vous recevrez 
+	les clés de l'appartement lorsque vous aurez payé le loyer dû et l'éventuelle taxe de séjour à votre arrivée. Vous pouvez 
+	effectuer le paiement et récupérer les clés auprès de notre gérante, Mme Bianka Moeller, au 4 An der Gärtnerei, Gersfeld. 
+	En raison de la réglementation Corona, nous sommes obligés de vous demander de faire vos propres lits. Vous trouverez 
+	les draps et les serviettes dans des boîtes en plastique dans l'appartement. 
+</p>
+<p>
+	<strong>Départ</strong> : Le départ doit avoir lieu au plus tard à 10h00. Nous vous demandons de laisser l'appartement propre. 
+	Conformément à la réglementation Corona, nous vous demandons de remettre les serviettes et le linge de lit dans les boîtes 
+	en plastique. N'oubliez pas de laisser les clés sur la table de la cuisine.
 </p>
 
 <p>
-	<strong>Bezahlung</strong> Wir bitten um Bezahlung des Mietpreises und der Kurtaxe möglichst 5 Werktage vor 
-	Ihrer Ankunft per Banküberweisung oder PayPal. Sollte Ihnen dies nicht möglich sein, dann wird der Betrag 
-	in bar bei Anreise fällig.
+	<strong>Paiement</strong> : Nous demandons le paiement du prix de la location et de la taxe de séjour, si possible, par virement 
+	bancaire ou PayPal, 5 jours ouvrables avant votre arrivée. Si cela n'est pas possible, le montant est dû en espèces à l'arrivée.
 </p>
 
-<p>Unsere Bankdaten:<br>
+<p>Informations sur le paiement :<br>
 	Ralph Müller<br>
 	Sparkasse Bensheim<br>
 	IBAN/BIC: DE12 50950068 0001621572/HELADEF1BEN<br>
@@ -58,71 +67,82 @@
 </p>
 
 <p>
-	<strong>Stornierungsbedingungen</strong>: Sollten Sie den Urlaub bei uns nicht antreten können, ist eine Stornierung bis 7 Tage 
-	vor dem Anreisetermin kostenfrei. Danach berechnen wir eine Gebühr von 50% des Mietpreises.
+	<strong>Conditions d'annulation</strong> : Les réservations confirmées peuvent être annulées sans 
+	frais jusqu'à 7 jours avant l'arrivée. En cas d'annulation au cours de la semaine précédant la date 
+	d'arrivée, nous facturerons des frais équivalant à 50 % du prix de la location.
 </p>
 
 <p>
-	Bitte beachten Sie, dass wir wegen Covid-19 (Corona Pandemie) bestimmte Maßnahmen einführen mußten. 
-	Wir mussten alle Kissen und Decken im Wohnbereich entfernen. In den gemeinsam benutzten Durchgangsräumen 
-	in der Flieger- und Gartenstraße haben wir für Sie Desinfektionsmittel bereitgestellt.
+	Veuillez noter qu'en raison de la Covid-19 (pandémie de Corona), nous avons dû prendre certaines mesures 
+	supplémentaires. Nous avons retiré tous les oreillers et couvertures supplémentaires dans les pièces à 
+	vivre. Dans les entrées communes des appartements Flieger- et Gartenstraße, nous avons mis à disposition 
+	un désinfectant pour les mains.
 </p>
 
-<p>Für weitere Fragen stehen wir Ihnen gerne telefonisch oder per Email zur Verfügung.</p>
+<p>Si vous avez des questions ou besoin d'informations supplémentaires, n'hésitez pas à nous contacter 
+	par e-mail ou par téléphone.</p>
 
-<p>Wir freuen uns auf Ihren Besuch!</p>
+<p>Nous nous réjouissons de vous accueillir prochainement !</p>
 
-{% include 'emails/mfg.html' %}
+{% include 'emails/fr/mfg.html' %}
 
-<p><strong>Ihre Buchung in der Zusammenfassung</strong></p>
+<p><strong>Votre réservation</strong></p>
 
 <table  class="table table-bordered table-striped col-2-table">
 	<tr>
-		<td>Wohnung</td>			
+		<td>Appartement</td>			
 		<td class="text-right">{{buchung.apartment.name}}</td></tr>
 	<tr>
-		<td>Anreise</td>			
-		<td class="text-right">{{buchung.get_anreise() | euro_date}}</td></tr>
+		<td>Arrivée</td>			
+		<td class="text-right">{{buchung.get_anreise() | euro_date_short}}</td></tr>
 	<tr>
-		<td>Abreise</td>			
-		<td class="text-right">{{buchung.get_abreise() | euro_date}}</td></tr>		
+		<td>Départ</td>			
+		<td class="text-right">{{buchung.get_abreise() | euro_date_short}}</td></tr>		
 	<tr>
-		<td>Preis/Nacht</td>		
+		<td>Prix/nuitée</td>		
 		<td class="text-right">{{buchung.get_preis_nacht() | euro_currency}}</td></tr>			
 	<tr>
-		<td>Zusatzkosten</td>		
+		<td>Coûts supplémentaires</td>		
 		<td class="text-right">{{buchung.get_zusatzkosten() |euro_currency}}</td></tr>
+	{%  if buchung.get_rabatt() > 0 %}
+		<tr>
+			<td>Rabais</td>				
+			<td class="text-right">{{buchung.get_rabatt()}} %</td></tr>	
+	{%  endif %}
 	<tr>
-		<td>Miete</td>				
-		<td class="text-right">{{buchung.get_miete() |euro_currency}}</td></tr>					
+		<td>Loyer</td>				
+		<td class="text-right">{{buchung.get_miete() |euro_currency}}</td>
+	</tr>
+	
 	<tr>
-		<td>Kurtaxe Vollzahler</td>	
+		<td>Taxe de séjour 100%</td>	
 		<td class="text-right">{{buchung.get_kurtaxe_vz()}}</td></tr>		
 	<tr>
-		<td>Kurtaxe Halbzahler</td>	
+		<td>Taxe de séjour 50%</td>	
 		<td class="text-right">{{buchung.get_kurtaxe_hz()}}</td></tr>	
 	<tr>
-		<td>Kinder</td>
+		<td>Enfants</td>
 		<td class="text-right">{{buchung.get_kurtaxe_kinder()}}</td></tr>	
 	<tr>
-		<td>Kurtaxe befreit</td>	
+		<td>Exonération de la taxe sur le spa</td>	
 		<td class="text-right">{{buchung.get_kurtaxe_nz()}}</td></tr>	
 	<tr>
-		<td>Kurtaxe gesamt</td>		
+		<td>Total de la taxe de séjour</td>		
 		<td class="text-right">{{buchung.get_kurtaxe() |euro_currency}}</td></tr>		
 	<tr>
-		<td>Summe</td>				
+		<td>Total</td>				
 		<td class="text-right">{{buchung.get_summe() |euro_currency}}</td></tr>						
 </table>
-<p>Erläuterungen zur Tabelle:</p>
+<p>Notes sur la taxe de séjour :</p>
 <ul>
 	<li>
-		Die Kurtaxe beträgt seit dem 2. März 2019 € 2,40 / Nacht für Besucher, die das 14. Lebensjahr beendet haben (Vollzahler) und € 1,20 
-		für Besucher zwischen dem 10. und 15. Lebensjahr (Halbzahler). Kinder vor Vollendung des 10. Lebensjahres 
-		zahlen keine Kurtaxe.
+		La taxe de séjour est, depuis le 2 mars 2019, de 2,40 € / nuit pour les visiteurs 
+		de plus de 14 ans (100%) et de 1,20 € pour les visiteurs âgés de 10 à 15 ans (50%). 
+		Les enfants âgés de moins de 10 ans ne paient pas la taxe de séjour.
 	</li>	
 	<li>
-		Von der Kurtaxe befreit sind Personen, die  Gersfeld aus beruflichen Gründen (auch Fortbildung) besuchen.
+		Les personnes visitant Gersfeld pour des raisons professionnelles (y compris 
+		l'enseignement supérieur) sont exemptées de la taxe de séjour.
 	</li>		
 </ul>
 
