@@ -9,6 +9,22 @@
 
 {% block content %}
 
-<p>MUSS ÜBERSETZT WERDEN</p>
+{% include 'emails/fr/greeting.html' %}
+
+<p>
+	Nous vous confirmons par la présente l'annulation de votre réservation auprès de Ferien-in-Gersfeld. 
+    Voici les détails de la réservation annulée :
+</p>
+<ul>
+    <li>Appartement : {{buchung.apartment.name}}</li>
+    <li>Dates : {{buchung.get_anreise() |euro_date_short}} - {{buchung.get_abreise() |euro_date_short}}</li>
+    <li>Loyer et taxe de séjour : {{buchung.get_summe() | euro_currency}}</li>
+    <li>Montant total dû : {{buchung.get_offener_betrag() | euro_currency}}</li>
+</ul>
+
+<p>Nous sommes désolés que cela n'ait pas fonctionné cette fois-ci, mais nous espérons pouvoir vous 
+    accueillir à l'avenir !</p>
+
+{% include 'emails/fr/mfg.html' %}
 
 {% endblock %}

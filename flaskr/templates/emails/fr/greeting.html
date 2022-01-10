@@ -1,0 +1,22 @@
+<!-- 
+    Created: Ralph, 27.12.2021
+
+    Greeting fragment German 
+        - rendering durch Jinja2 Engine
+-->
+
+<p>
+        
+    {% if buchung.besucher.anrede == 'Herr' %}
+    Cher Monsieur {{buchung.besucher.name}}, 
+    {% endif %}
+    {% if buchung.besucher.anrede == 'Frau' %}
+    Chère Madame {{buchung.besucher.name}}, 
+    {% endif %}
+    {% if buchung.besucher.anrede == 'Fam.' %}
+    Chère famille {{buchung.besucher.name}}, 
+    {% endif %}
+    {% if buchung.besucher.anrede == 'Firma' %}
+    Cher Monsieur ou Madame, 
+    {% endif %}
+</p>

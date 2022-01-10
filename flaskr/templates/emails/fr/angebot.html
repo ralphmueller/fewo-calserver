@@ -10,6 +10,50 @@
 
 {% block content %}
 
-<p>MUSS ÜBERSETZT WERDEN</p>
+{% include 'emails/fr/greeting.html' %}
+
+
+<p>Merci d'avoir demandé une offre pour un appartement de vacances à Ferien-in-Gersfeld.</p>
+
+<p>
+    L'appartement {{buchung.apartment.name}}, {{buchung.apartment.beschreibung}} est disponible pour votre séjour du
+     {{buchung.anreise | euro_date_short}} au {{buchung.abreise | euro_date_short}}.
+</p>
+
+<p> Le prix est le suivant :<br>
+    {{buchung.apartment.name}} ({{days}} Nuits - {{buchung.preis_nacht | euro_currency }}/Nuit pour {{buchung.kurtaxe_vz}} Personnes) 
+    Total {{buchung.miete | euro_currency}}  plus taxe de cure de la ville de Gersfeld {{buchung.kurtaxe  | euro_currency }}. 
+</p>
+{% if buchung.get_rabatt() > 0 %}
+    <p>
+        Le total comprend un rabais de {{buchung.get_rabatt() }} %.
+    </p>
+{% endif %}
+<p>
+    <strong>Pour accepter cette offre et confirmer votre réservation, 
+        veuillez répondre à cet e-mail. Nous serons très heureux de vous accueillir à Gersfeld !    
+    </strong>
+</p>
+
+<p>
+    Ce prix comprend le linge de lit, les serviettes, l'accès à Internet, etc. Vous trouverez une cuisine 
+    bien équipée comprenant les petits appareils ménagers courants et les épices de base pour cuisiner. Un 
+    lave-linge et un sèche-linge sont mis gratuitement à votre disposition. Il n'y a pas de frais 
+    supplémentaires. Vous trouverez une description complète de l'appartement sur notre  
+    <a href="https://ferien-in-gersfeld.de/?q=en">site Internet</a>.
+</p>
+<p>
+    Annulation : les réservations confirmées peuvent être annulées sans frais jusqu'à 7 jours avant l'arrivée. 
+    En cas d'annulation pendant la semaine précédant la date d'arrivée, nous facturerons des frais équivalant 
+    à 50 % du montant de la location. 
+</p>
+<p>
+    Si vous avez des questions ou besoin d'informations supplémentaires, n'hésitez pas à nous contacter par e-mail 
+    ou par téléphone (0700 - 789 333 44). Vous pouvez également consulter  
+    <a href="https://ferien-in-gersfeld.de/?q=en/FAQ">la Foire aux questions</a> sur notre site Web. 
+
+</p> 
+
+{% include 'emails/fr/mfg.html' %}
 
 {% endblock %}
