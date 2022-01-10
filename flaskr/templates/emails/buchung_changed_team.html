@@ -31,12 +31,12 @@
 		</tr>		
         <tr>
             <td>Preis/Nacht</td>		
-            <td class="text-right">{{ buchung_alt.get_preis_nacht() | euro_currency }} €</td>
+            <td class="text-right">{{ buchung_alt.get_preis_nacht() | euro_currency }}</td>
             <td class="text-right">{{ buchung.get_preis_nacht() | euro_currency }}</td>
         </tr>			
         <tr>
             <td>Zusatzkosten</td>		
-            <td class="text-right">{{ buchung_alt.get_zusatzkosten() | euro_currency }} €</td>
+            <td class="text-right">{{ buchung_alt.get_zusatzkosten() | euro_currency }}</td>
             <td class="text-right">{{ buchung.get_zusatzkosten() | euro_currency }}</td>
         </tr>
         <tr>
@@ -71,17 +71,17 @@
         </tr>		
         <tr>
             <td>Rabatt</td>				
-            <td class="text-right">{{ buchung_alt.get_rabatt() | euro_currency }}</td>
-            <td class="text-right">{{ buchung.get_rabatt() | euro_currency }}</td>
+            <td class="text-right">{{ buchung_alt.get_rabatt() | rabatt }}</td>
+            <td class="text-right">{{ buchung.get_rabatt() | rabatt }}</td>
         </tr>
         <tr>
             <td>Vorauszahlung</td>				
-            <td class="text-right">{{ buchung_alt.get_vorauszahlung() | rabatt }} €</td>
-            <td class="text-right">{{ buchung.get_vorauszahlung() | rabatt }}</td>
+            <td class="text-right">{{ buchung_alt.get_vorauszahlung() | euro_currency }} </td>
+            <td class="text-right">{{ buchung.get_vorauszahlung() | euro_currency }}</td>
         </tr>		
         <tr>
             <td>Summe</td>				
-            <td class="text-right">{{ buchung_alt.get_summe() | euro_currency }} €</td>
+            <td class="text-right">{{ buchung_alt.get_summe() | euro_currency }}</td>
             <td class="text-right">{{ buchung.get_summe() | euro_currency }}</td>
         </tr>	
         <tr>
