@@ -48,10 +48,10 @@ class SystemInfo():
                 'Prepayment received for booking {}, {} {} to {}'
         },
         'fr': {
-            'angebot': 'TBD',
-            'buchung_confirmation': 'TBD',
-            'buchung_storno': 'TBD',
-            'buchung_vorauszahlung': 'TBD'
+            'angebot': 'Lettre d\'offre {}, {} {} au {}',
+            'buchung_confirmation': 'Confirmation de réservation {}, {} {} au {}',              # noqa: E501
+            'buchung_storno': 'Avis d\'annulation  {}, {} {} to {}',
+            'buchung_vorauszahlung': 'Paiement préalable à la réservation {}, {} {} to {}'      # noqa: E501
         }
     }
 
