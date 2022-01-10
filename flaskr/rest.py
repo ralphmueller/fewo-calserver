@@ -126,7 +126,7 @@ def by_years():
             where status in ('abgerechnet', 'gebucht') group by year(anreise);
     """
     db = Buchung._meta.database
-    cursor = db.execute_sql('SELECT year(anreise), COUNT(*), sum(miete), sum(kurtaxe) from Buchung where status in ("abgerechnet", "gebucht") group by year(anreise);')
+    cursor = db.execute_sql('SELECT year(anreise), COUNT(*), sum(miete), sum(kurtaxe) from Buchung where status in ("abgerechnet", "gebucht") group by year(anreise);')     # noqa: E501
     res = [row for row in cursor.fetchall()]
 
     return json.dumps(

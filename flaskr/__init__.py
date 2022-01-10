@@ -1,9 +1,7 @@
 '''
 Created on 13.09.2016
 
-Refactoring ongoing (7.3.2019)
-
-Rewrite Oct. 2021
+Rewrite Oct. 2021 -> new Booking program
 
 @author: ralph
 '''
@@ -26,11 +24,12 @@ def create_app(test_config=None):
     CORS(app)
     csrf.init_app(app)
 
+    app.config['TEMPLATES_AUTO_RELOAD'] = True
+
     @app.before_request
     def _database_connect():
         db = app.config['DB']
         db.connection().ping(reconnect=True)
-
 
     @app.before_request
     def fix_missing_csrf_token():
@@ -47,9 +46,9 @@ def create_app(test_config=None):
     """
 
     with app.app_context():
-        from .utils import assets
-        from .utils import custom_filters
-        import flaskr.blueprints
-        from .utils import error_handlers
+        from .utils import assets               # noqa: F401
+        from .utils import custom_filters       # noqa: F401
+        import flaskr.blueprints                # noqa: F401
+        from .utils import error_handlers       # noqa: F401
 
     return app

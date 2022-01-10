@@ -52,6 +52,7 @@ class Config:
         SERVER_NAME = 'garten4a.dyndns-remote.com'
         EMAILS_TEAM = ['ralph.mueller.de@gmail.com']
         INFO_EMAIL = ['ralph.mueller.de@gmail.com']
+        SERVER_NAME = 'garten4a.dyndns-remote.com:8082'
     if FLASK_ENV == 'production':
         SERVER_NAME = 'garten4a.dyndns-remote.com:82'
         TESTING = False

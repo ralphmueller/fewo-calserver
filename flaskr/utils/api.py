@@ -66,7 +66,7 @@ class SystemInfo():
     @classmethod
     def get_years(cls):
         db = Buchung._meta.database
-        cursor = db.execute_sql('SELECT year(anreise), COUNT(*), sum(miete), sum(kurtaxe) from buchung where status in ("abgerechnet", "gebucht") group by year(anreise);')
+        cursor = db.execute_sql('SELECT year(anreise), COUNT(*), sum(miete), sum(kurtaxe) from buchung where status in ("abgerechnet", "gebucht") group by year(anreise);')     # noqa: E501
         res = [row for row in cursor.fetchall()]
         years_in_operation = [year[0] for year in res]
         return years_in_operation
@@ -128,30 +128,46 @@ def create_besucher_from_form(form):
     return besucher
 
 
+def typecheck(a, b, c):
+    if type(a) != type(b):
+        print('typecheck failed', c, type(a), type(b), a, b)
+
+
 def update_besucher(form, besucher):
     '''
         update besucher: check which fields need updating
     '''
+    typecheck(besucher.anrede, form.anrede.data, 'anrede')
     if besucher.anrede != form.anrede.data:
         besucher.anrede = form.anrede.data
+    typecheck(besucher.name, form.name.data, 'name')
     if besucher.name != form.name.data:
         besucher.name = form.name.data
+    typecheck(besucher.vorname, form.vorname.data, 'vorname')
     if besucher.vorname != form.vorname.data:
         besucher.vorname = form.vorname.data
+    typecheck(besucher.firmenname, form.firmenname.data, 'firmenname')
     if besucher.firmenname != form.firmenname.data:
         besucher.firmenname = form.firmenname.data
+    typecheck(besucher.tel, form.tel.data, 'tel')
     if besucher.tel != form.tel.data:
         besucher.tel = form.tel.data
+    typecheck(besucher.email, form.email.data, 'email')
     if besucher.email != form.email.data:
         besucher.email = form.email.data
+    typecheck(besucher.stadt, form.stadt.data, 'stadt')
     if besucher.stadt != form.stadt.data:
         besucher.stadt = form.stadt.data
+    typecheck(besucher.plz, form.plz.data, 'plz')
     if besucher.plz != form.plz.data:
         besucher.plz = form.plz.data
+    typecheck(besucher.strasse, form.strasse.data, 'strasse')
     if besucher.strasse != form.strasse.data:
         besucher.strasse = form.strasse.data
+    typecheck(besucher.vermerk, form.vermerk.data, 'vermerk')
     if besucher.vermerk != form.vermerk.data:
         besucher.vermerk = form.vermerk.data
+    typecheck(besucher.language, form.language.data, 'language')
     if besucher.language != form.language.data:
         besucher.language = form.language.data
     if besucher.is_dirty():
@@ -169,43 +185,58 @@ def update_buchung(form, buchung):
         Note: change in vorauszahlung has to be handled differntly
               with an email notice to visitor
     """
+    typecheck(buchung.anreise, form.anreise.data, 'anreise')
     if buchung.anreise != form.anreise.data:
         buchung.anreise = form.anreise.data
 
+    typecheck(buchung.abreise, form.abreise.data, 'abreise')
     if buchung.abreise != form.abreise.data:
         buchung.abreise = form.abreise.data
 
-    if buchung.apartment_id != form.apartment_id.data:
-        buchung.apartment_id = form.apartment_id.data
+    typecheck(
+        buchung.apartment_id, int(form.apartment_id.data), 'apartment_id')
+    if buchung.apartment_id != int(form.apartment_id.data):
+        buchung.apartment_id = int(form.apartment_id.data)
 
-    if buchung.get_preis_nacht() != form.preis_nacht.data:
+    typecheck(buchung.preis_nacht, form.preis_nacht.data, 'preis_nacht')
+    if buchung.preis_nacht != form.preis_nacht.data:
         buchung.preis_nacht = form.preis_nacht.data
 
+    typecheck(buchung.zusatzkosten, form.zusatzkosten.data, 'zusatzkosten')
     if buchung.get_zusatzkosten() != form.zusatzkosten.data:
         buchung.zusatzkosten = form.zusatzkosten.data
 
+    typecheck(buchung.rabatt, form.rabatt.data, 'rabatt')
     if buchung.get_rabatt() != form.rabatt.data:
         buchung.rabatt = form.rabatt.data
 
-    if buchung.get_vorauszahlung() != form.vorauszahlung.data:
+    typecheck(buchung.vorauszahlung, form.vorauszahlung.data, 'vorauszahlung')
+    if buchung.vorauszahlung != form.vorauszahlung.data:
         buchung.vorauszahlung = form.vorauszahlung.data
 
+    typecheck(buchung.portal_id, int(form.portal_id.data), 'portal_id')
     if buchung.portal_id != int(form.portal_id.data):
         buchung.portal_id = int(form.portal_id.data)
 
-    if buchung.get_kurtaxe_vz() != form.kurtaxe_vz.data:
+    typecheck(buchung.kurtaxe_vz, form.kurtaxe_vz.data, 'kurtaxe_vz')
+    if buchung.kurtaxe_vz != form.kurtaxe_vz.data:
         buchung.kurtaxe_vz = form.kurtaxe_vz.data
 
-    if buchung.get_kurtaxe_hz() != form.kurtaxe_hz.data:
+    typecheck(buchung.kurtaxe_hz, form.kurtaxe_hz.data, 'kurtaxe_hz')
+    if buchung.kurtaxe_hz != form.kurtaxe_hz.data:
         buchung.kurtaxe_hz = form.kurtaxe_hz.data
 
-    if buchung.get_kurtaxe_kinder() != form.kurtaxe_kinder.data:
+    typecheck(
+        buchung.kurtaxe_kinder, form.kurtaxe_kinder.data, 'kurtaxe_kinder')
+    if buchung.kurtaxe_kinder != form.kurtaxe_kinder.data:
         buchung.kurtaxe_kinder = form.kurtaxe_kinder.data
 
-    if buchung.get_kurtaxe_nz() != form.kurtaxe_nz.data:
+    typecheck(buchung.kurtaxe_nz, form.kurtaxe_nz.data, 'kurtaxe_nz')
+    if buchung.kurtaxe_nz != form.kurtaxe_nz.data:
         buchung.kurtaxe_nz = form.kurtaxe_nz.data
 
-    if buchung.get_notiz() != form.notiz.data:
+    typecheck(buchung.notiz, form.notiz.data, 'notiz')
+    if buchung.notiz != form.notiz.data:
         buchung.notiz = form.notiz.data
 
     if buchung.is_dirty():
@@ -223,10 +254,9 @@ def calc_prepayment(form, buchung):
               with an email notice to visitor
     """
 
-    if buchung.get_vorauszahlung() != form.vorauszahlung.data:
+    typecheck(buchung.vorauszahlung, form.vorauszahlung.data, 'vorauszahlung')
+    if buchung.vorauszahlung != form.vorauszahlung.data:
         buchung.vorauszahlung = form.vorauszahlung.data
-
-    if buchung.is_dirty():
         dirty_fields = [df.column_name for df in buchung.dirty_fields]
         buchung.recalc(buchung.status).save()
         return dirty_fields
