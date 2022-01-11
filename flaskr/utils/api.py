@@ -18,7 +18,7 @@ mailer = Config.MAILER
 
 class SystemInfo():
 
-    version_tag = 'beta.2'
+    version_tag = 'beta.3'
 
     letter_types = [
         'angebot',
@@ -314,7 +314,7 @@ def send_confirmation_emails(buchung, email_text):
     # prepare email to besucher
     mailer.add_email(
         [buchung.besucher.email],
-        current_app.config['EMAILS_TEAM'],
+        current_app.config['INFO_EMAIL'],
         besucher_email.header,
         besucher_email.body,
         'empty'
@@ -390,7 +390,7 @@ def send_angebot_emails(buchung, email_text):
     # prepare email to besucher
     mailer.add_email(
         [buchung.besucher.email],
-        current_app.config['EMAILS_TEAM'],
+        current_app.config['INFO_EMAIL'],
         besucher_email.header,
         besucher_email.body,
         'empty'
