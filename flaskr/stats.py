@@ -12,12 +12,14 @@ import datetime
 
 from bkormlib.schema import Apartment
 
-from .fewo_reporting import (
+from flaskr.utils.fewo_reporting import (
     aggregate_byMonth_byApartment,
     calc_income_and_commission_for_years,
     calc_apartment_income_and_commission_for_years,
     calc_income_all_apartments_for_years,
-    calc_income_apartment
+    calc_income_apartment,
+    calc_forecast_today,
+    calc_actuals_today
 )
 
 from flaskr.utils.api import SystemInfo
@@ -39,6 +41,21 @@ def income_year():
     return render_template('income_year_by_apartment.html',
         data=data, run_mode=current_app.env)
 '''
+
+
+@bp.route('/income_forecast')
+def income_forcast():
+    '''
+        compare bookings and their value for the current year
+        with the same values and date for past years (same day
+        of year)
+    '''
+    return render_template(
+        'forecast.html',
+        data=calc_forecast_today(),
+        abgerechnet=calc_actuals_today(),
+        title="Forecast (Stand heute)",
+        run_mode=current_app.env)
 
 
 @bp.route('/income_and_commission')

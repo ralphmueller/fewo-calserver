@@ -1,0 +1,48 @@
+<!-- 
+	Compare projected income for current year with
+    former years (same day of year)
+-->
+
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="row">
+
+    <table class="table table-bordered table-condensed table-hover">
+        <tbody>		
+            <thead>
+                <th></th>
+                {% for d_item in data %}
+                    <th>{{d_item[0]}}</th>
+                {% endfor %}
+            </thead>
+            <tr>
+                <th>Besuche (gebucht)</th>
+                {% for d_item in data %}
+                    <td>{{d_item[1]}}</td>
+                {% endfor %}
+            </tr>          
+            <tr>
+                <th>Umsatz (gebucht)</th>
+                {% for d_item in data %}
+                    <td>{{d_item[2] | euro_currency}}</td>
+                {% endfor %}
+            </tr>   
+            <tr>
+                <th>Besuche (abgerechnet)</th>
+                {% for d_item in abgerechnet %}
+                    <td>{{d_item[1]}}</td>
+                {% endfor %}
+            </tr>          
+            <tr>
+                <th>Umsatz (abgerechnet)</th>
+                {% for d_item in abgerechnet %}
+                    <td>{{d_item[2] | euro_currency}}</td>
+                {% endfor %}
+            </tr>           
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

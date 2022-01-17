@@ -15,6 +15,7 @@ Fixed bug on 3.1.0.2018: departure on first day of month doesn't account
 import datetime
 import calendar
 from peewee import fn
+# from playhouse.shortcuts import model_to_dict
 from bkormlib.schema import Buchung, Apartment
 
 
@@ -276,3 +277,137 @@ def calc_income_apartment(apt_name, year):
         float(miete),
         len(bookings),
         float(days_for_daily_rate/len(bookings))]
+
+
+def calc_forecast_today():
+
+    dataset = []
+    years = [2017, 2018, 2019, 2020, 2021, 2022, 2023]
+    for year in years:
+        today_in_year = datetime.date(
+            year,
+            datetime.date.today().month,
+            datetime.date.today().day)
+
+        query = (
+            Buchung
+            .select(
+                fn.COUNT(Buchung.id).alias('bookings'),
+                fn.SUM(Buchung.miete).alias('miete_sum'),
+                fn.SUM(Buchung.kurtaxe).alias('kurtaxe_sum'))
+            .where(
+                (Buchung.status << ['abgerechnet', 'gebucht', 'storno']) &
+                (fn.YEAR(Buchung.abreise) == year) &
+                (Buchung.tscreated <= today_in_year))
+        )
+
+        res = query[0]
+        dataset.append(
+            (year, res.bookings, float(res.miete_sum), float(res.kurtaxe_sum)))
+
+    return dataset
+
+
+def calc_actuals_today():
+
+    dataset = []
+    years = [2017, 2018, 2019, 2020, 2021, 2022, 2023]
+    for year in years:
+        today_in_year = datetime.date(
+            year,
+            datetime.date.today().month,
+            datetime.date.today().day)
+
+        query = (
+            Buchung
+            .select(
+                fn.COUNT(Buchung.id).alias('bookings'),
+                fn.SUM(Buchung.miete).alias('miete_sum'),
+                fn.SUM(Buchung.kurtaxe).alias('kurtaxe_sum'))
+            .where(
+                (Buchung.status << ['abgerechnet']) &
+                (fn.YEAR(Buchung.abreise) == year) &
+                (Buchung.rechnungsdatum <= today_in_year))
+        )
+
+        res = query[0]
+        if res.bookings == 0:
+            dataset.append((year, 0, 0, 0))
+        else:
+            dataset.append(
+                (
+                    year, res.bookings,
+                    float(res.miete_sum),
+                    float(res.kurtaxe_sum)))
+    return dataset
+
+
+def show_forecast_by_month(year):
+    '''
+        return the forcast for <year>
+
+    '''
+
+    year = 2023
+
+    today_in_year = datetime.date(
+        year,
+        datetime.date.today().month,
+        datetime.date.today().day)
+    print(today_in_year)
+
+    query = (
+        Buchung
+        .select(
+            fn.COUNT(Buchung.id).alias('count'),
+            fn.SUM(Buchung.miete).alias('miete'),
+            fn.SUM(Buchung.kurtaxe).alias('kurtaxe'),
+            fn.MONTH(Buchung.abreise).alias('month'))
+        .where(
+            (Buchung.status << ['abgerechnet', 'gebucht']) &
+            (fn.YEAR(Buchung.abreise) == year) &
+            (Buchung.tscreated <= today_in_year)
+        )
+        .group_by(
+            fn.MONTH(Buchung.abreise))
+    )
+    tupls = [
+        (q.month, q.count, float(q.miete), float(q.kurtaxe)) for q in query]
+    # fill up tupls to full year (if no bookings for sertain month)
+    for month in list(set(range(1, 13, 1)) - set(x[0] for x in tupls)):
+        tupls.append((month, 0, 0))
+    print(tupls)
+    return tupls
+
+
+'''
+select sum(miete) as 'Miete', sum(kurtaxe) as 'Kurtaxe'
+    from buchung
+    WHERE
+        status in ('abgerechnet', 'gebucht')
+        and YEAR(abreise) = 2022
+        and tscreated < '2022-01-13'
+
+
+SELECT COUNT(
+    `t1`.`id`) AS `count`,
+        SUM(`t1`.`miete`) AS `miete`,
+        MONTH(`t1`.`abreise`) AS `month`
+    FROM `buchung` AS `t1`
+    WHERE ((
+        (`t1`.`status` IN ('gebucht'))
+        AND EXTRACT(year FROM `t1`.`abreise`)) = 2022)
+    GROUP BY MONTH(`t1`.`abreise`);
+
+This works:
+SELECT COUNT(
+    `t1`.`id`) AS `count`,
+    SUM(`t1`.`miete`) AS `miete`,
+    SUM(`t1`.`kurtaxe`) AS `kurtaxe`,
+    MONTH(`t1`.`abreise`) AS `month`
+FROM `buchung` AS `t1`
+WHERE
+    `t1`.`status` IN ('gebucht', 'abgerechnet')  and
+    YEAR (`t1`.`abreise`) = 2022
+GROUP BY MONTH(`t1`.`abreise`)
+'''
