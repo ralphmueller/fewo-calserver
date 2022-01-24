@@ -2,7 +2,7 @@
 	include file to display row in list of booking
 -->
 
-<tr id="{{buchung.id}}" onclick=getBuchungDetails(`{{ buchung.id }}`)>
+<tr id="{{buchung.id}}" onclick="getBuchungDetails(`{{ buchung.id }}`)">
     <td class="col80">{{buchung.anreise | euro_date_short }}</td>
     <td class="col80">{{buchung.abreise | euro_date_short }}</td>
     <td class="col80">{{buchung.apartment.name}}</td>
