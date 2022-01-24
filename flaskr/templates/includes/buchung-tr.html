@@ -1,0 +1,15 @@
+<!-- 
+	include file to display row in list of booking
+-->
+
+<tr id="{{buchung.id}}" onclick=getBuchungDetails(`{{ buchung.id }}`)>
+    <td class="col80">{{buchung.anreise | euro_date_short }}</td>
+    <td class="col80">{{buchung.abreise | euro_date_short }}</td>
+    <td class="col80">{{buchung.apartment.name}}</td>
+    <td class="besucher">{{buchung.besucher.name}}, {{buchung.besucher.vorname}}</td>
+    <td class="money">{{buchung.miete | euro_currency }}</td>
+    <td class="money">{{buchung.kurtaxe | euro_currency }}</td>
+    <td class="money">{{buchung.summe | euro_currency }}</td>
+    <td class="money">{{buchung.vorauszahlung | euro_currency }}</td>
+    <td class="col80">{{buchung.status}}</td>
+</tr>
