@@ -311,6 +311,7 @@ def abrechnen(buchung_id):
             buchung.apartment.name,
             buchung.apartment.get_next_invoice_no(),
             datetime.date.today().year)
+        buchung.rechnungsdatum = buchung.anreise
         buchung.save()
         return(
             redirect(
