@@ -4,7 +4,7 @@
 	partial für Neue Buchung anlegen / Step 1
 -->
 
-{% from "_macros.html" import render_field %}
+{% from "_macros.html" import render_field, render_label_data %}
 
 {% block content %}
 
@@ -12,14 +12,17 @@
 
   <div class="col-12">
 
-    <p>{{besucher.vorname}} {{besucher.name}} <br />{{besucher.strasse}} {{besucher.plz}} {{besucher.stadt}}</p>
+    <p>
+      <a href="{{url_for('besucher_bp.update', besucher_id=besucher.id)}}">{{besucher.vorname}} {{besucher.name}}</a><br />
+      {{besucher.strasse}} {{besucher.plz}} {{besucher.stadt}}
+    </p>
 
     <form method="post">
 
       {{ form.hidden_tag() }}
 
       <div class="row">
-        <div class="col-6">
+        <div class="col-4">
           <dl>
             {{ render_field(form.anreise) }}
             {{ render_field(form.apartment_id) }}
@@ -30,7 +33,7 @@
             {{ render_field(form.notiz) }}
           </dl>
         </div>
-        <div class="col-6">
+        <div class="col-4">
           <dl>
             {{ render_field(form.abreise) }}
             {{ render_field(form.portal_id) }}
@@ -38,6 +41,12 @@
             {{ render_field(form.kurtaxe_hz) }}
             {{ render_field(form.kurtaxe_kinder) }}
             {{ render_field(form.kurtaxe_nz) }}
+          </dl>
+        </div>
+        <div class="col-4 grey-text">
+          <dl>
+            {{ render_label_data("Nächte", 2) }}
+            {{ render_label_data("Miete", 0 | euro_currency) }}
           </dl>
         </div>
         {% if form.errors %}
@@ -57,15 +66,48 @@
   <script>
     // 
     // Set date of abreise field to 3 days ahead of anreise field
+    // calculate and update nights of stay, net price (excl. kurtaxe)
     // 
-    const selectElement = document.querySelector('#anreise');
+    const anreise = document.querySelector('#anreise');
+    const abreise = document.querySelector('#abreise');
+    const preis_nacht = document.querySelector('#preis_nacht');
+    const apartment = document.querySelector('#apartment');
+    const naechte = document.querySelector('#nächte');
+    const miete = document.querySelector('#miete');
 
-    selectElement.addEventListener('change', (event) => {
+    function datediff(){
+      let d1 = new Date(anreise.value);
+      let d2 = new Date(abreise.value);
+      return(Math.floor((d2 - d1) / (1000*60*60*24)));
+    }
 
-      const abreise = document.querySelector('#abreise');
+    function set_miete(d2, d1) {
+      let mietpreis  = preis_nacht.value * datediff(abreise.value, anreise.value);
+      mietpreis = mietpreis.toLocaleString('de-DE', {
+        style: 'currency', 
+        currency: 'EUR', 
+        minimumFractionDigits: 2 
+      });
+      
+      // miete.innerHTML = mietpreis.toString().replace(/\./gi, ",") + ' €';
+      miete.innerHTML = mietpreis;
+    }
+
+    preis_nacht.addEventListener('change', (event) => {
+      set_miete(abreise.value, anreise.value);
+    });
+
+    abreise.addEventListener('change', (event) => {
+      naechte.innerHTML = datediff();
+      set_miete(abreise.value, anreise.value);
+    });
+
+    anreise.addEventListener('change', (event) => {
       let d1 = new Date(event.target.value);
       d1.setDate(d1.getDate() + 3);
       abreise.value = d1.toISOString().substring(0,10);
+      naechte.innerHTML = datediff();
+      set_miete();
     });
   </script>
 

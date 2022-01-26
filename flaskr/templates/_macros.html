@@ -15,5 +15,5 @@
 
 {% macro render_label_data(label, data, extra="") -%}
   <dt> {{label}} </dt>
-  <dd> {{data}} {{extra}}</dd>
+  <dd id="{{ label | lower}}"> {{data}} {{extra}}</dd>
 {%- endmacro %}
