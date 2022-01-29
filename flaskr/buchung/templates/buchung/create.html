@@ -1,8 +1,8 @@
-{% extends "layout.html" %}
-
 <!-- 
 	partial für Neue Buchung anlegen / Step 1
 -->
+{% extends "layout.html" %}
+
 
 {% from "_macros.html" import render_field, render_label_data %}
 
@@ -12,10 +12,7 @@
 
   <div class="col-12">
 
-    <p>
-      <a href="{{url_for('besucher_bp.update', besucher_id=besucher.id)}}">{{besucher.vorname}} {{besucher.name}}</a><br />
-      {{besucher.strasse}}, {{besucher.plz}} {{besucher.stadt}}
-    </p>
+    {% include 'besuchersnippet.html' %}
 
     <form method="post">
 
@@ -37,12 +34,17 @@
             {{ render_field(form.abreise) }}
           </dl>
         </div>
+        <div class="col-2">
+          <dl>
+            {{ render_field(form.portal_id) }}
+          </dl>
+        </div>        
         <div class="col-1 grey-text">
           <dl>
             &nbsp;
           </dl>
-        </div>        
-        <div class="col-1 grey-text">
+        </div>
+        <div class="col-2 grey-text">
           <dl>
             {{ render_label_data("Nächte", 2) }}
           </dl>
@@ -65,11 +67,16 @@
             {{ render_field(form.zusatzkosten) }}
           </dl>
         </div>
+        <div class="col-2">
+          <dl>
+            {{ render_field(form.vorauszahlung) }}
+          </dl>
+        </div>        
         <div class="col-1 grey-text">
           <dl>
             &nbsp;
           </dl>
-        </div>        
+        </div>
         <div class="col-1 grey-text">
           <dl>
             {{ render_label_data("Miete", 0.0 | euro_currency) }}
@@ -78,7 +85,6 @@
       </div> <!-- row -->
       
       <div class="row">
-        <p>Kurtaxe</p>
         <div class="col-2">
           <dl>
             {{ render_field(form.kurtaxe_vz) }}
@@ -97,19 +103,6 @@
         <div class="col-2">
           <dl>
             {{ render_field(form.kurtaxe_nz) }}
-          </dl>
-        </div>
-      </div> <!-- row -->
-
-      <div class="row">
-        <div class="col-2">
-          <dl>
-            {{ render_field(form.vorauszahlung) }}
-          </dl>
-        </div>
-        <div class="col-2">
-          <dl>
-            {{ render_field(form.portal_id) }}
           </dl>
         </div>
       </div> <!-- row -->

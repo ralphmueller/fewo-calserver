@@ -1,8 +1,8 @@
-{% extends "layout.html" %}
-
 <!-- 
 	partial für Neue Buchung anlegen / Step 1
 -->
+
+{% extends "layout.html" %}
 
 {% from "_macros.html" import render_field %}
 {% from "_macros.html" import render_label_data %}
@@ -12,11 +12,7 @@
 <div class="row">
 
   <div class="col-12">
-
-    <p>
-      <a href="{{url_for('besucher_bp.update', besucher_id=besucher.id)}}">{{besucher.vorname}} {{besucher.name}}</a><br />
-      {{besucher.strasse}} {{besucher.plz}} {{besucher.stadt}}</p>
-
+    {% include 'besuchersnippet.html' %}
     <form method="post">
 
       {{ form.hidden_tag() }}
