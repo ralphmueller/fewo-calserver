@@ -68,7 +68,7 @@ class BuchungForm(FlaskForm):
     )
 
     kurtaxe_vz = IntegerField(
-        'Erwachsene / Jugendliche ab 15J',
+        'Personen ab 15J',
         default=2
     )
 
