@@ -7,18 +7,10 @@
 
     {{ form.hidden_tag()}}
 
-      {{ render_field(form.user)}}
-      {{ render_field(form.password)}}
+    {{render_field("input", "col-3", "", form.user, "")}} 
+    {{render_field("input", "col-3", "", form.password, "")}} 
 
-    <input type="submit" value="Log In">
-
-    {% if form.errors %}
-    <div class="row">
-      <div class="col-6">
-        {{ form.errors }}
-      </div>
-    </div>
-    {% endif %}
+    <input type="submit" value="Anmelden">
 
   </form>
 {% endblock %}

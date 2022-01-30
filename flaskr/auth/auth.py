@@ -56,7 +56,7 @@ def login():
     return render_template(
         'login.html',
         form=form,
-        title='Login',
+        title='Anmelden',
         run_mode=current_app.env,
         template='form-template'
     )

@@ -5,26 +5,20 @@
 
     {{ form.hidden_tag() }}
 
-      {{ render_field(form.anrede)}}
-      {{ render_field(form.vorname)}}
-      {{ render_field(form.name)}}
-      {{ render_field(form.firmenname)}}
-      {{ render_field(form.email)}}
-      {{ render_field(form.tel)}}
-      {{ render_field(form.strasse)}}
-      {{ render_field(form.plz)}}
-      {{ render_field(form.stadt)}}
-      {{ render_field(form.land)}}
-      {{ render_field(form.language)}}
-      {{ render_field(form.vermerk)}}
+    {{render_field("input", "col-8", "", form.anrede, "")}} 
+    {{render_field("input", "col-8", "", form.vorname, "")}} 
+    {{render_field("input", "col-8", "", form.name, "")}} 
+    {{render_field("input", "col-8", "", form.firmenname, "")}} 
+    {{render_field("input", "col-8", "", form.email, "")}} 
+    {{render_field("input", "col-8", "", form.tel, "")}} 
+    {{render_field("input", "col-8", "", form.strasse, "")}} 
+    {{render_field("input", "col-8", "", form.plz, "")}} 
+    {{render_field("input", "col-8", "", form.stadt, "")}} 
+    {{render_field("input", "col-8", "", form.land, "")}} 
+    {{render_field("input", "col-8", "", form.language, "")}} 
+    {{render_field("input", "col-8", "", form.vermerk, "")}} 
 
     <input type="submit" value="Speichern">
-
-    <ul class="flex-container"> 
-      <li class="flex-item">{{form.anrede.label}}</li>
-      <li class="flex-item">{{form.name.data}}</li>
-      <li class="flex-item">{{form.vorname.data}}</li>
-    </ul>
 
   </form>
 {% endblock %}

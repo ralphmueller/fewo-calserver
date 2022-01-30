@@ -58,6 +58,9 @@
         </li>
         {% endif %}
         {% if g.user %}
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('info_bp.info') }}">Info</a>
+        </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
               data-bs-toggle="dropdown" aria-expanded="false">
@@ -65,15 +68,12 @@
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" href="{{ url_for('auth_bp.change_password') }}">Passwort ändern</a>
-              <a class="dropdown-item" href="{{ url_for('auth_bp.logout') }}">Logout</a>
+              <a class="dropdown-item" href="{{ url_for('auth_bp.logout') }}">Abmelden</a>
           </div>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('info_bp.info') }}">Info</a>
         </li>
         {% else %}
         <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('auth_bp.login') }}">Log In</a>
+            <a class="nav-link" href="{{ url_for('auth_bp.login') }}">Anmelden</a>
         </li>
         {% endif %}
       </ul>

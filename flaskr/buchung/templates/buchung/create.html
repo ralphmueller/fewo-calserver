@@ -4,7 +4,7 @@
 {% extends "layout.html" %}
 
 
-{% from "_macros.html" import render_field, render_label_data %}
+{% from "_macros.html" import render_f, render_field, render_label_data %}
 
 {% block content %}
 
@@ -19,69 +19,38 @@
       {{ form.hidden_tag() }}
 
       <div class="row">
-        <div class="col-2">
-            {{ render_field(form.apartment_id) }}
-        </div>
-        <div class="col-2">
-            {{ render_field(form.anreise) }}
-        </div>
-        <div class="col-2">
-            {{ render_field(form.abreise) }}
-        </div>
-        <div class="col-2">
-            {{ render_field(form.portal_id) }}
-        </div>        
-        <div class="col-1 grey-text">
-            &nbsp;
-        </div>
-        <div class="col-2 grey-text">
-            {{ render_label_data("Nächte", 2) }}
-        </div>
+        {{render_field("input", "col-3", "", form.anreise, "")}}
+        {{render_field("input", "col-3", "", form.abreise, "")}}
+        {{render_field("label", "col-3 grey-text", "Nächte", "2", "")}}
       </div> <!-- row -->
+      <div class="row">
+        {{render_field("input", "col-3", "", form.apartment_id, "")}}
+        {{render_field("input", "col-3", "", form.portal_id, "")}}   
+        {{render_field("label", "col-3 grey-text", "Miete", 0.0 | euro_currency, "")}}   
+      </div> <!-- row -->
+      <div class="row">
+        {{render_field("input", "col-3", "", form.preis_nacht, "")}}
+        {{render_field("input", "col-3", "", form.zusatzkosten, "")}}   
+        {{render_field("label", "col-3 grey-text", "Kurtaxe", 0.0 | euro_currency, "")}}   
+      </div> <!-- row -->      
+      <div class="row">
+        {{render_field("input", "col-3", "", form.rabatt, "")}}
+        {{render_field("input", "col-3", "", form.vorauszahlung, "")}}   
+        {{render_field("label", "col-3 grey-text", "Summe", 0.0 | euro_currency, "")}}   
+      </div> <!-- row -->       
+      <div class="row">
+        {{render_field("input", "col-3", "", form.kurtaxe_vz, "")}}
+        {{render_field("input", "col-3", "", form.kurtaxe_hz, "")}}   
+        {{render_field("label", "col-3 grey-text", "Restbetrag", 0.0 | euro_currency, "")}}
+      </div> <!-- row -->    
+      <div class="row">
+        {{render_field("input", "col-3", "", form.kurtaxe_kinder, "")}}
+        {{render_field("input", "col-3", "", form.kurtaxe_nz, "")}}   
+        {{render_field("label", "col-3 grey-text", "Status", "-", "")}}
+      </div> <!-- row -->                
 
       <div class="row">
-        <div class="col-2">
-            {{ render_field(form.preis_nacht) }}
-        </div>
-        <div class="col-2">
-            {{ render_field(form.rabatt) }}
-        </div>
-        <div class="col-2">
-            {{ render_field(form.zusatzkosten) }}
-        </div>
-        <div class="col-2">
-            {{ render_field(form.vorauszahlung) }}
-        </div>        
-        <div class="col-1 grey-text">
-            &nbsp;
-        </div>
-        <div class="col-1 grey-text">
-            {{ render_label_data("Miete", 0.0 | euro_currency) }}
-        </div>
-      </div> <!-- row -->
-      
-      <div class="row">
-        <div class="col-2">
-          {{ render_field(form.kurtaxe_vz) }}
-        </div>
-        <div class="col-2">
-            {{ render_field(form.kurtaxe_hz) }}
-        </div>
-        <div class="col-2">
-            {{ render_field(form.kurtaxe_kinder) }}
-        </div>
-        <div class="col-2">
-            {{ render_field(form.kurtaxe_nz) }}
-        </div>
-      </div> <!-- row -->
-
-      <div class="row">
-        <div class="col-8">
-            {{ render_field(form.notiz) }}
-        </div>
-        <div class="col-4"> 
-          &nbsp;
-        </div>
+        {{render_field("input", "col-9", "", form.notiz, "")}} 
       </div> <!-- row -->
       <div>
         {% if form.errors %}
