@@ -22,6 +22,10 @@ bundles = {
         "js/buchung.js",
         "js/lookup_besucher.js",
         output='dist/all.js'),
+    'buchung_recalc_js': Bundle(
+        "js/buchung_recalc.js",
+        output='dist/buchung_recalc.js'
+    ),
     'all_css': Bundle(
         'node_modules/bootstrap/dist/css/bootstrap.css',
         'css/myapp.css',

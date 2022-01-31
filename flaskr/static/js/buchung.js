@@ -6,7 +6,9 @@
 *
 */
 
-function getBuchungDetails(id, status) {
+    
+
+function getBuchungDetails(id) {
 	/* 
 	  re-route to actions available for 
 	  this particular booking
@@ -15,8 +17,8 @@ function getBuchungDetails(id, status) {
 	  date: 23.11.2021
 	*/
 	window.location.href = '/buchung/update_check/' + id;
-	return (t)
-  }
+	return (1)
+}
 
 function checkAvailability() {
 	/* 

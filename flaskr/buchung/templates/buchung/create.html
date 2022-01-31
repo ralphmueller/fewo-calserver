@@ -3,8 +3,11 @@
 -->
 {% extends "layout.html" %}
 
+{% assets "buchung_recalc_js" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
 
-{% from "_macros.html" import render_f, render_field, render_label_data %}
+{% from "_macros.html" import render_field%}
 
 {% block content %}
 
@@ -67,52 +70,5 @@
     </form>
 
   </div>
-  <script>
-    // 
-    // Set date of abreise field to 3 days ahead of anreise field
-    // calculate and update nights of stay, net price (excl. kurtaxe)
-    // 
-    const anreise = document.querySelector('#anreise');
-    const abreise = document.querySelector('#abreise');
-    const preis_nacht = document.querySelector('#preis_nacht');
-    const apartment = document.querySelector('#apartment');
-    const naechte = document.querySelector('#nächte');
-    const miete = document.querySelector('#miete');
-
-    function datediff(){
-      let d1 = new Date(anreise.value);
-      let d2 = new Date(abreise.value);
-      return(Math.floor((d2 - d1) / (1000*60*60*24)));
-    }
-
-    function set_miete(d2, d1) {
-      let mietpreis  = preis_nacht.value * datediff(abreise.value, anreise.value);
-      mietpreis = mietpreis.toLocaleString('de-DE', {
-        style: 'currency', 
-        currency: 'EUR', 
-        minimumFractionDigits: 2 
-      });
-      
-      // miete.innerHTML = mietpreis.toString().replace(/\./gi, ",") + ' €';
-      miete.innerHTML = mietpreis;
-    }
-
-    preis_nacht.addEventListener('change', (event) => {
-      set_miete(abreise.value, anreise.value);
-    });
-
-    abreise.addEventListener('change', (event) => {
-      naechte.innerHTML = datediff();
-      set_miete(abreise.value, anreise.value);
-    });
-
-    anreise.addEventListener('change', (event) => {
-      let d1 = new Date(event.target.value);
-      d1.setDate(d1.getDate() + 3);
-      abreise.value = d1.toISOString().substring(0,10);
-      naechte.innerHTML = datediff();
-      set_miete();
-    });
-  </script>
 
   {% endblock %}

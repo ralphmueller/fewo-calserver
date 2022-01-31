@@ -9,53 +9,51 @@
 
 {% block content %}
 
-<div class="row">
-  <div class="col-12">
-    {% include 'besuchersnippet.html' %}
+  <div class="row">
+    <div class="col-12">
+      {% include 'besuchersnippet.html' %}
+    </div>
+  </div>
+
+  <div class="row">
+      {{render_field("label", "col-3", "Anreise", buchung.get_anreise() | euro_date, "")}}
+      {{render_field("label", "col-3", "Abreise", buchung.get_abreise() | euro_date, "")}}
+      {{render_field("label", "col-3", "Nächte", (buchung.abreise - buchung.anreise).days, "")}}
+  </div> <!-- row -->
+  <div class="row">
+      {{render_field("label", "col-3", "Apartment", buchung.apartment.name, "")}}
+      {{render_field("label", "col-3", "Portal", buchung.portal.name, "")}}   
+      {{render_field("label", "col-3", "Miete", buchung.get_miete() | euro_currency, "")}}   
+  </div> <!-- row -->
+  <div class="row">
+      {{render_field("label", "col-3", "Miete", buchung.get_preis_nacht() | euro_currency, "")}}  
+      {{render_field("label", "col-3", "Zusatzkosten", buchung.zusatzkosten  | euro_currency , "")}}   
+      {{render_field("label", "col-3", "Kurtaxe", 0.0 | euro_currency, "")}}   
+  </div> <!-- row -->      
+  <div class="row">
+      {{render_field("label", "col-3", "Rabatt", buchung.rabatt | rabatt, "")}}
+      {{render_field("label", "col-3", "Vorauszahlung", buchung.vorauszahlung | euro_currency, "")}}   
+      {{render_field("label", "col-3", "Summe", buchung.summe | euro_currency, "")}}   
+  </div> <!-- row -->       
+  <div class="row">
+      {{render_field("label", "col-3", "Personen ab 15J", buchung.kurtaxe_vz, "")}}
+      {{render_field("label", "col-3", "Kinder 10-15J", buchung.kurtaxe_hz, "")}}   
+      {{render_field("label", "col-3", "Restbetrag", 0.0 | euro_currency, "")}}
+  </div> <!-- row -->    
+  <div class="row">
+      {{render_field("label", "col-3", "Kinder unter 10J", buchung.kurtaxe_kinder, "")}}
+      {{render_field("label", "col-3", "Kurtaxe befreit", buchung.kurtaxe_nz, "")}}   
+      {{render_field("label", "col-3", "Status", buchung.status, "")}}
+  </div> <!-- row -->                
+  <div class="row">
+      {{render_field("label", "col-9", "Notiz", buchung.notiz, "")}} 
+  </div> <!-- row -->
+
     <form method="post">
       {{ form.hidden_tag() }}
-      <div class="row">
-        <div class="col-3">
-            {{ render_label_data("Anreise", buchung.get_anreise() | euro_date) }}
-            {{ render_label_data("Apartment", buchung.apartment.name) }}
-            {{ render_label_data("Preis/Nacht", buchung.get_preis_nacht() | euro_currency) }}
-            {{ render_label_data("Zusatzkostent", buchung.get_zusatzkosten() | euro_currency) }}
-            {{ render_label_data("Rabatt", buchung.get_rabatt() | euro_decimal | rabatt ) }}
-            {{ render_label_data("Vorauszahlung", buchung.get_vorauszahlung() | euro_currency ) }}
-        </div>
-        <div class="col-3">
-            {{ render_label_data("Abreise", buchung.get_abreise() | euro_date) }}
-            {{ render_label_data("Portal", buchung.portal.name) }}
-            {{ render_label_data("Kurtaxe 15+", buchung.get_kurtaxe_vz()) }}
-            {{ render_label_data("Kurtaxe 10-14", buchung.get_kurtaxe_hz()) }}
-            {{ render_label_data("Kurtaxe Kinder", buchung.get_kurtaxe_kinder()) }}
-            {{ render_label_data("Kurtaxe 0", buchung.get_kurtaxe_nz()) }}
-        </div>
-        <div class="col-3">
-              {{ render_label_data("Nächte", buchung.get_nights()) }}
-              {{ render_label_data("Miete", buchung.get_miete() | euro_currency) }}
-              {{ render_label_data("Kurtaxe", buchung.get_kurtaxe() | euro_currency) }}
-              {{ render_label_data("Summe", buchung.get_summe() | euro_currency) }}
-              {{ render_label_data("Vorauszahlung", buchung.get_vorauszahlung() | euro_currency) }}
-              {{ render_label_data("Restbetrag", buchung.get_offener_betrag() | euro_currency) }}
-              {{ render_label_data("Status", buchung.status) }}
-          </div>
-          <div cLass="row">
-            <div class="col-3">
-                {{ render_label_data("Notiz", buchung.notiz) }}
-                {{ render_field(form.meldeschein_nummer) }}
-            </div>
-          </div>
-        {% if form.errors %}
-          <div class="row">
-            <div class="col-6">
-              {{ form.errors }}
-            </div>
-          </div>
-        {% endif %}
-      </div>
+
+      {{render_field("input", "col-3", "", form.meldeschein_nummer, "")}}       
       <input type="submit" value="Abrechnen">
     </form>
-  </div>
 </div>
 {% endblock %}
