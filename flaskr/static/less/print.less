@@ -18,8 +18,8 @@ css file display/print rechnung
     size: a4 portrait;
     margin-right: 2.0cm;
     margin-left: 2.0cm;
-    margin-top: 1.0cm;
-    margin-bottom: 1.0cm;
+    margin-top: 2.0cm;
+    margin-bottom: 0.0cm;
   }
 
   body {
@@ -34,7 +34,10 @@ css file display/print rechnung
       clear: both;
     }
 
-    #visit-description, #invoice-data, #kurtaxe-text, #address-date {
+    #invoice-data, #kurtaxe-text, #address-date {
+      padding-top: 0.5cm;
+    }
+    #visit-description {
       padding-top: 1cm;
     }
     h1 {
@@ -61,7 +64,7 @@ css file display/print rechnung
     }
 
     #footer {
-      margin-top: 2.0cm;
+      margin-top: 2cm;
       border-top: 2px solid black;
       text-align: left;
       font-size: 12px;

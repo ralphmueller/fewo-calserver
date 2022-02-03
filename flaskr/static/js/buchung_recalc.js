@@ -1,11 +1,48 @@
 // 
-// Set date of abreise field to 3 days ahead of anreise field
+// Set date of abreise field to 2 days ahead of anreise field
 // calculate and update nights of stay, net price (excl. kurtaxe)
 // 
 
 // data entered or provided in hidden fields
 
+
+function checkAvailability() {
+	/* 
+	  check availability of selected apartment and 
+	  - confirm or
+	  - negate with list of available apartments
+
+	  author: ralph
+	  date: 23.11.2021
+	*/
+	const anreise = document.querySelector('#anreise');
+	const abreise = document.querySelector('#abreise');
+	const apartment = document.querySelector('#apartment_id');
+	const availability = document.querySelector('#availability_id');
+	const url = '/rest/apartment/available/' 
+	  + apartment.value 
+	  + '?anreise=' + anreise.value 
+	  + '&abreise=' + abreise.value;
+	$.getJSON(url, function(result){
+	  if (result.avail == true) {
+		availability.innerHTML = 'Apartment verfügbar';
+	  } else {
+		availability.innerHTML = 'Apartment nicht verfügbar. Freie Apartments: ' + result.apartments; 
+	  }
+	});
+	return false;
+}
+
 window.onload = function() {
+	/*
+	  Set date of abreise field to 2 days ahead of anreise field
+	  calculate and update nights of stay, net price (excl. kurtaxe)
+	  
+
+	  author: ralph
+	  date: 23.11.2021
+	*/
+	// get the relevant elements 
 	const anreise = document.querySelector('#anreise');
 	const abreise = document.querySelector('#abreise');
     const preis_nacht = document.querySelector('#preis_nacht');
@@ -31,7 +68,7 @@ window.onload = function() {
   
 	  anreise.addEventListener('change', (event) => {
 		let d1 = new Date(event.target.value);
-		d1.setDate(d1.getDate() + 3);
+		d1.setDate(d1.getDate() + 2);
 		abreise.value = d1.toISOString().substring(0,10);
 		naechte.innerHTML = datediff();
 		recalc();

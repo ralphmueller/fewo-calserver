@@ -2,7 +2,13 @@
 	include file to display row in list of booking
 -->
 
-<tr id="{{buchung.id}}" onclick="getBuchungDetails(`{{ buchung.id }}`)">
+{% if buchung.notiz != '' %}
+    {% set notiz_class = 'text-info' %}
+{% else %}
+    {% set notiz_class = ' ' %}    
+{% endif %}
+
+<tr id="{{buchung.id}}" class="{{notiz_class}}" data-toggle="tooltip" title="Notiz: {{buchung.notiz}}" onclick="getBuchungDetails(`{{ buchung.id }}`)">
     <td class="col80">{{buchung.anreise | euro_date_short }}</td>
     <td class="col80">{{buchung.abreise | euro_date_short }}</td>
     <td class="col80">{{buchung.apartment.name}}</td>

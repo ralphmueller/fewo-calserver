@@ -45,7 +45,7 @@ def index():
             Buchung.status.in_(where_list) &
             Buchung.abreise.between(
                 datetime.date.today(),
-                datetime.date.today() + datetime.timedelta(days=2)))
+                datetime.date.today() + datetime.timedelta(days=3)))
         .order_by(Buchung.abreise)
     )
 
