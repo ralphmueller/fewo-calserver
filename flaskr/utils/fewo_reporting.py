@@ -354,7 +354,6 @@ def show_forecast_by_month(year):
         year,
         datetime.date.today().month,
         datetime.date.today().day)
-    print(today_in_year)
 
     query = (
         Buchung
@@ -376,7 +375,6 @@ def show_forecast_by_month(year):
     # fill up tupls to full year (if no bookings for sertain month)
     for month in list(set(range(1, 13, 1)) - set(x[0] for x in tupls)):
         tupls.append((month, 0, 0))
-    print(tupls)
     return tupls
 
 

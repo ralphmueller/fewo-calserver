@@ -18,7 +18,7 @@ mailer = Config.MAILER
 
 class SystemInfo():
 
-    version_tag = 'beta.8'
+    version_tag = 'beta.8.1'
 
     letter_types = [
         'angebot',

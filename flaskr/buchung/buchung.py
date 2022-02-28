@@ -98,7 +98,6 @@ def index():
         run_mode=current_app.env)
 
 
-
 @buchung_bp.route('/create/<int:besucher_id>', methods=('GET', 'POST'))
 @login_required
 def create_buchung(besucher_id):
@@ -643,6 +642,7 @@ def update_vorauszahlung(buchung_id):
     return render_template(
         'buchung/vorauszahlung.html',
         buchung=buchung,
+        besucher=buchung.besucher,
         form=form,
         title='Vorauszahlung erfassen',
         run_mode=current_app.env,

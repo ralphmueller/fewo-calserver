@@ -1,25 +1,16 @@
 *.pyc
 __pycache__/
-
 instance/
-
 .pytest_cache/
 .coverage
 htmlcov/
-
 dist/
 build/
 *.egg-info/
-
 node_modules/
-
 config/
-
 .vscode/
-
 .DS_Store
 .env
-
 .webassets-cache
 
-.DS_Store
