@@ -1,10 +1,19 @@
 # Installation
 
-##code 
+## from bitbucket.org
 
-### from bitbucket.org
+### clone
 
     git clone https://ralph_mueller@bitbucket.org/ralph_mueller/fewo-calserver.git
+
+or 
+
+    git clone git@bitbucket.org:ralph_mueller/fewo-calserver.git
+
+### change origin to ssh 
+
+    git remote set-url origin git@bitbucket.org:ralph_mueller/fewo-calserver.git
+    git remote -v
 
 ## node modules
 
@@ -13,9 +22,9 @@
 
 ## pipenv
 
-create pipenv for the defined python version (=> 3.8) and install
+create pipenv for the required python version  and install
 
-    pipenv --python 3.x
+    pipenv --python 3.9
     ppipenv install
 
 ## pythonpacks
