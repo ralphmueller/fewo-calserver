@@ -9,6 +9,7 @@ import re
 from os import environ, path
 from dotenv import load_dotenv
 import datetime
+import socket
 from bkormlib.schema import db_connect
 from rmemaillib.email import EmailObject
 
@@ -38,6 +39,8 @@ class Config:
     print('database: ', re.sub(r":\w+@", ":_______@", DATABASE))
     DB = db_connect(FLASK_ENV, DATABASE)
     MAILER = EmailObject.from_object(EmailConfig)
+    HOST = socket.gethostname()
+    IP_ADDESS = socket.gethostbyname(HOST)
 
     # for the assets pipeline
     ASSETS_DEBUG = False

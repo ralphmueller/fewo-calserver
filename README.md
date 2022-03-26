@@ -79,6 +79,10 @@ Important: To avoid error like [mysql out of sync](https://github.com/PyMySQL/Py
 
 Comments
 
+    localtion: /etc/systemd/system/flaskr.service
+    start: sudo sytemctl start flaskr.service
+    load on startup: sudo sytemctl enable flaskr.service
+
 Type=idle    - waits for everything else being started .. [link](https://superuser.com/questions/544399/how-do-you-make-a-systemd-service-as-the-last-service-on-boot/573761#573761)
 
 Source

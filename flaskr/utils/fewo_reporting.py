@@ -348,7 +348,7 @@ def show_forecast_by_month(year):
 
     '''
 
-    year = 2023
+    # year = 2023
 
     today_in_year = datetime.date(
         year,
