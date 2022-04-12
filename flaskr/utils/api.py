@@ -80,7 +80,7 @@ class SystemInfo():
         if letter_type not in cls.letter_types:
             raise ValueError
         return (
-            cls.header_strings[buchung.besucher.language][letter_type]
+            cls.header_strings[buchung.besucher.language.lower()][letter_type]
             .format(
                 buchung.apartment.name,
                 buchung.apartment.beschreibung,
