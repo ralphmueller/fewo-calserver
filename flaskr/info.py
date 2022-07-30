@@ -3,6 +3,7 @@ Created on 28.12.2021
 
 @author: ralph
 '''
+from datetime import datetime
 from flask import Blueprint, render_template, current_app
 from flaskr.utils.api import SystemInfo
 import config
@@ -20,6 +21,7 @@ info_bp = Blueprint(
 def info():
     return render_template(
         'info.html',
+        dt=datetime.now(),
         title='Info',
         sysinfo=SystemInfo,
         no_besucher=SystemInfo.get_number_of_visitors(),
