@@ -304,7 +304,7 @@ def abrechnen(buchung_id):
     if form.validate_on_submit():
         # save meldeschein data
         buchung.meldeschein_nummer = form.meldeschein_nummer.data
-        # set status to abgrechnet
+        # set status to abgerechnet
         buchung.status = 'abgerechnet'
         buchung.rechnungs_nummer = '{}-{:03}-{}'.format(
             buchung.apartment.name,
