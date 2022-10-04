@@ -21,6 +21,8 @@ cssmin = "*"
 jsmin = "*"
 pythonpacks = {path = "./libs/pythonpacks-0.2.tar.gz", sys_platform = "== 'linux'"}
 
+pythonpacks = {path = "./libs/pythonpacks-0.2.tar.gz", sys_platform = "== 'linux'"}
+
 [dev-packages]
 flake8 = "*"
 rope = "*"
@@ -29,4 +31,8 @@ autopep8 = "*"
 flask-debugtoolbar = "*"
 
 [requires]
+<<<<<<< HEAD
 python = {version = ">=3.9"}
+=======
+python_version = ">=3.9"
+>>>>>>> vorauszahlung
