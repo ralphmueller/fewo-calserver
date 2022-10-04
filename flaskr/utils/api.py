@@ -402,7 +402,7 @@ def send_angebot_emails(buchung, email_text):
 
 def send_update_emails(buchung, buchung_alt, res):
     # send emails
-    if 'vorauszahlung' in res and buchung.anreise <= date.today():
+    if 'vorauszahlung' in res and buchung.anreise > date.today():
         # send payment confirmation to besucher
         # 26.10.2022: Only send if is really a prepayment, and not if it is 
         #   just a transfer after the visit

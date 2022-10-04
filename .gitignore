@@ -13,4 +13,6 @@ config/
 .DS_Store
 .env
 .webassets-cache
+.jython_cache/
+libs/*
 
