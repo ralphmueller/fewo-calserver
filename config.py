@@ -40,7 +40,7 @@ class Config:
     DB = db_connect(FLASK_ENV, DATABASE)
     MAILER = EmailObject.from_object(EmailConfig)
     HOST = socket.gethostname()
-    IP_ADDESS = socket.gethostbyname(HOST)
+    IP_ADDRESS = socket.gethostbyname(HOST)
 
     # for the assets pipeline
     ASSETS_DEBUG = False
