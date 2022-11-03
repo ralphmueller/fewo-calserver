@@ -36,7 +36,7 @@ class Config:
     PERMANENT_SESSION_LIFETIME = datetime.timedelta(minutes=30)
     SECRET_KEY = environ.get('SECRET_KEY')
     DATABASE = environ.get(FLASK_ENV.upper() + '_DATABASE')
-    print('database: ', re.sub(r":\w+@", ":_______@", DATABASE)) # mask user name/password
+    print('database: ', re.sub(r":\w+@", ":_______@", DATABASE))    # mask user name/password
     DB = db_connect(FLASK_ENV, DATABASE)
     MAILER = EmailObject.from_object(EmailConfig)
     HOST = socket.gethostname()

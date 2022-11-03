@@ -296,7 +296,7 @@ def calc_forecast_today():
                 fn.SUM(Buchung.miete).alias('miete_sum'),
                 fn.SUM(Buchung.kurtaxe).alias('kurtaxe_sum'))
             .where(
-                (Buchung.status << ['abgerechnet', 'gebucht', 'storno']) &
+                (Buchung.status << ['abgerechnet', 'gebucht']) &
                 (fn.YEAR(Buchung.abreise) == year) &
                 (Buchung.tscreated <= today_in_year))
         )
