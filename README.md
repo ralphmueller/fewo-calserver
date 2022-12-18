@@ -1,3 +1,19 @@
+
+# Latest
+
+## Kurtaxe ändert sich für 2023
+
+[Beschluss Stadt Gersfeld](https://www.gersfeld.de/satzungen-gebuehren.html)
+
+In Kürze die Änderungen ab 2013:
+
+* Kurbeitrag nach Vollendung des 14. Lebensjahres: 2,10€
+* Für Ausübung des Berufes: 0,50€
+* bis Vollendung des 14. Lebensjahres: 0,00€
+* verschiedene Ausnahmen
+
+Anpassung der App zum 1. Januar 2023 
+
 # Installation
 
 ## from bitbucket.org

@@ -19,7 +19,7 @@ mailer = Config.MAILER
 
 class SystemInfo():
 
-    version_tag = 'beta.9'
+    version_tag = 'beta.10'
 
     letter_types = [
         'angebot',
@@ -183,7 +183,7 @@ def update_besucher(form, besucher):
 def update_buchung(form, buchung):
     """
         check the relevant buchung fields, recalc and save if needed
-        Note: change in vorauszahlung has to be handled differntly
+        Note: change in vorauszahlung has to be handled differently
               with an email notice to visitor
     """
     typecheck(buchung.anreise, form.anreise.data, 'anreise')

@@ -73,12 +73,12 @@ class BuchungForm(FlaskForm):
     )
 
     kurtaxe_hz = IntegerField(
-        'Kinder 10-15J',
+        'Beruflich',
         default=0
     )
 
     kurtaxe_kinder = IntegerField(
-        'Kinder unter 10J',
+        'Kinder unter 15J',
         default=0
     )
     kurtaxe_nz = IntegerField(
