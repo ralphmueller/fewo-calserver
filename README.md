@@ -5,7 +5,7 @@
 
 [Beschluss Stadt Gersfeld](https://www.gersfeld.de/satzungen-gebuehren.html)
 
-In Kürze die Änderungen ab 2013:
+In Kürze die Änderungen ab 2023:
 
 * Kurbeitrag nach Vollendung des 14. Lebensjahres: 2,10€
 * Für Ausübung des Berufes: 0,50€
@@ -14,13 +14,17 @@ In Kürze die Änderungen ab 2013:
 
 Anpassung der App zum 1. Januar 2023 
 
+Einige kleine Änderungen / Verbesserungen
+
+Rev: 1.1
+
 # Installation
 
 ## from bitbucket.org
 
 ### clone
 
-    git clone https://ralph_mueller@bitbucket.org/ralph_mueller/fewo-calserver.git
+    git clone git@bitbucket.org:ralph_mueller/fewo-calserver.git
 
 or 
 
@@ -41,7 +45,7 @@ or
 create pipenv for the required python version  and install
 
     pipenv --python 3.9
-    ppipenv install
+    pipenv install
 
 ## pythonpacks
 

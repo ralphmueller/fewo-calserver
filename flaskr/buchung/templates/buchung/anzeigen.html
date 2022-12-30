@@ -34,12 +34,12 @@
         {{render_field("label", "col-3", "Summe", buchung.summe | euro_currency, "")}}   
     </div> <!-- row -->       
     <div class="row">
-        {{render_field("label", "col-3", "Personen ab 15J", buchung.kurtaxe_vz, "")}}
+        {{render_field("label", "col-3", "Personen ab 14J", buchung.kurtaxe_vz, "")}}
         {{render_field("label", "col-3", "Beruflich", buchung.kurtaxe_hz, "")}}   
         {{render_field("label", "col-3", "Restbetrag", (buchung.summe - buchung.vorauszahlung) | euro_currency, "")}}
     </div> <!-- row -->    
     <div class="row">
-        {{render_field("label", "col-3", "Kinder unter 15J", buchung.kurtaxe_kinder, "")}}
+        {{render_field("label", "col-3", "Kinder unter 14J", buchung.kurtaxe_kinder, "")}}
         {{render_field("label", "col-3", "Kurtaxe befreit", buchung.kurtaxe_nz, "")}}   
         {{render_field("label", "col-3", "Status", buchung.status, "")}}
     </div> <!-- row -->                
