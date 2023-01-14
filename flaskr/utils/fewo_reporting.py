@@ -282,7 +282,7 @@ def calc_income_apartment(apt_name, year):
 def calc_forecast_today():
 
     dataset = []
-    years = [2017, 2018, 2019, 2020, 2021, 2022, 2023]
+    years = [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
     for year in years:
         today_in_year = datetime.date(
             year,
