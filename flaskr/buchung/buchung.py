@@ -44,6 +44,22 @@ from flaskr.utils.api import (
     send_update_emails,
     send_storno_emails)
 
+# ToDo - locale aabhängige Lösung wäre besser
+months = [
+    "Jan",
+    "Feb",
+    "Mär",
+    "Apr",
+    "Mai",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Okt",
+    "Nov",
+    "Dez",
+    ]
+
 buchung_bp = Blueprint(
     'buchung_bp',
     __name__,
@@ -70,6 +86,21 @@ def index():
         year = datetime.date.today().year
     else:
         year = int(request.args.get('year'))
+
+    if request.args.get('month') is None:
+        month = months[datetime.date.today().month - 1]
+    else:
+        month = request.args.get('month')
+
+    start_month = months.index(month) + 1
+
+    if month == 'Dez':
+        end_year = year + 1
+        end_month = 1
+    else:
+        end_year = year
+        end_month = months.index(month) + 2
+
     query = (
         Buchung
         .select()
@@ -77,12 +108,11 @@ def index():
         .switch(Buchung)
         .join(Besucher)
         .where(
-            Buchung.status.in_(where_list) &
-            Buchung.anreise.between(
-                datetime.date(year, 1, 1),
-                datetime.date(year + 1, 1, 1))
+            (Buchung.status.in_(where_list)) &
+            (Buchung.anreise >= datetime.date(year, start_month, 1)) &
+            (Buchung.anreise < datetime.date(end_year, end_month, 1))
         )
-        .order_by(Buchung.anreise.desc())
+        .order_by(Buchung.anreise.asc())
     )
 
     return render_template(
@@ -93,8 +123,10 @@ def index():
             len(list(query))),
         buchungen=query,
         year=year,
+        month=month,
         status=request_params_status,
         years=SystemInfo.get_years(),
+        months=months,
         run_mode=current_app.env)
 
 
@@ -124,7 +156,7 @@ def create_buchung(besucher_id):
         if besucher.email == "":
             flash('Besucher hat keine Email Adresse', 'error')
 
-        return(redirect(url_for('buchung_bp.create_buchung_finish')))
+        return redirect(url_for('buchung_bp.create_buchung_finish'))
 
     return render_template(
         'buchung/create.html',
@@ -175,7 +207,7 @@ def create_buchung_finish():
                 buchung.besucher.name,
                 buchung.besucher.vorname
             ))
-        return(
+        return (
             redirect(
                 url_for(
                     'besucher_bp.update',
@@ -218,7 +250,7 @@ def update(buchung_id):
             'Buchung {} mit Status {} kann nicht geändert werden!</br> \
             Vorauszahlung siehe linke Seite!'
             .format(buchung.id, buchung.status), 'error')
-        return(redirect(url_for('home_bp.index')))
+        return redirect(url_for('home_bp.index'))
 
     form = BuchungForm(obj=buchung)
 
@@ -237,7 +269,7 @@ def update(buchung_id):
                 buchung.id, buchung.besucher.name
                 ))
 
-        return(
+        return (
             redirect(
                 url_for(
                     'besucher_bp.update',
@@ -298,7 +330,7 @@ def abrechnen(buchung_id):
         flash(
             'Buchung {} mit Status {} kann nicht abgerechnet werden!'
             .format(buchung.id, buchung.status), 'error')
-        return(redirect(url_for('home_bp.index')))
+        return redirect(url_for('home_bp.index'))
     form = MeldescheinForm()
 
     if form.validate_on_submit():
@@ -312,7 +344,7 @@ def abrechnen(buchung_id):
             datetime.date.today().year)
         buchung.rechnungsdatum = buchung.anreise
         buchung.save()
-        return(
+        return (
             redirect(
                 url_for(
                     'besucher_bp.update',
@@ -452,7 +484,7 @@ def create_angebot(besucher_id):
             # TODO: Liste der verfügbaren Aprtments
             flash('Apartment ist nicht verfügbar!', 'error')
 
-        return(redirect(url_for('buchung_bp.create_angebot_finish')))
+        return redirect(url_for('buchung_bp.create_angebot_finish'))
 
     return render_template(
         'buchung/create.html',
@@ -502,7 +534,7 @@ def create_angebot_finish():
                 buchung.besucher.name,
                 buchung.besucher.vorname
             ))
-        return(
+        return (
             redirect(
                 url_for(
                     'besucher_bp.update',
@@ -551,7 +583,7 @@ def convert_angebot(buchung_id):
                 buchung.besucher.name,
                 buchung.besucher.vorname
             ))
-        return(
+        return (
             redirect(
                 url_for(
                     'besucher_bp.update',
@@ -588,7 +620,7 @@ def drop_angebot(buchung_id):
             buchung.besucher.name,
             buchung.besucher.vorname
         ))
-    return(
+    return (
         redirect(
             url_for(
                 'besucher_bp.update',
@@ -612,7 +644,7 @@ def update_vorauszahlung(buchung_id):
         flash(
             'Buchung {} mit Status {} kann nicht abgerechnet werden!'
             .format(buchung.id, buchung.status), 'error')
-        return(redirect(url_for('home_bp.index')))
+        return redirect(url_for('home_bp.index'))
 
     form = VorauszahlungForm(obj=buchung)
 
@@ -633,7 +665,7 @@ def update_vorauszahlung(buchung_id):
                 buchung.id, buchung.besucher.name
                 ))
 
-        return(
+        return (
             redirect(
                 url_for(
                     'besucher_bp.update',

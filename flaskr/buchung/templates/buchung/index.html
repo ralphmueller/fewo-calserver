@@ -17,7 +17,15 @@
 				<li class="nav-item {{highlight}}"><a class="nav-link" target="_self" href="{{url_for('buchung_bp.index', year=y, status=status)}}">{{y}}</a></li>
 			{% endfor %}
 		</ul>
-		{% if buchungen | length > 0 %}
+		<ul class="flex-horizontal">
+			{% for m in months %}
+				{% if m == month %}
+					{% set highlight = 'highlight' %}
+				{% endif %}
+				<li class="nav-item {{highlight}}"><a class="nav-link" target="_self" href="{{url_for('buchung_bp.index', year=year, month=m, status=status)}}">{{m}}</a></li>
+			{% endfor %}
+		</ul>
+		{% if buchungen | length > 0 %}
 			<table class="table table-bordered table-condensed table-hover">
 				{% include 'includes/buchung-header.html' %}
 				<tbody>	
