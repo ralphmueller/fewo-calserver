@@ -12,7 +12,7 @@
 
 <p>Datum: {{dt}} </p>
 <p>Version: {{sysinfo.version_tag}}</p>
-<p>Umgebung: {{config.FLASK_ENV}}</p>
+<p>Umgebung: {{config.ENV}}</p>
 <p>Host: {{config.HOST}} - IP {{config.IP_ADDRESS}}</p>
 <p>Datenbank: {{config.DATABASE | filter_db_url }}</p>
 <p>Emails Team: {{','.join(config.EMAILS_TEAM)}}</p>

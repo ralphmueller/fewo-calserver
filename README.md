@@ -1,17 +1,29 @@
 
 # Latest
 
-## Liste Rechnungen und Buchungen (28.02.2023)
+## Rev: 1.2 (28.02.2023) 
+
+### Liste Rechnungen und Buchungen 
 
 * getrennt nach Monaten anzeigbar
 * Liste Rechnungen: alle Rechnungen mit Abreise im gewählten Monat, sortiert nach absteigendem Datum
 * Liste Buchungen: alle Rechnungen mit Anreise im gewählten Monat, sortiert nach aufsteigendem Datum
 
-## Kurtaxe ändert sich für 2023
+### FLASK_ENV
+
+was deprecated in the current FLASK release, so I took it out. .env file still reads ENV variable to configure the DB, mailer, etc.
+
+### Logging
+
+added simple code to flaskr/__init__.py to supress url logging on console
+
+## Rev: 1.1
+
+Kurtaxe ändert sich für 2023 
 
 [Beschluss Stadt Gersfeld](https://www.gersfeld.de/satzungen-gebuehren.html)
 
-In Kürze die Änderungen ab 2023:
+Kurze Zusammenfdassung der Änderungen ab 2023:
 
 * Kurbeitrag nach Vollendung des 14. Lebensjahres: 2,10€
 * Für Ausübung des Berufes: 0,50€
@@ -21,8 +33,6 @@ In Kürze die Änderungen ab 2023:
 Anpassung der App zum 1. Januar 2023 
 
 Einige kleine Änderungen / Verbesserungen
-
-Rev: 1.1
 
 # Installation
 

@@ -15,8 +15,7 @@ from rmemaillib.email import EmailObject
 
 basedir = path.abspath(path.dirname(__file__))
 load_dotenv(path.join(basedir, '.env'))
-print('basedir: ', basedir)
-print('env: ', environ.get('FLASK_ENV'))
+print('env: ', environ.get('ENV'))
 
 
 class EmailConfig:
@@ -30,14 +29,14 @@ class EmailConfig:
 
 class Config:
     """Set Flask config variables."""
-    FLASK_ENV = environ.get('FLASK_ENV')
+    ENV = environ.get('ENV')
     STATIC_FOLDER = 'static'
     TEMPLATES_FOLDER = 'templates'
     PERMANENT_SESSION_LIFETIME = datetime.timedelta(minutes=30)
     SECRET_KEY = environ.get('SECRET_KEY')
-    DATABASE = environ.get(FLASK_ENV.upper() + '_DATABASE')
+    DATABASE = environ.get(ENV.upper() + '_DATABASE')
     print('database: ', re.sub(r":\w+@", ":_______@", DATABASE))    # mask user name/password
-    DB = db_connect(FLASK_ENV, DATABASE)
+    DB = db_connect(ENV, DATABASE)
     MAILER = EmailObject.from_object(EmailConfig)
     HOST = socket.gethostname()
     IP_ADDRESS = socket.gethostbyname(HOST)
@@ -46,17 +45,17 @@ class Config:
     ASSETS_DEBUG = False
     ASSETS_AUTO_BUILD = True
 
-    if FLASK_ENV == 'development':
+    if ENV == 'development':
         TESTING = True
         EMAILS_TEAM = ['ralph.mueller.de@gmail.com']
         INFO_EMAIL = ['ralph.mueller.de@gmail.com']
-    if FLASK_ENV == 'staging':
+    if ENV == 'staging':
         TESTING = True
         SERVER_NAME = 'garten4a.dyndns-remote.com'
         EMAILS_TEAM = ['ralph.mueller.de@gmail.com']
         INFO_EMAIL = ['ralph.mueller.de@gmail.com']
         SERVER_NAME = 'garten4a.dyndns-remote.com:8082'
-    if FLASK_ENV == 'production':
+    if ENV == 'production':
         SERVER_NAME = 'garten4a.dyndns-remote.com:82'
         TESTING = False
         EMAILS_TEAM = [

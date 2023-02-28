@@ -21,6 +21,10 @@ def create_app(test_config=None):
     else:
         app.config.update(test_config)
 
+    import logging
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.ERROR)
+
     CORS(app)
     csrf.init_app(app)
 
