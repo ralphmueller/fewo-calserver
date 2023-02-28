@@ -11,6 +11,7 @@ Created on 04.10.2021
 '''
 from babel.dates import format_date
 import datetime
+from calendar import monthrange
 from flask import (
     Blueprint,
     render_template,
@@ -44,7 +45,7 @@ from flaskr.utils.api import (
     send_update_emails,
     send_storno_emails)
 
-# ToDo - locale aabhängige Lösung wäre besser
+# ToDo - locale abhängige Lösung wäre besser
 months = [
     "Jan",
     "Feb",
@@ -94,12 +95,25 @@ def index():
 
     start_month = months.index(month) + 1
 
-    if month == 'Dez':
-        end_year = year + 1
-        end_month = 1
+    last_day = monthrange(year, start_month)[1]
+
+    if 'abgerechnet' in where_list:
+        where_clause = (
+            (Buchung.status.in_(where_list)) &
+            (Buchung.abreise.between(
+                datetime.date(year, start_month, 1),
+                datetime.date(year, start_month, last_day)
+            )))
+        orderby_clause = Buchung.abreise.desc()
     else:
-        end_year = year
-        end_month = months.index(month) + 2
+        where_clause = (
+                (Buchung.status.in_(where_list)) &
+                (Buchung.anreise.between(
+                    datetime.date(year, start_month, 1),
+                    datetime.date(year, start_month, last_day)
+                ))
+            )
+        orderby_clause = Buchung.anreise.asc()
 
     query = (
         Buchung
@@ -107,12 +121,8 @@ def index():
         .join(Apartment)
         .switch(Buchung)
         .join(Besucher)
-        .where(
-            (Buchung.status.in_(where_list)) &
-            (Buchung.anreise >= datetime.date(year, start_month, 1)) &
-            (Buchung.anreise < datetime.date(end_year, end_month, 1))
-        )
-        .order_by(Buchung.anreise.asc())
+        .where(where_clause)
+        .order_by(orderby_clause)
     )
 
     return render_template(

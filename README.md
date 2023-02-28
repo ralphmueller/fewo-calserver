@@ -1,6 +1,12 @@
 
 # Latest
 
+## Liste Rechnungen und Buchungen (28.02.2023)
+
+* getrennt nach Monaten anzeigbar
+* Liste Rechnungen: alle Rechnungen mit Abreise im gewählten Monat, sortiert nach absteigendem Datum
+* Liste Buchungen: alle Rechnungen mit Anreise im gewählten Monat, sortiert nach aufsteigendem Datum
+
 ## Kurtaxe ändert sich für 2023
 
 [Beschluss Stadt Gersfeld](https://www.gersfeld.de/satzungen-gebuehren.html)
@@ -23,10 +29,6 @@ Rev: 1.1
 ## from bitbucket.org
 
 ### clone
-
-    git clone git@bitbucket.org:ralph_mueller/fewo-calserver.git
-
-or 
 
     git clone git@bitbucket.org:ralph_mueller/fewo-calserver.git
 
