@@ -19,7 +19,7 @@ uwsgi = "*"
 flask-assets = ">=2.0"
 cssmin = "*"
 jsmin = "*"
-pythonpacks = {path = "./libs/pythonpacks-0.2.tar.gz", sys_platform = "== 'linux'"}
+pythonpacks = {path = "./libs/pythonpacks-1.1.tar.gz", sys_platform = "== 'linux'"}
 
 [dev-packages]
 flake8 = "*"

@@ -19,7 +19,7 @@ mailer = Config.MAILER
 
 class SystemInfo():
 
-    version_tag = 'rev.1.2'
+    version_tag = 'rev.1.3'
 
     letter_types = [
         'angebot',
