@@ -52,7 +52,7 @@ def index():
             number_besucher=len(data),
             title='Besucherliste',
             data=data,
-            run_mode=current_app.env
+            run_mode=current_app.config['ENV']
         )
     else:
         flash('no visitors found')
@@ -65,7 +65,7 @@ def find():
     return render_template(
         'besucher/find.html',
         title="Finde Besucher",
-        run_mode=current_app.env)
+        run_mode=current_app.config['ENV'])
 
 
 @besucher_bp.route('/create', methods=('GET', 'POST'))
@@ -89,7 +89,7 @@ def create():
         'besucher/create.html',
         form=form,
         title='Neuen Besucher anlegen',
-        run_mode=current_app.env,
+        run_mode=current_app.config['ENV'],
         template='form-template'
     )
 
@@ -136,5 +136,5 @@ def update(besucher_id):
                 'angebot']],
         besucher=besucher,
         list_type='long',
-        run_mode=current_app.env
+        run_mode=current_app.config['ENV']
     )

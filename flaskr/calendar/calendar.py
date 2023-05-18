@@ -49,7 +49,7 @@ def monthly_calendar():
         year=year,
         days=days_in_month(year, month),
         data=fewocalendar.calendar_for_apartments(year, month),
-        run_mode=current_app.env
+        run_mode=current_app.config['ENV']
     )
 
 

@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 peewee = "*"
-flask = "2.0.2"
+flask = "2.3.1"
 pymysql = "*"
 flask-wtf = ">=1.0"
 email-validator = "*"

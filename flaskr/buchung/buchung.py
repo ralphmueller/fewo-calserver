@@ -137,7 +137,7 @@ def index():
         status=request_params_status,
         years=SystemInfo.get_years(),
         months=months,
-        run_mode=current_app.env)
+        run_mode=current_app.config['ENV'])
 
 
 @buchung_bp.route('/create/<int:besucher_id>', methods=('GET', 'POST'))
@@ -173,7 +173,7 @@ def create_buchung(besucher_id):
         besucher=besucher,
         form=form,
         title='Buchung anlegen',
-        run_mode=current_app.env,
+        run_mode=current_app.config['ENV'],
         template='form-template'
     )
 
@@ -229,7 +229,7 @@ def create_buchung_finish():
         buchung=buchung,
         form=form,
         title='Neue Buchung fertigstellen',
-        run_mode=current_app.env,
+        run_mode=current_app.config['ENV'],
         template='form-template')
 
 
@@ -302,7 +302,7 @@ def update(buchung_id):
         title='Buchung ändern',
         buchungen=buchung,
         besucher=buchung.besucher,
-        run_mode=current_app.env
+        run_mode=current_app.config['ENV']
     )
 
 
@@ -367,7 +367,7 @@ def abrechnen(buchung_id):
         # actions=actions,
         title='Buchung abrechnen',
         besucher=buchung.besucher,
-        run_mode=current_app.env
+        run_mode=current_app.config['ENV']
     )
 
 
@@ -430,7 +430,7 @@ def anzeigen(buchung_id):
         actions=actions,
         title='{} anzeigen'.format(buchung.status.capitalize()),
         besucher=buchung.besucher,
-        run_mode=current_app.env
+        run_mode=current_app.config['ENV']
     )
 
 
@@ -455,7 +455,7 @@ def rechnung(buchung_id):
         actions=actions,
         mwst_satz=StaticValuesBuchung.mwstsatz(),
         title='Buchung anzeigen',
-        run_mode=current_app.env
+        run_mode=current_app.config['ENV']
     )
 
 
@@ -501,7 +501,7 @@ def create_angebot(besucher_id):
         besucher=besucher,
         form=form,
         title='Angebot anlegen',
-        run_mode=current_app.env,
+        run_mode=current_app.config['ENV'],
         template='form-template'
     )
 
@@ -556,7 +556,7 @@ def create_angebot_finish():
         buchung=buchung,
         form=form,
         title='Neues Angebot fertigstellen',
-        run_mode=current_app.env,
+        run_mode=current_app.config['ENV'],
         template='form-template')
 
 
@@ -605,7 +605,7 @@ def convert_angebot(buchung_id):
         buchung=buchung,
         form=form,
         title='Angebot umwandeln',
-        run_mode=current_app.env,
+        run_mode=current_app.config['ENV'],
         template='form-template')
 
 
@@ -687,5 +687,5 @@ def update_vorauszahlung(buchung_id):
         besucher=buchung.besucher,
         form=form,
         title='Vorauszahlung erfassen',
-        run_mode=current_app.env,
+        run_mode=current_app.config['ENV'],
         template='form-template')

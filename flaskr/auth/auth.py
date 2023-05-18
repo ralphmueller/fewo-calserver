@@ -57,7 +57,7 @@ def login():
         'login.html',
         form=form,
         title='Anmelden',
-        run_mode=current_app.env,
+        run_mode=current_app.config['ENV'],
         template='form-template'
     )
 
@@ -104,7 +104,7 @@ def change_password():
         form=form,
         user=user,
         title='Password ändern',
-        run_mode=current_app.env,
+        run_mode=current_app.config['ENV'],
         template='form-template')
 
 
@@ -126,6 +126,6 @@ def register():
         'register.html',
         form=form,
         title='Benutzer anlegen',
-        run_mode=current_app.env,
+        run_mode=current_app.config['ENV'],
         template='form-template'
     )
