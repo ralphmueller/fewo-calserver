@@ -39,7 +39,7 @@ def income_year():
     for apt in APTS:
         data.append([apt, *calc_income_apartment(apt, year)])
     return render_template('income_year_by_apartment.html',
-        data=data, run_mode=current_app.env)
+        data=data, run_mode=current_app.config['ENV']))
 '''
 
 
@@ -55,7 +55,7 @@ def income_forcast():
         data=calc_forecast_today(),
         abgerechnet=calc_actuals_today(),
         title="Forecast (Stand heute)",
-        run_mode=current_app.env)
+        run_mode=current_app.config['ENV'])
 
 
 @bp.route('/income_and_commission')
@@ -65,7 +65,7 @@ def income_and_commission():
         sel='',
         title="Einnahmen und Kommission",
         rest_url='/stats/rest/income_and_commission/',
-        run_mode=current_app.env)
+        run_mode=current_app.config['ENV'])
 
 
 @bp.route('/income_apartments')
@@ -75,7 +75,7 @@ def income_apartments():
         sel='',
         title="Einnahmen Apartments",
         rest_url='/stats/rest/income_apartments',
-        run_mode=current_app.env)
+        run_mode=current_app.config['ENV'])
 
 
 @bp.route('/income_and_commission/<apartment_name>')
@@ -85,7 +85,7 @@ def apartment_income_and_commission(apartment_name):
         sel=apartment_name,
         title=apartment_name + " Einnahmen und Kommission",
         rest_url='/stats/rest/income_apartment_and_commission/',
-        run_mode=current_app.env)
+        run_mode=current_app.config['ENV'])
 
 
 @bp.route('/rest/income_year')
@@ -133,5 +133,5 @@ def abgerechnete_besuche():
     return render_template(
         'abgerechnete-besuche.html',
         data=aggregate_byMonth_byApartment(),
-        run_mode=current_app.env,
+        run_mode=current_app.config['ENV'],
     )

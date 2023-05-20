@@ -27,4 +27,4 @@ def info():
         no_besucher=SystemInfo.get_number_of_visitors(),
         no_buchungen=SystemInfo.get_number_of_bookings(),
         config=config.Config,
-        run_mode=current_app.env)
+        run_mode=current_app.config['ENV'])

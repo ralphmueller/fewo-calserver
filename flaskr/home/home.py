@@ -66,4 +66,4 @@ def index():
         anreisen=list(anreisen),
         abreisen=list(abreisen),
         angebote=list(angebote),
-        run_mode=current_app.env)
+        run_mode=current_app.config['ENV'])
