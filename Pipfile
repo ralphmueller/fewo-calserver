@@ -5,21 +5,22 @@ name = "pypi"
 
 [packages]
 peewee = "*"
-flask = "2.0.2"
+flask = "*"
 pymysql = "*"
-flask-wtf = ">=1.0"
+flask-wtf = "*"
 email-validator = "*"
 babel = "*"
 pytest = "*"
 python-dotenv = "*"
-flask-cors = ">=3.0"
+flask-cors = "*"
 wtforms = "*"
 cd = "*"
 uwsgi = "*"
-flask-assets = ">=2.0"
+flask-assets = "*"
 cssmin = "*"
 jsmin = "*"
-pythonpacks = {path = "./libs/pythonpacks-1.1.tar.gz", sys_platform = "== 'linux'"}
+# pythonpacks = {path = "./libs/pythonpacks-1.1.tar.gz"}
+blinker = "*"
 
 [dev-packages]
 flake8 = "*"
@@ -29,4 +30,4 @@ autopep8 = "*"
 flask-debugtoolbar = "*"
 
 [requires] 
-python = {version = ">=3.9"}
+python = {version = ">=3.11"}
