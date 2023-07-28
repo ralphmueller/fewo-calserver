@@ -12,7 +12,7 @@ config/
 .vscode/
 .DS_Store
 .env
-.webassets-cache
+flaskr/static/.webassets-cache/
 .jython_cache/
 libs/*
 Pipfile.lock
