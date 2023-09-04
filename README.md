@@ -1,6 +1,10 @@
 
 # Latest
 
+## Rev: 1.4 (04.09.2023)
+
+Fixed calendar FiG Website links (Prices)
+
 ## Rev: 1.2 (28.02.2023) 
 
 ### Liste Rechnungen und Buchungen 
