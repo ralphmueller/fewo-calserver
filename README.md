@@ -85,19 +85,35 @@ create pipenv for the required python version  and install
 
 Important: To avoid error like [mysql out of sync](https://github.com/PyMySQL/PyMySQL/issues/563) see link (https://stackoverflow.com/questions/22752521/uwsgi-flask-sqlalchemy-and-postgres-ssl-error-decryption-failed-or-bad-reco) use the fix below.
 
-    [uwsgi]
-    module = wsgi
+	[uwsgi]
 
-    master = true
-    processes = 5
+	# important: change target directory to actual settings
+	chdir = /home/pi/fewo-calserver
 
-    # the fix
-    lazy = true
-    lazy-apps = true
+	module = wsgi
+	callable = application
 
-    socket = /tmp/flaskr.sock
-    chmod-socket = 660
-    vacuum = true
+	master = true
+	processes = 5
+
+	# the fix
+	lazy = true
+	lazy-apps = true
+
+	socket = /tmp/flaskr.sock
+	chmod-socket = 666
+	vacuum = true
+
+	# os writer error
+
+	ignore-sigpipe = true
+	ignore-write-errors = true
+	disable-write-exception = true
+
+	# logging
+
+	log-5xx = true
+	disable-logging = true
 
 ## nginx conf
 
@@ -115,9 +131,14 @@ Important: To avoid error like [mysql out of sync](https://github.com/PyMySQL/Py
 
 Comments
 
-    localtion: /etc/systemd/system/flaskr.service
-    start: sudo sytemctl start flaskr.service
-    load on startup: sudo sytemctl enable flaskr.service
+    location: /etc/systemd/system/flaskr.service
+start: 
+
+	sudo systemctl start flaskr.service
+
+load on startup: 
+
+	sudo systemctl enable flaskr.service
 
 Type=idle    - waits for everything else being started .. [link](https://superuser.com/questions/544399/how-do-you-make-a-systemd-service-as-the-last-service-on-boot/573761#573761)
 
