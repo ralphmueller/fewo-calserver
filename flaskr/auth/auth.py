@@ -78,10 +78,24 @@ def logout():
 
 
 def login_required(view):
+    ''' need to login before accessing this view '''
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
             return redirect(url_for('auth_bp.login'))
+        return view(**kwargs)
+    return wrapped_view
+
+
+def admin_required(view):
+    ''' need to be admin to access this view '''
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.user is None:
+            return redirect(url_for('auth_bp.login'))
+        else:
+            if not g.admin:
+                return redirect(url_for('auth_bp.login'))
         return view(**kwargs)
     return wrapped_view
 
