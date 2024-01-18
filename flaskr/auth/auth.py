@@ -40,16 +40,27 @@ def login():
         error = None
         try:
             user = User.get(User.username == form.user.data)
-            if not check_password_hash(user.password, form.password.data):
-                error = error_message
         except DoesNotExist:
             error = error_message
+            current_app.logger.warning('username %s invalid', form.user.data)
             session.clear()
+
+        if error is None:
+            if not check_password_hash(user.password, form.password.data):
+                # wrong password
+                error = error_message
+                current_app.logger.warning(
+                    'user %s wrong password',
+                    form.user.data)
 
         if error is None:
             session.clear()
             session['user_id'] = user.id
+            current_app.logger.info(
+                'user %s logged in',
+                form.user.data)
             return redirect(url_for('home_bp.index'))
+        
         flash(error, 'error')
         return redirect(url_for('auth_bp.login'))
 

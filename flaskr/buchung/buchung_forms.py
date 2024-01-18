@@ -85,12 +85,14 @@ class BuchungForm(FlaskForm):
         'Kurtaxe befreit',
         default=0
     )
-
+    kurtaxe_korrekturwert = DecimalField(
+        'Kurtaxe Korrektur',
+        default=0.0
+    )
     preis_nacht = DecimalField(
         'Preis/Nacht',
         default=0.0
     )
-
     rabatt = DecimalField(
         'Rabatt(%)',
         default=0

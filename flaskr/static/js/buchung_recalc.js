@@ -49,8 +49,10 @@ window.onload = function() {
     const rabatt = document.querySelector('#rabatt');
     const zusatzkosten = document.querySelector('#zusatzkosten');
     const kurtaxe_vz = document.querySelector('#kurtaxe_vz');
+	const kurtaxe_hz = document.querySelector('#kurtaxe_hz');
     const ktsatz_hz = document.querySelector('#ktsatz_hz');
     const ktsatz_vz = document.querySelector('#ktsatz_vz');
+	const kurtaxe_korrekturwert = document.querySelector('#kurtaxe_korrekturwert');
     const vorauszahlung = document.querySelector('#vorauszahlung');
     // calculated 
     const naechte = document.querySelector('#nächte');
@@ -64,15 +66,15 @@ window.onload = function() {
     abreise.addEventListener('change', (event) => {
 		naechte.innerHTML = datediff();
 		recalc();
-	  });
+	});
   
-	  anreise.addEventListener('change', (event) => {
+	anreise.addEventListener('change', (event) => {
 		let d1 = new Date(event.target.value);
 		d1.setDate(d1.getDate() + 2);
 		abreise.value = d1.toISOString().substring(0,10);
 		naechte.innerHTML = datediff();
 		recalc();
-	  });	
+	});	
 
     preis_nacht.addEventListener('change', (event) => {
       recalc();
@@ -98,6 +100,10 @@ window.onload = function() {
       recalc();
     });
 
+    kurtaxe_korrekturwert.addEventListener('change', (event) => {
+		recalc();
+	  });
+
 	function datediff(){
 		let d1 = new Date(anreise.value);
 		let d2 = new Date(abreise.value);
@@ -106,11 +112,12 @@ window.onload = function() {
   
 	function recalc() {
 		// 
-		// shall be triggered by
-		//  - # nights
+		// shall be triggered by change of
+		//  - arrival and/or departure
 		//  - preis_nacht
 		//  - zusatzkosten
 		//  - rabatt
+		//  - changes in kurtaxe_korrekturwert, kurtaxe_hz, kurtaxe_vz 
 		//
 		let nights = datediff(abreise.value, anreise.value);
 		let miete_value = parseFloat(preis_nacht.value) * nights * (1 - parseFloat(rabatt.value)/100) + parseFloat(zusatzkosten.value);
@@ -120,7 +127,7 @@ window.onload = function() {
 		  minimumFractionDigits: 2 
 		});
   
-		let kurtaxe_value = nights * (parseFloat(kurtaxe_vz.value) * parseFloat(ktsatz_vz.value) + parseFloat(kurtaxe_hz.value) * parseFloat(ktsatz_hz.value));
+		let kurtaxe_value = nights * (parseFloat(kurtaxe_vz.value) * parseFloat(ktsatz_vz.value) + parseFloat(kurtaxe_hz.value) * parseFloat(ktsatz_hz.value)) - parseFloat(kurtaxe_korrekturwert.value);
 		kurtaxe.innerHTML = kurtaxe_value.toLocaleString('de-DE', {
 		  style: 'currency', 
 		  currency: 'EUR', 

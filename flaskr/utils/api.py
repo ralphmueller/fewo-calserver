@@ -130,7 +130,7 @@ def create_besucher_from_form(form):
 
 
 def typecheck(a, b, c):
-    if type(a) != type(b):
+    if type(a) is not type(b):
         print('typecheck failed', c, type(a), type(b), a, b)
 
 
@@ -236,6 +236,13 @@ def update_buchung(form, buchung):
     if buchung.kurtaxe_nz != form.kurtaxe_nz.data:
         buchung.kurtaxe_nz = form.kurtaxe_nz.data
 
+    typecheck(
+        buchung.kurtaxe_korrekturwert,
+        form.kurtaxe_korrekturwert.data,
+        'kurtaxe_korrekturwert')
+    if buchung.kurtaxe_korrekturwert != form.kurtaxe_korrekturwert.data:
+        buchung.kurtaxe_korrekturwert = form.kurtaxe_korrekturwert.data
+
     typecheck(buchung.notiz, form.notiz.data, 'notiz')
     if buchung.notiz != form.notiz.data:
         buchung.notiz = form.notiz.data
@@ -251,7 +258,7 @@ def update_buchung(form, buchung):
 def calc_prepayment(form, buchung):
     """
         check the relevant buchung fields, recalc and save if needed
-        Note: change in vorauszahlung has to be handled differntly
+        Note: change in vorauszahlung has to be handled differently
               with an email notice to visitor
     """
 
@@ -404,7 +411,7 @@ def send_update_emails(buchung, buchung_alt, res):
     # send emails
     if 'vorauszahlung' in res and buchung.anreise > date.today():
         # send payment confirmation to besucher
-        # 26.10.2022: Only send if is really a prepayment, and not if it is 
+        # 26.10.2022: Only send if is really a prepayment, and not if it is
         #   just a transfer after the visit
         email_html = render_template(
             'emails/{}/buchung_vorauszahlung.html'
