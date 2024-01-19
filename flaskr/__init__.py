@@ -5,11 +5,28 @@ Rewrite Oct. 2021 -> new Booking program
 
 @author: ralph
 '''
+import sys
+import logging
 from flask import Flask, session, g
 from flask_cors import CORS
 from flask_wtf.csrf import CSRFProtect
 
 csrf = CSRFProtect()
+
+
+def createLogger(service_name):
+    logger = logging.getLogger(service_name)
+    logger.setLevel(logging.ERROR)
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    try:
+        from systemd import journal
+        logger.addHandler(journal.JournaldLogHandler())
+    except Exception:
+        streamHandler = logging.StreamHandler(sys.stdout)
+        streamHandler.setFormatter(formatter)
+        logger.addHandler(streamHandler)
+    return logger
 
 
 def create_app(test_config=None):
@@ -21,9 +38,7 @@ def create_app(test_config=None):
     else:
         app.config.update(test_config)
 
-    import logging
-    log = logging.getLogger('werkzeug')
-    log.setLevel(logging.ERROR)
+    _ = createLogger('fewo-calserver')
 
     CORS(app)
     csrf.init_app(app)
