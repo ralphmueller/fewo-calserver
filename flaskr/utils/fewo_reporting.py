@@ -311,7 +311,7 @@ def calc_forecast_today():
 def calc_actuals_today():
 
     dataset = []
-    years = [2017, 2018, 2019, 2020, 2021, 2022, 2023]
+    years = [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
     for year in years:
         today_in_year = datetime.date(
             year,
