@@ -60,7 +60,7 @@ def login():
                 'user %s logged in',
                 form.user.data)
             return redirect(url_for('home_bp.index'))
-        
+
         flash(error, 'error')
         return redirect(url_for('auth_bp.login'))
 

@@ -5,7 +5,6 @@ Created on 19.09.2021
 
 @author: ralph
 '''
-import re
 from os import environ, path
 from dotenv import load_dotenv
 import datetime
@@ -15,7 +14,6 @@ from rmemaillib.email import EmailObject
 
 basedir = path.abspath(path.dirname(__file__))
 load_dotenv(path.join(basedir, '.env'))
-print('env: ', environ.get('ENV'))
 
 
 class EmailConfig:
@@ -35,7 +33,6 @@ class Config:
     PERMANENT_SESSION_LIFETIME = datetime.timedelta(minutes=30)
     SECRET_KEY = environ.get('SECRET_KEY')
     DATABASE = environ.get(ENV.upper() + '_DATABASE')
-    print('database: ', re.sub(r":\w+@", ":_______@", DATABASE))    # mask user name/password
     DB = db_connect(ENV, DATABASE)
     MAILER = EmailObject.from_object(EmailConfig)
     HOST = socket.gethostname()
@@ -60,8 +57,7 @@ class Config:
         TESTING = False
         EMAILS_TEAM = [
             'ralph.mueller.de@gmail.com',
-            'susan.iwai@gmail.com',
-            'bianka.moeller73@googlemail.com']
+            'susan.iwai@gmail.com']
         INFO_EMAIL = ['info@ferien-in-gersfeld.de']
 
 

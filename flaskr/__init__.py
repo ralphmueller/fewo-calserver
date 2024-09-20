@@ -3,9 +3,15 @@ Created on 13.09.2016
 
 Rewrite Oct. 2021 -> new Booking program
 
+19.01.2024 add logger, can be used
+    from flask import current app
+    ...
+    current_app.logger.{info|warning|error|...}(msg)
+
 @author: ralph
 '''
 import sys
+import re
 import logging
 from flask import Flask, session, g
 from flask_cors import CORS
@@ -20,25 +26,30 @@ def createLogger(service_name):
     formatter = logging.Formatter(
         '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     try:
-        from systemd import journal
+        from systemd import journal                  # type: ignore
         logger.addHandler(journal.JournaldLogHandler())
     except Exception:
         streamHandler = logging.StreamHandler(sys.stdout)
         streamHandler.setFormatter(formatter)
         logger.addHandler(streamHandler)
+    logger.setLevel(logging.INFO)
     return logger
 
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=False)
 
+    logger = createLogger('fewo-calserver')
+
     if test_config is None:
         app.config.from_object('config.Config')
         app.config.from_object('config.EmailConfig')
+        logger.info(
+            'env: {}, Database:  {}'.format(
+                app.config['ENV'],
+                re.sub(r":\w+@", ":_______@", app.config['DATABASE'])))
     else:
         app.config.update(test_config)
-
-    _ = createLogger('fewo-calserver')
 
     CORS(app)
     csrf.init_app(app)
