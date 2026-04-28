@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-12">
+    <a href="{{ url_for('warenwirtschaft_bp.create') }}" class="btn btn-primary mb-3">Neuer Artikel</a>
+    <a href="{{ url_for('warenwirtschaft_bp.statistik') }}" class="btn btn-secondary mb-3 ml-2">Statistik</a>
+
+    {% if waren %}
+    <table class="table table-bordered table-condensed table-hover">
+      <thead>
+        <tr>
+          <th>Bezeichnung</th>
+          <th>Preis</th>
+          <th>MwSt.</th>
+          <th class="text-center">Lager</th>
+          <th class="text-center">Mindestbestand</th>
+          <th>Lieferant</th>
+          <th>Aktiv</th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ware in waren %}
+        <tr>
+          <td>{{ ware.bezeichnung }}</td>
+          <td>{{ ware.preis | euro_currency }}</td>
+          <td>{{ ware.mwst_satz }} %</td>
+          <td class="text-center">{{ ware.menge_lager }}</td>
+          <td class="text-center">{{ ware.mindestbestand if ware.mindestbestand > 0 else '—' }}</td>
+          <td>{{ ware.lieferant or '—' }}</td>
+          <td>{{ 'ja' if ware.active else 'nein' }}</td>
+          <td><a href="{{ url_for('warenwirtschaft_bp.update', ware_id=ware.id) }}">Stammdaten</a></td>
+          <td><a href="{{ url_for('warenwirtschaft_bp.lager', ware_id=ware.id) }}">Lieferung</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="text-center">Keine Artikel vorhanden</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

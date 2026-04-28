@@ -12,4 +12,6 @@ from .schema import Email                       # noqa
 from .schema import StaticValuesBuchung         # noqa
 from .schema import FlaskrSession               # noqa
 from .schema import UserLogging                 # noqa
+from .schema import Ware                        # noqa
+from .schema import Verkauf                     # noqa
 from .schema import db_connect                  # noqa

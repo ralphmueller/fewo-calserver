@@ -567,6 +567,55 @@ class Buchung(BaseModel):
                     self.kommission)        # 11
 
 
+    def get_waren_summe(self):
+        """Gesamtbetrag aller verkauften Waren für diese Buchung."""
+        return sum(
+            float(v.preis_zum_zeitpunkt) * v.menge
+            for v in self.verkaeufe
+        )
+
+    def get_waren_mwst(self):
+        """MwSt.-Aufschlüsselung der Waren: {satz: betrag_brutto}."""
+        result = {}
+        for v in self.verkaeufe:
+            satz = v.mwst_zum_zeitpunkt
+            brutto = float(v.preis_zum_zeitpunkt) * v.menge
+            result[satz] = result.get(satz, 0.0) + brutto
+        return result
+
+
+class Ware(BaseModel):
+    """Artikelstamm für den Warenverkauf an Gäste."""
+    bezeichnung = CharField()
+    preis = DecimalField(decimal_places=2)
+    mwst_satz = IntegerField(default=19)
+    menge_lager = IntegerField(default=0)
+    mindestbestand = IntegerField(default=0)
+    lieferant = CharField(null=True)
+    active = BooleanField(default=True)
+
+    class Meta:
+        db_table = 'ware'
+
+    @classmethod
+    def choices(cls):
+        waren = Ware.select().where(Ware.active).order_by(Ware.bezeichnung)
+        return [(w.id, w.bezeichnung) for w in waren]
+
+
+class Verkauf(BaseModel):
+    """Einzelner Warenverkauf — verknüpft eine Buchung mit einer Ware."""
+    buchung = ForeignKeyField(Buchung, backref='verkaeufe')
+    ware = ForeignKeyField(Ware, backref='verkaeufe')
+    menge = IntegerField()
+    preis_zum_zeitpunkt = DecimalField(decimal_places=2)
+    mwst_zum_zeitpunkt = IntegerField()
+    zeitpunkt = DateTimeField(default=datetime.now)
+
+    class Meta:
+        db_table = 'verkauf'
+
+
 class Email(BaseModel):
     ''' model class for emails '''
     besucher = ForeignKeyField(Besucher, backref='emails')

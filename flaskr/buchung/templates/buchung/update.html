@@ -65,4 +65,72 @@
 
     </form>
 
+
+<hr>
+<h5>Verkaufte Artikel</h5>
+
+{% if verkaeufe %}
+<table class="table table-sm table-bordered">
+  <thead>
+    <tr>
+      <th>Artikel</th>
+      <th>Menge</th>
+      <th>Preis</th>
+      <th>Gesamt</th>
+      <th>MwSt.</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for v in verkaeufe %}
+    <tr>
+      <td>{{ v.ware.bezeichnung }}</td>
+      <td>{{ v.menge }}</td>
+      <td>{{ v.preis_zum_zeitpunkt | euro_currency }}</td>
+      <td>{{ (v.menge * v.preis_zum_zeitpunkt) | euro_currency }}</td>
+      <td>{{ v.mwst_zum_zeitpunkt }} %</td>
+      <td>
+        <form method="post" action="{{ url_for('warenwirtschaft_bp.verkauf_delete', verkauf_id=v.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn btn-sm btn-outline-danger">Storno</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+    <tr class="table-secondary">
+      <td colspan="3"><strong>Waren gesamt</strong></td>
+      <td><strong>{{ buchung.get_waren_summe() | euro_currency }}</strong></td>
+      <td colspan="2"></td>
+    </tr>
+  </tbody>
+</table>
+{% else %}
+<p class="text-muted">Keine Artikel verkauft</p>
+{% endif %}
+
+{% if waren_choices %}
+<form method="post" action="{{ url_for('warenwirtschaft_bp.verkauf_create', buchung_id=buchung.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="row align-items-end">
+    <div class="col-5">
+      <label>Artikel</label>
+      <select name="ware_id" class="form-control">
+        {% for ware_id, ware_name in waren_choices %}
+        <option value="{{ ware_id }}">{{ ware_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-2">
+      <label>Menge</label>
+      <input type="number" name="menge" value="1" min="1" class="form-control">
+    </div>
+    <div class="col-2">
+      <button type="submit" class="btn btn-primary">Verkaufen</button>
+    </div>
+  </div>
+</form>
+{% else %}
+<p class="text-muted"><a href="{{ url_for('warenwirtschaft_bp.create') }}">Artikel anlegen</a> um Waren zu verkaufen.</p>
+{% endif %}
+
 {% endblock %}

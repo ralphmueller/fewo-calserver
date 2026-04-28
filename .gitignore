@@ -16,3 +16,4 @@ flaskr/static/.webassets-cache/
 .jython_cache/
 libs/*
 Pipfile.lock
+*.pdf

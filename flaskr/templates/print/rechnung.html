@@ -66,47 +66,81 @@
 				<tr>
 					<td class="long">Mietpreis</td>
 					<td class="long">{{ buchung.get_nights() }} Nächte</td>
-					<td class="medium">{{ buchung.preis_nacht  | euro_currency}}</td>
-					<td class="medium"> {{ buchung.miete | euro_currency}}</td>		
+					<td class="medium">{{ buchung.preis_nacht | euro_currency }}</td>
+					<td class="medium">{{ buchung.miete | euro_currency }}</td>
 				</tr>
 				<tr>
 					<td class="long">Zusätzliche Kosten</td>
 					<td class="long"></td>
 					<td class="medium"></td>
-					<td class="medium"> {{ buchung.zusatzkosten | euro_currency}}</td>		
-				</tr>						
+					<td class="medium">{{ buchung.zusatzkosten | euro_currency }}</td>
+				</tr>
 				<tr>
 					<td class="long">Kurtaxe (Info siehe Fussnote)</td>
 					<td class="long"></td>
 					<td class="medium"></td>
-					<td class="medium"> {{ buchung.kurtaxe | euro_currency}}</td>		
+					<td class="medium">{{ buchung.kurtaxe | euro_currency }}</td>
 				</tr>
 				<tr>
-					<td class="long">Umsatzsteuer</td>
-					<td class="long">{{mwst_satz}} %</td>
-					<td class="medium"></td>
-					<td class="medium"> {{ buchung.mwst | euro_currency}}</td>		
-				</tr>
-				<tr>
-					<td class="long">Summe</td>
+					<td class="long">Umsatzsteuer {{ mwst_satz }} % (Übernachtung)</td>
 					<td class="long"></td>
 					<td class="medium"></td>
-					<td class="medium"> {{ buchung.summe | euro_currency}} </td>		
+					<td class="medium">{{ buchung.mwst | euro_currency }}</td>
+				</tr>
+				<tr>
+					<td class="long">Summe Übernachtung</td>
+					<td class="long"></td>
+					<td class="medium"></td>
+					<td class="medium">{{ buchung.summe | euro_currency }}</td>
+				</tr>
+
+				{% if verkaeufe %}
+				<tr>
+					<td class="long" colspan="4"><strong>Verkaufte Waren</strong></td>
+				</tr>
+				{% for v in verkaeufe %}
+				<tr>
+					<td class="long">{{ v.ware.bezeichnung }}</td>
+					<td class="long">{{ v.menge }} Stück</td>
+					<td class="medium">{{ v.preis_zum_zeitpunkt | euro_currency }}</td>
+					<td class="medium">{{ (v.menge * v.preis_zum_zeitpunkt) | euro_currency }}</td>
+				</tr>
+				{% endfor %}
+				{% for rate, brutto, mwst in waren_mwst_detail %}
+				<tr>
+					<td class="long">Umsatzsteuer {{ rate }} % (Waren)</td>
+					<td class="long"></td>
+					<td class="medium"></td>
+					<td class="medium">{{ mwst | euro_currency }}</td>
+				</tr>
+				{% endfor %}
+				<tr>
+					<td class="long">Summe Waren</td>
+					<td class="long"></td>
+					<td class="medium"></td>
+					<td class="medium">{{ waren_summe | euro_currency }}</td>
+				</tr>
+				{% endif %}
+
+				<tr>
+					<td class="long"><strong>Gesamtsumme</strong></td>
+					<td class="long"></td>
+					<td class="medium"></td>
+					<td class="medium"><strong>{{ gesamtsumme | euro_currency }}</strong></td>
 				</tr>
 				<tr>
 					<td class="long">Vorauszahlung</td>
 					<td class="long"></td>
 					<td class="medium"></td>
-					<td class="medium"> {{ buchung.vorauszahlung | euro_currency}} </td>		
-				</tr>		
+					<td class="medium">{{ buchung.vorauszahlung | euro_currency }}</td>
+				</tr>
 				<tr>
 					<td class="long">Offener Betrag</td>
 					<td class="long"></td>
 					<td class="medium"></td>
-					
-					<td class="medium"> {{ buchung.offener_betrag | euro_currency}} </td>		
+					<td class="medium">{{ offener_betrag | euro_currency }}</td>
 				</tr>
-			</table>		
+			</table>
 		</div> <!-- invoice-data -->
 		<div id="kurtaxe-text">
 			<p>Berechnung der Kurtaxe:</p> 

@@ -1,5 +1,33 @@
 
-# Latest
+# fewo-calserver
+
+Ferienwohnungsverwaltung — Flask-App zur Verwaltung von Buchungen, Gästen,
+Rechnungen, Warenwirtschaft und Kalender für einen Ferienwohnungsbetrieb.
+
+Architektur- und Datenbankübersicht: siehe [ARCHITEKTUR.md](ARCHITEKTUR.md)
+
+---
+
+# Änderungshistorie
+
+## Rev: 1.6 (28.04.2026)
+
+### Warenwirtschaft
+
+Neues Modul zur Verwaltung von Waren und Warenverkauf an Gäste.
+
+- Artikelstamm: Bezeichnung, Preis, MwSt.-Satz (7 % / 19 %), Lieferant, Aktiv-Flag
+- Lagerbestandsverwaltung mit Mindestbestand und Ampel-Anzeige
+- Lieferungen: Zugänge werden auf den aktuellen Bestand addiert
+- Warenverkauf direkt aus der Buchungsansicht (laufendes Tab)
+- Automatische Lagerbestandsreduktion beim Verkauf; Storno stellt Bestand wieder her
+- Preis- und MwSt.-Snapshot zum Verkaufszeitpunkt
+- Warenblock auf der Endrechnung (separater MwSt.-Ausweis)
+- Statistik: Top-Artikel, Erlös nach Jahr/Monat, Lagerbestand-Ampel
+
+Neue DB-Tabellen: `ware`, `verkauf`
+
+Detaillierte Beschreibung: [Erweiterung Warenwirtschaft.md](Erweiterung%20Warenwirtschfaft.md)
 
 ## Rev: 1.5 (28.04.2026)
 
@@ -34,8 +62,7 @@ Alle Tests zusammen:
 
 `fetch_visitors()` gab `None` zurück wenn keine Besucher vorhanden waren,
 was zu einem Redirect auf die Startseite führte. Die Funktion gibt jetzt
-immer eine Liste zurück (ggf. leer). Das Template zeigt in diesem Fall
-„Keine Besucher gefunden".
+immer eine Liste zurück (ggf. leer).
 
 ---
 
@@ -43,9 +70,9 @@ immer eine Liste zurück (ggf. leer). Das Template zeigt in diesem Fall
 
 Fixed calendar FiG Website links (Prices)
 
-## Rev: 1.2 (28.02.2023) 
+## Rev: 1.2 (28.02.2023)
 
-### Liste Rechnungen und Buchungen 
+### Liste Rechnungen und Buchungen
 
 * getrennt nach Monaten anzeigbar
 * Liste Rechnungen: alle Rechnungen mit Abreise im gewählten Monat, sortiert nach absteigendem Datum
@@ -61,7 +88,7 @@ added simple code to flaskr/__init__.py to supress url logging on console
 
 ## Rev: 1.1
 
-Kurtaxe ändert sich für 2023 
+Kurtaxe ändert sich für 2023
 
 [Beschluss Stadt Gersfeld](https://www.gersfeld.de/satzungen-gebuehren.html)
 
@@ -72,108 +99,174 @@ Kurze Zusammenfassung der Änderungen ab 2023:
 * bis Vollendung des 14. Lebensjahres: 0,00€
 * verschiedene Ausnahmen
 
-Anpassung der App zum 1. Januar 2023 
-
-Einige kleine Änderungen / Verbesserungen
+---
 
 # Installation
 
 ## Voraussetzungen
 
 - Python >= 3.9
-- pipenv
-- Node.js / npm
-- MySQL-Datenbank
-- `../pythonpacks` Repo ausgecheckt (für `rmemaillib`)
+- pipenv (`pip install pipenv`)
+- Node.js / npm (für Bootstrap)
+- MySQL >= 5.7 oder MariaDB >= 10.3
+- Repo `../pythonpacks` ausgecheckt (für `rmemaillib`)
 
-## Repository klonen
+## 1. Repository klonen
 
     git clone git@bitbucket.org:ralph_mueller/fewo-calserver.git
+    cd fewo-calserver
 
-SSH-URL setzen:
+SSH-URL prüfen:
 
-    git remote set-url origin git@bitbucket.org:ralph_mueller/fewo-calserver.git
     git remote -v
 
-## Node modules
-
-    cd flaskr/static
-    npm install
-
-## pipenv
+## 2. Python-Abhängigkeiten installieren
 
     pipenv install
 
 `bkormlib` liegt direkt im Projekt. `pythonpacks` (für `rmemaillib`) wird
-aus dem Nachbar-Repo `../pythonpacks` installiert.
+aus dem Nachbar-Repo `../pythonpacks` installiert (Pipfile-Pfad).
 
-## .env Datei
+## 3. Node-Module (Bootstrap)
 
-Enthält Datenbankverbindung, Secret Key und E-Mail-Konfiguration.
-Vorlage (Werte anpassen):
+    cd flaskr/static
+    npm install
+    cd ../..
 
+## 4. .env Datei anlegen
+
+Datei `.env` im Projektverzeichnis anlegen (nicht ins Repo einchecken):
+
+    # development oder production
     ENV=development
-    DEVELOPMENT_DATABASE=mysql+pymysql://user:password@localhost/fewo
+
+    # Datenbankverbindung (Entwicklung)
+    DEVELOPMENT_DATABASE=mysql+pymysql://user:password@localhost/testrechnungen
+
+    # Datenbankverbindung (Produktion)
+    PRODUCTION_DATABASE=mysql+pymysql://user:password@localhost/fewo
+
+    # Flask Secret Key (langen Zufallsstring verwenden)
     SECRET_KEY=<geheimer-schlüssel>
-    EMAIL_ADDRESS=...
-    EMAIL_USER=...
-    EMAIL_PASSWORD=...
-    EMAIL_HOST=...
 
-## Tests ausführen
+    # E-Mail-Konfiguration
+    EMAIL_ADDRESS=fewo@example.com
+    EMAIL_USER=fewo@example.com
+    EMAIL_PASSWORD=<passwort>
+    EMAIL_HOST=smtp.example.com
 
-    # App-Tests (kein Datenbankzugriff nötig)
-    pipenv run pytest tests/
+    # Empfänger für interne Mails (Team-Benachrichtigungen)
+    EMAILS_TEAM=team@example.com
+    INFO_EMAIL=info@example.com
 
-    # bkormlib-Tests (SQLite in-memory)
+**Hinweis Entwicklung:** Im `development`-Modus werden Team-Mails an die
+in `EMAILS_TEAM` konfigurierte Adresse umgeleitet. Gäste-E-Mails gehen
+aber an die echte Gästeadresse — daher im Testbetrieb nur mit
+Testbuchungen auf eigene Namen arbeiten.
+
+## 5. Datenbank einrichten
+
+### MySQL-Benutzer und Datenbank anlegen
+
+    CREATE DATABASE testrechnungen CHARACTER SET utf8mb4;
+    CREATE USER 'fewouser'@'localhost' IDENTIFIED BY 'passwort';
+    GRANT ALL PRIVILEGES ON testrechnungen.* TO 'fewouser'@'localhost';
+    FLUSH PRIVILEGES;
+
+**Hinweis MariaDB:** Falls Authentifizierungsprobleme auftreten:
+
+    ALTER USER 'fewouser'@'localhost'
+      IDENTIFIED VIA mysql_native_password USING PASSWORD('passwort');
+
+### Neue Tabellen für Warenwirtschaft erstellen
+
+    CREATE TABLE ware (
+        id          INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        bezeichnung VARCHAR(255) NOT NULL,
+        preis       DECIMAL(10,2) NOT NULL,
+        mwst_satz   INT NOT NULL DEFAULT 19,
+        menge_lager INT NOT NULL DEFAULT 0,
+        mindestbestand INT NOT NULL DEFAULT 0,
+        lieferant   VARCHAR(255),
+        active      TINYINT(1) NOT NULL DEFAULT 1
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+    CREATE TABLE verkauf (
+        id                   INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        buchung_id           INT NOT NULL,
+        ware_id              INT NOT NULL,
+        menge                INT NOT NULL,
+        preis_zum_zeitpunkt  DECIMAL(10,2) NOT NULL,
+        mwst_zum_zeitpunkt   INT NOT NULL,
+        zeitpunkt            DATETIME NOT NULL
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+**Hinweis:** Die App verwendet MyISAM — keine Foreign-Key-Constraints in der DB.
+Die referenzielle Integrität wird auf Anwendungsebene sichergestellt.
+
+### Produktionsdaten lokal importieren (optional)
+
+    # Dump auf dem Server erstellen
+    mysqldump -u user -p fewo > fewo_dump.sql
+
+    # Lokal importieren
+    mysql -u fewouser -p testrechnungen < fewo_dump.sql
+
+    # Danach ware- und verkauf-Tabellen anlegen (s.o., falls nicht im Dump)
+
+## 6. Tests ausführen
+
+    # bkormlib-Tests (ORM gegen SQLite in-memory)
     pipenv run pytest bkormlib/tests/
+
+    # App-Tests (Flask Test Client, kein Datenbankzugriff)
+    pipenv run pytest tests/
 
     # Alle Tests
     pipenv run pytest
 
-## Testlauf (Entwicklung)
+## 7. Entwicklungsserver starten
+
+    pipenv run flask run
+
+Alternativ mit uWSGI:
 
     pipenv run uwsgi --http-socket :5000 --module wsgi:application
 
-## uwsgi conf (flaskr.ini)
+---
 
-Important: To avoid error like [mysql out of sync](https://github.com/PyMySQL/PyMySQL/issues/563) see link (https://stackoverflow.com/questions/22752521/uwsgi-flask-sqlalchemy-and-postgres-ssl-error-decryption-failed-or-bad-reco) use the fix below.
+# Produktivbetrieb (Linux-Server)
 
-	[uwsgi]
+## uWSGI-Konfiguration (`flaskr.ini`)
 
-	# important: change target directory to actual settings
-	chdir = /home/pi/fewo-calserver
+    [uwsgi]
+    chdir = /home/rmueller/fewo-calserver
+    module = wsgi
+    callable = application
 
-	module = wsgi
-	callable = application
+    master = true
+    processes = 5
 
-	master = true
-	processes = 5
+    # Wichtig: verhindert MySQL "out of sync"-Fehler
+    lazy = true
+    lazy-apps = true
 
-	# the fix
-	lazy = true
-	lazy-apps = true
+    socket = /tmp/flaskr.sock
+    chmod-socket = 666
+    vacuum = true
 
-	socket = /tmp/flaskr.sock
-	chmod-socket = 666
-	vacuum = true
+    ignore-sigpipe = true
+    ignore-write-errors = true
+    disable-write-exception = true
 
-	# os writer error
+    log-5xx = true
+    disable-logging = true
 
-	ignore-sigpipe = true
-	ignore-write-errors = true
-	disable-write-exception = true
-
-	# logging
-
-	log-5xx = true
-	disable-logging = true
-
-## nginx conf
+## nginx-Konfiguration
 
     server {
         listen 80;
-        server_name server_domain_or_IP;
+        server_name example.com;
 
         location / {
             include uwsgi_params;
@@ -181,34 +274,16 @@ Important: To avoid error like [mysql out of sync](https://github.com/PyMySQL/Py
         }
     }
 
-## Run as service /etc/systemd/system/fewo-calserver.service
-
-    location: /etc/systemd/system/flaskr.service
-
-start: 
-
-	sudo systemctl start flaskr.service
-
-load on startup: 
-
-	sudo systemctl enable flaskr.service
-
-Type=idle    - waits for everything else being started .. [link](https://superuser.com/questions/544399/how-do-you-make-a-systemd-service-as-the-last-service-on-boot/573761#573761)
-
-Source
+## Systemd-Service (`/etc/systemd/system/flaskr.service`)
 
     [Unit]
     Description=uWSGI fewo-calserver
     After=syslog.target
 
     [Service]
-    User=<user>
-    WorkingDirectory=/home/<dir>/fewo-calserver
-
-    # Linux Server Gersfeld
+    User=rmueller
+    WorkingDirectory=/home/rmueller/fewo-calserver
     ExecStart=/home/rmueller/.local/bin/pipenv run uwsgi --ini /home/rmueller/fewo-calserver/flaskr.ini
-
-    # Requires systemd version 211 or newer
     Restart=always
     KillSignal=SIGQUIT
     Type=idle
@@ -218,9 +293,16 @@ Source
     [Install]
     WantedBy=multi-user.target
 
+Starten und beim Boot aktivieren:
+
+    sudo systemctl start flaskr.service
+    sudo systemctl enable flaskr.service
+
+---
+
 # Bedienungsnotizen
 
-## Besucher Suche
+## Besucher-Suche
 
 `*` sind Wildcard-Zeichen
 
@@ -230,3 +312,11 @@ Source
 | `*Müller` | Namen die auf Müller enden (Eide-Müller, Buchmüller) |
 | `Müller*` | Namen die mit Müller beginnen (Müller-Waldheim) |
 | `*Müller*` | Namen die Müller enthalten |
+
+## Warenwirtschaft
+
+- **Artikelstamm** — Waren anlegen und Stammdaten pflegen (Preis, MwSt, Lieferant, Aktiv)
+- **Lieferung** — Zugang zur Ware buchen; wird auf aktuellen Bestand addiert
+- **Verkauf** — aus der Buchungsdetailansicht: Artikel und Menge wählen, Lager wird automatisch reduziert
+- **Storno** — einzelne Verkäufe können storniert werden; Lager wird wiederhergestellt
+- **Statistik** — Top-Artikel nach Umsatz, Erlös nach Jahr/Monat, Lagerbestand-Ampel

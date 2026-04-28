@@ -29,7 +29,8 @@ from bkormlib import (
     Apartment,
     User,
     FlaskrSession,
-    StaticValuesBuchung)
+    StaticValuesBuchung,
+    Ware)
 
 from .buchung_forms import (
     BuchungForm, Buchung2Form, MeldescheinForm, VorauszahlungForm)
@@ -302,6 +303,8 @@ def update(buchung_id):
         title='Buchung ändern',
         buchungen=buchung,
         besucher=buchung.besucher,
+        waren_choices=Ware.choices(),
+        verkaeufe=list(buchung.verkaeufe),
         run_mode=current_app.config['ENV']
     )
 
@@ -448,12 +451,27 @@ def rechnung(buchung_id):
             url_for('buchung_bp.rechnung', buchung_id=buchung.id))
     ]
 
+    verkaeufe = list(buchung.verkaeufe)
+    waren_summe = buchung.get_waren_summe()
+    waren_mwst = buchung.get_waren_mwst()
+    waren_mwst_detail = [
+        (rate, brutto, round(brutto * rate / (100 + rate), 2))
+        for rate, brutto in sorted(waren_mwst.items())
+    ]
+    gesamtsumme = buchung.get_summe() + waren_summe
+    offener_betrag = gesamtsumme - buchung.get_vorauszahlung()
+
     return render_template(
         'print/rechnung.html',
         buchung=buchung,
         days=(buchung.abreise - buchung.anreise).days,
         actions=actions,
         mwst_satz=StaticValuesBuchung.mwstsatz(),
+        verkaeufe=verkaeufe,
+        waren_summe=waren_summe,
+        waren_mwst_detail=waren_mwst_detail,
+        gesamtsumme=gesamtsumme,
+        offener_betrag=offener_betrag,
         title='Buchung anzeigen',
         run_mode=current_app.config['ENV']
     )

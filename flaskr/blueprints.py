@@ -18,6 +18,7 @@ from flaskr import stats
 from flaskr.calendar import calendar
 from flaskr import json_routes
 from flaskr import info
+from flaskr.warenwirtschaft import warenwirtschaft
 
 app.register_blueprint(home.home_bp)
 app.register_blueprint(auth.auth_bp)
@@ -28,3 +29,4 @@ app.register_blueprint(stats.bp)
 app.register_blueprint(calendar.calendar_bp)
 app.register_blueprint(json_routes.bp)
 app.register_blueprint(info.info_bp)
+app.register_blueprint(warenwirtschaft.warenwirtschaft_bp)

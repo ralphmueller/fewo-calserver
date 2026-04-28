@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% from "_macros.html" import render_field %}
+
+{% block content %}
+
+<h5>Lieferung buchen: {{ ware.bezeichnung }}</h5>
+
+<table class="table table-sm table-bordered mb-4" style="max-width: 400px;">
+  <tr>
+    <th>Aktueller Bestand</th>
+    <td><strong>{{ ware.menge_lager }}</strong></td>
+  </tr>
+  <tr>
+    <th>Mindestbestand</th>
+    <td>{{ ware.mindestbestand if ware.mindestbestand > 0 else '—' }}</td>
+  </tr>
+  <tr>
+    <th>Preis</th>
+    <td>{{ ware.preis | euro_currency }}</td>
+  </tr>
+</table>
+
+<form method="post" style="max-width: 300px;">
+  {{ form.hidden_tag() }}
+  {{ render_field("input", "col-12", "", form.zugang, "") }}
+  <p class="text-muted small">Wird zum aktuellen Bestand addiert.</p>
+  <div class="mt-2">
+    <input type="submit" class="btn btn-primary" value="Lieferung buchen">
+    <a href="{{ url_for('warenwirtschaft_bp.index') }}" class="btn btn-secondary ml-2">Abbrechen</a>
+  </div>
+</form>
+
+{% endblock %}

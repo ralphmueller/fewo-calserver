@@ -11,11 +11,13 @@ from bkormlib.schema import (
     database_proxy,
     User, Besucher, Buchung, Apartment, Portal,
     Preisliste, FlaskrSession, Email, UserLogging, Migration,
+    Ware, Verkauf,
 )
 
 ALL_MODELS = [
     User, UserLogging, Portal, Apartment, Preisliste,
     Besucher, Buchung, Email, FlaskrSession, Migration,
+    Ware, Verkauf,
 ]
 
 
