@@ -45,18 +45,13 @@ def index():
         REST: List visitors
     '''
     data = fetch_visitors()
-
-    if data is not None:
-        return render_template(
-            'besucher/index.html',
-            number_besucher=len(data),
-            title='Besucherliste',
-            data=data,
-            run_mode=current_app.config['ENV']
-        )
-    else:
-        flash('no visitors found')
-        return(redirect(url_for('home_bp.index')))
+    return render_template(
+        'besucher/index.html',
+        number_besucher=len(data),
+        title='Besucherliste',
+        data=data,
+        run_mode=current_app.config['ENV']
+    )
 
 
 @besucher_bp.route('/find')

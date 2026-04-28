@@ -19,7 +19,7 @@ uwsgi = "*"
 flask-assets = "*"
 cssmin = "*"
 jsmin = "*"
-pythonpacks = {path = "./libs/pythonpacks-1.7.tar.gz"}
+pythonpacks = {path = "../pythonpacks"}
 blinker = "*"
 
 [dev-packages]

@@ -9,7 +9,7 @@
 			</tr>
 		</thead>
 		<tbody>	
-	    {% for besucher in data %}	  	
+	    {% for besucher in data %}
 		    <tr id="{{besucher.id}}" onclick=getBesucherDetails({{ besucher.id }})>
 		        <td>{{besucher.anrede}}</td>
 		        <td>{{besucher.name}}, {{besucher.vorname}}</td>
@@ -19,6 +19,8 @@
 		        <td>{{besucher.email}}</td>
 				<td>{{besucher.tel}}</td>
 		     </tr>
+		 {% else %}
+		 	<tr><td colspan="7">Keine Besucher gefunden</td></tr>
 		 {% endfor %}
 		 </tbody>
 	</table>

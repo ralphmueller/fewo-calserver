@@ -97,15 +97,7 @@ LANGUAGE = [
 
 
 def fetch_visitors():
-    ''' get full list of visitors'''
-    query = (
-        Besucher
-        .select()
-        .order_by(Besucher.name)
-    )
-    if len(list(query)) > 0:
-        return list(query)
-    return None
+    return list(Besucher.select().order_by(Besucher.name))
 
 
 def create_besucher_from_form(form):

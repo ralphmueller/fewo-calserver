@@ -1,6 +1,44 @@
 
 # Latest
 
+## Rev: 1.5 (28.04.2026)
+
+### bkormlib ins Projekt integriert
+
+`bkormlib` wird nicht mehr als Teil von `pythonpacks` ausgeliefert, sondern
+liegt jetzt direkt im Projektverzeichnis unter `bkormlib/`. Änderungen am
+ORM-Schema werden hier vorgenommen.
+
+`pythonpacks` (Repo `../pythonpacks`) wird weiterhin für `rmemaillib`
+verwendet und im Pipfile als Pfad-Abhängigkeit referenziert.
+
+### Tests eingeführt
+
+Zwei unabhängige Test-Suites:
+
+**App-Tests** (`tests/`) — Flask-Routen, Auth, REST-API, Kalender-Logik.
+Laufen mit gemocktem `bkormlib`, kein Datenbankzugriff nötig.
+
+    pipenv run pytest tests/
+
+**bkormlib-Tests** (`bkormlib/tests/`) — ORM-Modelle gegen SQLite in-memory.
+Testen Buchungslogik, Kurtaxe-Berechnung, Verfügbarkeitsprüfung, Preisliste.
+
+    pipenv run pytest bkormlib/tests/
+
+Alle Tests zusammen:
+
+    pipenv run pytest
+
+### Bugfix: Besucherliste bei leerem Ergebnis
+
+`fetch_visitors()` gab `None` zurück wenn keine Besucher vorhanden waren,
+was zu einem Redirect auf die Startseite führte. Die Funktion gibt jetzt
+immer eine Liste zurück (ggf. leer). Das Template zeigt in diesem Fall
+„Keine Besucher gefunden".
+
+---
+
 ## Rev: 1.4 (04.09.2023)
 
 Fixed calendar FiG Website links (Prices)
@@ -27,7 +65,7 @@ Kurtaxe ändert sich für 2023
 
 [Beschluss Stadt Gersfeld](https://www.gersfeld.de/satzungen-gebuehren.html)
 
-Kurze Zusammenfdassung der Änderungen ab 2023:
+Kurze Zusammenfassung der Änderungen ab 2023:
 
 * Kurbeitrag nach Vollendung des 14. Lebensjahres: 2,10€
 * Für Ausübung des Berufes: 0,50€
@@ -40,46 +78,62 @@ Einige kleine Änderungen / Verbesserungen
 
 # Installation
 
-## from bitbucket.org
+## Voraussetzungen
 
-### clone
+- Python >= 3.9
+- pipenv
+- Node.js / npm
+- MySQL-Datenbank
+- `../pythonpacks` Repo ausgecheckt (für `rmemaillib`)
+
+## Repository klonen
 
     git clone git@bitbucket.org:ralph_mueller/fewo-calserver.git
 
-### change origin to ssh 
+SSH-URL setzen:
 
     git remote set-url origin git@bitbucket.org:ralph_mueller/fewo-calserver.git
     git remote -v
 
-## node modules
+## Node modules
 
     cd flaskr/static
     npm install
 
 ## pipenv
 
-create pipenv for the required python version  and install
-
-    pipenv --python 3.9
     pipenv install
 
-## pythonpacks
+`bkormlib` liegt direkt im Projekt. `pythonpacks` (für `rmemaillib`) wird
+aus dem Nachbar-Repo `../pythonpacks` installiert.
 
-### create wheel 
+## .env Datei
 
-    pipenv run  python setup.py sdist
+Enthält Datenbankverbindung, Secret Key und E-Mail-Konfiguration.
+Vorlage (Werte anpassen):
 
-### install on target
+    ENV=development
+    DEVELOPMENT_DATABASE=mysql+pymysql://user:password@localhost/fewo
+    SECRET_KEY=<geheimer-schlüssel>
+    EMAIL_ADDRESS=...
+    EMAIL_USER=...
+    EMAIL_PASSWORD=...
+    EMAIL_HOST=...
 
-    pipenv install --skip-lock pythonpacks-<version>.tar.gz
+## Tests ausführen
 
-## node_modules
+    # App-Tests (kein Datenbankzugriff nötig)
+    pipenv run pytest tests/
 
-## .env file
+    # bkormlib-Tests (SQLite in-memory)
+    pipenv run pytest bkormlib/tests/
 
-## test run
+    # Alle Tests
+    pipenv run pytest
 
-    pipenv run uwsgi --http-socket :5000  --module wsgi:application
+## Testlauf (Entwicklung)
+
+    pipenv run uwsgi --http-socket :5000 --module wsgi:application
 
 ## uwsgi conf (flaskr.ini)
 
@@ -129,9 +183,8 @@ Important: To avoid error like [mysql out of sync](https://github.com/PyMySQL/Py
 
 ## Run as service /etc/systemd/system/fewo-calserver.service
 
-Comments
-
     location: /etc/systemd/system/flaskr.service
+
 start: 
 
 	sudo systemctl start flaskr.service
@@ -154,8 +207,6 @@ Source
 
     # Linux Server Gersfeld
     ExecStart=/home/rmueller/.local/bin/pipenv run uwsgi --ini /home/rmueller/fewo-calserver/flaskr.ini
-    # Rapspi
-    # ExecStart=/home/pi/.local/bin/pipenv run uwsgi --ini /home/pi/fewo-calserver/flaskr.ini
 
     # Requires systemd version 211 or newer
     Restart=always
@@ -171,9 +222,11 @@ Source
 
 ## Besucher Suche
 
-*** sind wildcard Zeichen
+`*` sind Wildcard-Zeichen
 
-Müller - findet alle mit Nachnamen Müller
-*Müller - findet alle, deren Namen auf Müller endet (Eide-Müller, Buchmüller)
-Müller* - findet alle, deren Namen mit Müller beginnt (Müller-Waldheim, Müller - Testbenutzer)
-*Müller* - findet alle, in deren Namen das Wort Müller vorkommt (von Müller-Meier, Müller, Müller-Waldheim, Buchmüller)
+| Eingabe | Ergebnis |
+|---|---|
+| `Müller` | alle mit Nachnamen Müller |
+| `*Müller` | Namen die auf Müller enden (Eide-Müller, Buchmüller) |
+| `Müller*` | Namen die mit Müller beginnen (Müller-Waldheim) |
+| `*Müller*` | Namen die Müller enthalten |
