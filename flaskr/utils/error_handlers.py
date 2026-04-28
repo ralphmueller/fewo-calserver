@@ -24,7 +24,7 @@ def page_not_found(e):
         base_url=request.base_url,
         version=SystemInfo.version_tag,
         title='Fehler 404 - Seite nicht gefunden',
-        run_mode=app.env)
+        run_mode=app.config['ENV'])
 
 
 app.register_error_handler(404, page_not_found)
