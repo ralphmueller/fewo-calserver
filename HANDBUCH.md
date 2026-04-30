@@ -57,7 +57,74 @@ Nach dem Anlegen wird direkt zur Detailseite weitergeleitet.
 
 ## Buchungen
 
-> Dokumentation folgt — wird mit dem HTMX-Umbau ergänzt.
+Menü → **Buchungen**
+
+### Buchungsliste
+
+Die Liste zeigt alle Buchungen des gewählten Monats.
+
+**Filter — alle ohne Seitenwechsel:**
+
+| Filter | Bedienung |
+|---|---|
+| Jahr | Klick auf Jahreszahl |
+| Monat | Klick auf Monatsname |
+| Status | Checkboxen: Gebucht / Abgerechnet / Angebot |
+| Wohnung | Dropdown „Alle Wohnungen" oder einzelne Wohnung |
+| Gast | Freitextsuche mit Wildcard (`Müll*`, `Müll* Ral*`) |
+
+### Detailansicht
+
+Klick auf eine Zeile klappt die Details **direkt darunter** auf:
+
+- Anreise, Abreise, Nächte, Apartment, Portal
+- Miete, Kurtaxe, Summe, Vorauszahlung, Restbetrag (rot wenn > 0)
+- Kurtaxe-Belegung (Personen ab 14J / Beruflich / Kinder / Befreit)
+- Notiz, Meldeschein-Nr., Rechnungsnummer (wenn vorhanden)
+
+Nochmals klicken schließt die Detailzeile.
+
+### Schnell-Statuswechsel
+
+In der **Status-Spalte** der Liste: Dropdown direkt in der Zeile.
+
+| Von | Nach |
+|---|---|
+| Angebot | Gebucht oder Verworfen |
+| Gebucht | Storno |
+
+> Für „Gebucht → Abgerechnet" den Button **Abrechnen** im Detailpanel nutzen
+> (erfordert Meldeschein-Nummer und generiert Rechnungsnummer).
+
+### Buchung bearbeiten
+
+Im Detailpanel → **Bearbeiten**. Das Formular öffnet sich inline.
+
+- Alle Felder editierbar (Datum, Apartment, Portal, Preise, Kurtaxe, Notiz)
+- **Speichern** → Detailkarte aktualisiert sich, Update-E-Mail wird verschickt
+- **Abbrechen** → zurück zur Detailkarte
+
+### Neue Buchung
+
+Menü → **Buchungen → Neue Buchung** (`/buchung/neu`)
+
+1. Name eintippen (ab 3 Zeichen) → Gästeliste erscheint
+2. Gast anklicken → Buchungsformular lädt rechts
+3. Felder ausfüllen → **Buchung speichern & E-Mail senden**
+
+Bestätigungs-E-Mail wird automatisch an den Gast verschickt.
+
+### Schnellbuchung
+
+Menü → **Buchungen → Schnellbuchung** (`/buchung/schnell`)
+
+Optimiert für Telefonanfragen:
+
+1. **Anreise + Abreise** eingeben → **Verfügbare Wohnungen prüfen**
+2. Freie Wohnung auswählen
+3. Gast suchen (ab 2 Zeichen) **oder** „+ Neuen Gast anlegen" (Miniformular)
+4. Buchungsformular: Preis/Nacht (aus Preisliste vorausgefüllt), Portal, Personen, Vorauszahlung
+5. **Angebot erstellen** oder **Direkt buchen** → E-Mail wird automatisch verschickt
 
 ---
 
