@@ -34,11 +34,13 @@ graph TB
     MySQL[("MySQL\n(fewo / testrechnungen)")]
     SMTP["SMTP-Server\n(E-Mail)"]
     pythonpacks["../pythonpacks\n(rmemaillib Quelle)"]
+    Feratel["Feratel Deskline\nWebClient4\n(Gästemeldung)"]
 
     Browser --> nginx --> uwsgi --> Flask
     Flask --> bkormlib --> MySQL
     Flask --> rmemaillib --> SMTP
     pythonpacks -.->|Pipfile-Pfad| rmemaillib
+    Flask -->|Playwright\nheadless Chromium| Feratel
 ```
 
 ---
@@ -200,6 +202,7 @@ fewo-calserver/
 │   ├── buchung/            Buchungs-Verwaltung
 │   ├── calendar/           Kalender
 │   ├── warenwirtschaft/    Warenwirtschaft
+│   ├── feratel/            Feratel Gästemeldung (Playwright-Automation)
 │   ├── home/               Startseite
 │   ├── static/             CSS, JS (Bootstrap via npm)
 │   ├── templates/          Globale Templates (layout, nav, rechnung)

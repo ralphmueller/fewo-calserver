@@ -10,6 +10,52 @@ Architektur- und Datenbankübersicht: siehe [ARCHITEKTUR.md](ARCHITEKTUR.md)
 
 # Änderungshistorie
 
+## Rev: 1.7 (29.04.2026)
+
+### Feratel Gästemeldung automatisiert
+
+Neues Modul `flaskr/feratel/` zur automatischen Übermittlung von
+Gästemeldungen an das Feratel Deskline WebClient4-System per Browser-Automation
+(Playwright / Chromium).
+
+**Funktionsumfang:**
+
+- Button „An Feratel melden" direkt in der Buchungsansicht (abgerechnete Buchungen)
+- Playwright steuert einen headless Chromium-Browser:
+  - Login mit Credentials aus `.env`
+  - Apartment-Auswahl anhand des Buchungs-Apartments
+  - Neuen Meldeschein öffnen
+  - Anreise- und Abreisedatum setzen
+  - Hauptgast suchen (im Feratel-Adresssystem) oder manuell eintragen
+  - Weitere Gäste hinzufügen wenn `kurtaxe_vz > 1`
+  - Meldeschein speichern, Nummer auslesen
+- Vergebene Meldeschein-Nummer wird in `buchung.meldeschein_nummer` gespeichert
+- Wiederholtes Melden möglich (Button wechselt auf „Erneut melden")
+
+**Mock-Modus:**
+
+Für Entwicklung und Tests kann die echte Feratel-Verbindung durch einen Mock
+ersetzt werden — kein Browser wird gestartet:
+
+    # in .env
+    FERATEL_MOCK=true
+
+Im Mock-Modus wird eine gefälschte Meldeschein-Nummer (`MOCK-YYYYMMDDHHMMSS`)
+zurückgegeben und der komplette Vorgang nur geloggt.
+
+**Neue `.env`-Variablen:**
+
+    FERATEL_ID=<Feratel-Benutzername>
+    FERATEL_PW=<Feratel-Passwort>
+    FERATEL_MOCK=true   # true = Mock, false/weggelassen = echter Browser
+
+**Neue Abhängigkeiten:**
+
+    pipenv install playwright
+    pipenv run playwright install chromium
+
+---
+
 ## Rev: 1.6 (28.04.2026)
 
 ### Warenwirtschaft

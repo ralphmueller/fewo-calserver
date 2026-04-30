@@ -44,8 +44,31 @@
         {{render_field("label", "col-3", "Status", buchung.status, "")}}
     </div> <!-- row -->                
     <div class="row">
-        {{render_field("label", "col-9", "Notiz", buchung.notiz, "")}} 
+        {{render_field("label", "col-9", "Notiz", buchung.notiz, "")}}
     </div> <!-- row -->
 
+    <div class="row mt-3">
+        <div class="col-6">
+            <dl>
+                <dt>Feratel Meldeschein</dt>
+                <dd>
+                    {% if buchung.meldeschein_nummer %}
+                        <span class="text-success">Nr. {{ buchung.meldeschein_nummer }}</span>
+                        &nbsp;
+                    {% endif %}
+                    <form method="post"
+                          action="{{ url_for('buchung_bp.feratel_meldeschein', buchung_id=buchung.id) }}"
+                          style="display:inline"
+                          onsubmit="this.querySelector('button').disabled=true; this.querySelector('button').textContent='Wird gemeldet…'">
+                        {{ form.hidden_tag() if form is defined else '' }}
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-primary">
+                            {% if buchung.meldeschein_nummer %}Erneut melden{% else %}An Feratel melden{% endif %}
+                        </button>
+                    </form>
+                </dd>
+            </dl>
+        </div>
+    </div>
 
 {% endblock %}

@@ -706,3 +706,23 @@ def update_vorauszahlung(buchung_id):
         title='Vorauszahlung erfassen',
         run_mode=current_app.config['ENV'],
         template='form-template')
+
+
+@buchung_bp.route('/feratel_meldeschein/<int:buchung_id>', methods=['POST'])
+@login_required
+def feratel_meldeschein(buchung_id):
+    """Legt einen Feratel-Meldeschein an und speichert die Nummer in der Buchung."""
+    from flaskr.feratel.automation import submit_meldeschein
+    result = submit_meldeschein(buchung_id)
+    if result['success']:
+        buchung = Buchung.get_by_id(buchung_id)
+        nr = result.get('meldeschein_nr') or ''
+        buchung.meldeschein_nummer = nr
+        buchung.save()
+        msg = f'Feratel Meldeschein angelegt'
+        if nr:
+            msg += f' (Nr. {nr})'
+        flash(msg)
+    else:
+        flash(f'Feratel Fehler: {result["error"]}', 'error')
+    return redirect(url_for('buchung_bp.anzeigen', buchung_id=buchung_id))
