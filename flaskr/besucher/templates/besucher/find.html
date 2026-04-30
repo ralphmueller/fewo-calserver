@@ -1,30 +1,27 @@
 {% extends "layout.html" %}
 
-<!-- 
-	partial for finding a visitor
--->
-
 {% block content %}
 
 <div class="row g-3">
-	<div class="col-md-12">
-	  	<form role="form">
-	    	<div class="form-group">
-	      		<input type="text" id="textInput" class="form-control" placeholder="Anfangsbuchstaben Nachname">
-	    	</div>
-	  	</form>
-		<div class="table-responsive"></div>
-			<table class="table table-bordered table-condensed table-hover">
-				<tbody id="results"/>
-			</table>
-		</div>
-		<p>Suchen ... mindestens 3 Zeichen eintippen. Nicht mit Enter abschließen. </p>
-		<p>
-			Müller - findet alle Besucher mit Nachnamen Müller<br>
-			Müller* - findet Müller, Müller-Stolz usw.<br>
-			*Müller - findet Wegmüller, Schulze-Müller<br>
-			*Müller* - Wegmüller, Wegmüller-Schulz</p>
-	</div>
+    <div class="col-md-12">
+        <div class="form-group">
+            <input type="text"
+                   name="q"
+                   class="form-control"
+                   placeholder="Anfangsbuchstaben Nachname"
+                   hx-get="{{ url_for('besucher_bp.search') }}"
+                   hx-trigger="keyup changed delay:300ms"
+                   hx-target="#results"
+                   autocomplete="off">
+        </div>
+        <div id="results"></div>
+        <p class="mt-2 text-muted small">
+            Mindestens 3 Zeichen eintippen.<br>
+            <code>*Müller</code> → endet auf Müller &nbsp;|&nbsp;
+            <code>Müller*</code> → beginnt mit Müller &nbsp;|&nbsp;
+            <code>*Müller*</code> → enthält Müller
+        </p>
+    </div>
 </div>
 
 {% endblock %}

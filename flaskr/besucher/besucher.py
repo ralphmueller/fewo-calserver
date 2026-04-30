@@ -14,6 +14,7 @@ from flask import (
     render_template,
     flash,
     redirect,
+    request,
     url_for,
     current_app,
     session
@@ -61,6 +62,16 @@ def find():
         'besucher/find.html',
         title="Finde Besucher",
         run_mode=current_app.config['ENV'])
+
+
+@besucher_bp.route('/search')
+@login_required
+def search():
+    q = request.args.get('q', '').strip()
+    if len(q) < 3:
+        return ''
+    data = fetch_visitors(q)
+    return render_template('besucher/list_partial.html', data=data)
 
 
 @besucher_bp.route('/create', methods=('GET', 'POST'))

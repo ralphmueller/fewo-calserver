@@ -1,27 +1,26 @@
-<!-- 
-	partial für Besucherliste
--->
+<!-- partial für Besucherliste -->
 <div class="table-responsive">
-	<table class="table table-bordered table-condensed table-hover">
-		<thead>
-			<tr>
-				<th>Anrede</th><th>Name</th><th>Strasse</th><th>Stadt</th><th>Land</th><th>Email</th><th>Tel</th>
-			</tr>
-		</thead>
-		<tbody>	
-	    {% for besucher in data %}
-		    <tr id="{{besucher.id}}" onclick=getBesucherDetails({{ besucher.id }})>
-		        <td>{{besucher.anrede}}</td>
-		        <td>{{besucher.name}}, {{besucher.vorname}}</td>
-		        <td>{{besucher.strasse}}</td>
-		        <td>{{besucher.stadt}}</td>
-		        <td>{{besucher.land}}</td>
-		        <td>{{besucher.email}}</td>
-				<td>{{besucher.tel}}</td>
-		     </tr>
-		 {% else %}
-		 	<tr><td colspan="7">Keine Besucher gefunden</td></tr>
-		 {% endfor %}
-		 </tbody>
-	</table>
+    <table class="table table-bordered table-condensed table-hover">
+        <thead>
+            <tr>
+                <th>Anrede</th><th>Name</th><th>Strasse</th><th>Stadt</th><th>Land</th><th>Email</th><th>Tel</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for besucher in data %}
+                <tr style="cursor:pointer"
+                    onclick="window.location='{{ url_for('besucher_bp.update', besucher_id=besucher.id) }}'">
+                    <td>{{ besucher.anrede }}</td>
+                    <td>{{ besucher.name }}, {{ besucher.vorname }}</td>
+                    <td>{{ besucher.strasse }}</td>
+                    <td>{{ besucher.stadt }}</td>
+                    <td>{{ besucher.land }}</td>
+                    <td>{{ besucher.email }}</td>
+                    <td>{{ besucher.tel }}</td>
+                </tr>
+            {% else %}
+                <tr><td colspan="7">Keine Besucher gefunden</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
