@@ -2,8 +2,10 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <strong>{{ besucher.anrede }} {{ besucher.vorname }} {{ besucher.name }}</strong>
         <div>
-            <a href="{{ url_for('besucher_bp.update', besucher_id=besucher.id) }}"
-               class="btn btn-sm btn-outline-secondary">Bearbeiten</a>
+            <button class="btn btn-sm btn-outline-secondary"
+                    hx-get="{{ url_for('besucher_bp.edit', besucher_id=besucher.id) }}"
+                    hx-target="#detail-panel"
+                    hx-swap="innerHTML">Bearbeiten</button>
             <a href="{{ url_for('buchung_bp.create_buchung', besucher_id=besucher.id) }}"
                class="btn btn-sm btn-primary ms-1">Neue Buchung</a>
             <a href="{{ url_for('buchung_bp.create_angebot', besucher_id=besucher.id) }}"

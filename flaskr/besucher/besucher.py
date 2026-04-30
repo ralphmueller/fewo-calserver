@@ -95,6 +95,25 @@ def detail(besucher_id):
                            buchungen=buchungen)
 
 
+@besucher_bp.route('/edit/<int:besucher_id>', methods=('GET', 'POST'))
+@login_required
+def edit(besucher_id):
+    besucher, buchungen = fetch_besucher_for_update(besucher_id)
+    form = BesucherForm(obj=besucher)
+
+    if form.validate_on_submit():
+        update_besucher(form, besucher)
+        besucher, buchungen = fetch_besucher_for_update(besucher_id)
+        return render_template('besucher/detail_partial.html',
+                               besucher=besucher,
+                               buchungen=buchungen)
+
+    return render_template('besucher/edit_partial.html',
+                           form=form,
+                           besucher=besucher,
+                           error=None)
+
+
 @besucher_bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():
