@@ -29,6 +29,7 @@ from flaskr.utils.api import (
     create_besucher_from_form,
     update_besucher
 )
+from bkormlib import Besucher
 
 besucher_bp = Blueprint(
     'besucher_bp',
@@ -70,7 +71,18 @@ def search():
     q = request.args.get('q', '').strip()
     if len(q) < 3:
         return ''
-    data = fetch_visitors(q)
+
+    parts = q.lower().split()
+    def pat(s):
+        return s.replace('*', '%')
+
+    if len(parts) >= 2:
+        where = (Besucher.name ** pat(parts[0])) & (Besucher.vorname ** pat(parts[1]))
+    else:
+        p = pat(parts[0])
+        where = (Besucher.name ** p) | (Besucher.vorname ** p)
+
+    data = Besucher.select().where(where).order_by(Besucher.name)
     return render_template('besucher/list_partial.html', data=data)
 
 

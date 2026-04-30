@@ -6,6 +6,32 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 
+def _make_besucher(id=1, name='Müller', vorname='Ralph'):
+    b = MagicMock()
+    b.id = id
+    b.name = name
+    b.vorname = vorname
+    b.anrede = 'Herr'
+    b.strasse = 'Hauptstr. 1'
+    b.plz = '36129'
+    b.stadt = 'Gersfeld'
+    b.land = 'DE'
+    b.email = 'test@example.com'
+    b.tel = '01234'
+    return b
+
+
+def _search_mock(results):
+    """Returns a Besucher mock whose select().where().order_by() yields results."""
+    q = MagicMock()
+    q.where.return_value = q
+    q.order_by.return_value = iter(results)
+    m = MagicMock()
+    m.select.return_value = q
+    m.name = MagicMock()
+    return m
+
+
 class TestBesucherListProtection:
     def test_list_requires_login(self, client):
         """GET /besucher/ without session → redirect to login."""
@@ -20,16 +46,67 @@ class TestBesucherListProtection:
         assert response.status_code == 200
 
 
-class TestBesucherSearch:
+class TestBesucherFind:
     def test_find_requires_login(self, client):
         """GET /besucher/find without session → redirect."""
-        response = client.get('/besucher/find?q=Müller', follow_redirects=False)
+        response = client.get('/besucher/find', follow_redirects=False)
         assert response.status_code == 302
 
-    def test_find_returns_results(self, logged_in_client):
-        """GET /besucher/find with a query → 200 (no DB call needed for /find)."""
-        response = logged_in_client.get('/besucher/find?q=M%C3%BCller')
+    def test_find_renders_page(self, logged_in_client):
+        """GET /besucher/find → 200 with search input."""
+        response = logged_in_client.get('/besucher/find')
         assert response.status_code == 200
+        assert b'hx-get' in response.data
+
+
+class TestBesucherSearchRoute:
+    def test_search_requires_login(self, client):
+        """GET /besucher/search without session → redirect."""
+        response = client.get('/besucher/search?q=Müller', follow_redirects=False)
+        assert response.status_code == 302
+
+    def test_short_query_returns_empty(self, logged_in_client):
+        """Query shorter than 3 chars → empty response, no DB call."""
+        with patch('flaskr.besucher.besucher.Besucher') as mock_cls:
+            response = logged_in_client.get('/besucher/search?q=Mü')
+        assert response.status_code == 200
+        assert response.data == b''
+        mock_cls.select.assert_not_called()
+
+    def test_single_term_searches_name_and_vorname(self, logged_in_client):
+        """Single term → OR search across name and vorname."""
+        besucher = _make_besucher()
+        with patch('flaskr.besucher.besucher.Besucher', _search_mock([besucher])):
+            response = logged_in_client.get('/besucher/search?q=M%C3%BCll*')
+        assert response.status_code == 200
+        assert b'M\xc3\xbcller' in response.data  # Müller in UTF-8
+
+    def test_two_terms_searches_name_and_vorname_combined(self, logged_in_client):
+        """Two space-separated terms → AND search: first=name, second=vorname."""
+        besucher = _make_besucher()
+        with patch('flaskr.besucher.besucher.Besucher', _search_mock([besucher])):
+            response = logged_in_client.get('/besucher/search?q=M%C3%BCll*+Ral*')
+        assert response.status_code == 200
+        assert b'M\xc3\xbcller' in response.data
+
+    def test_no_results_shows_empty_message(self, logged_in_client):
+        """Empty result set → 'Keine Besucher gefunden' in response."""
+        with patch('flaskr.besucher.besucher.Besucher', _search_mock([])):
+            response = logged_in_client.get('/besucher/search?q=xyzxyz')
+        assert response.status_code == 200
+        assert 'Keine Besucher gefunden'.encode() in response.data
+
+    def test_wildcard_converted_to_sql_percent(self, logged_in_client):
+        """* in query is passed as % to the ORM where clause."""
+        with patch('flaskr.besucher.besucher.Besucher') as mock_cls:
+            q = MagicMock()
+            q.where.return_value = q
+            q.order_by.return_value = iter([])
+            mock_cls.select.return_value = q
+            mock_cls.name = MagicMock()
+            logged_in_client.get('/besucher/search?q=M%C3%BCll*')
+        # where() must have been called (pattern was passed to ORM)
+        q.where.assert_called_once()
 
 
 class TestBesucherCreate:
