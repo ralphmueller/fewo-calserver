@@ -1,0 +1,82 @@
+{% from "_macros.html" import render_field %}
+
+<div id="buchung-detail-{{ buchung.id }}" class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Buchung bearbeiten — {{ buchung.besucher.vorname }} {{ buchung.besucher.name }}</strong>
+        <button type="button"
+                class="btn btn-sm btn-outline-secondary"
+                hx-get="{{ url_for('buchung_bp.detail', buchung_id=buchung.id) }}"
+                hx-target="#buchung-detail-{{ buchung.id }}"
+                hx-swap="outerHTML">Abbrechen</button>
+    </div>
+    <div class="card-body">
+        <form hx-post="{{ url_for('buchung_bp.edit_inline', buchung_id=buchung.id) }}"
+              hx-target="#buchung-detail-{{ buchung.id }}"
+              hx-swap="outerHTML">
+            {{ form.hidden_tag() }}
+
+            <div class="row g-2">
+                <div class="col-md-3">
+                    {{ render_field("input", "mb-2", "", form.anreise, "") }}
+                </div>
+                <div class="col-md-3">
+                    {{ render_field("input", "mb-2", "", form.abreise, "") }}
+                </div>
+                <div class="col-md-3">
+                    {{ render_field("input", "mb-2", "", form.apartment_id, "") }}
+                </div>
+                <div class="col-md-3">
+                    {{ render_field("input", "mb-2", "", form.portal_id, "") }}
+                </div>
+            </div>
+
+            <div class="row g-2">
+                <div class="col-md-3">
+                    {{ render_field("input", "mb-2", "", form.preis_nacht, "") }}
+                </div>
+                <div class="col-md-3">
+                    {{ render_field("input", "mb-2", "", form.zusatzkosten, "") }}
+                </div>
+                <div class="col-md-3">
+                    {{ render_field("input", "mb-2", "", form.rabatt, "") }}
+                </div>
+                <div class="col-md-3">
+                    {{ render_field("input", "mb-2", "", form.vorauszahlung, "") }}
+                </div>
+            </div>
+
+            <div class="row g-2">
+                <div class="col-md-3">
+                    {{ render_field("input", "mb-2", "", form.kurtaxe_vz, "") }}
+                </div>
+                <div class="col-md-3">
+                    {{ render_field("input", "mb-2", "", form.kurtaxe_hz, "") }}
+                </div>
+                <div class="col-md-3">
+                    {{ render_field("input", "mb-2", "", form.kurtaxe_kinder, "") }}
+                </div>
+                <div class="col-md-3">
+                    {{ render_field("input", "mb-2", "", form.kurtaxe_nz, "") }}
+                </div>
+            </div>
+
+            <div class="row g-2">
+                <div class="col-md-3">
+                    {{ render_field("input", "mb-2", "", form.kurtaxe_korrekturwert, "") }}
+                </div>
+                <div class="col-md-9">
+                    {{ render_field("input", "mb-2", "", form.notiz, "") }}
+                </div>
+            </div>
+
+            <div class="mt-2">
+                <button type="submit" class="btn btn-primary">Speichern</button>
+                <button type="button"
+                        class="btn btn-outline-secondary ms-2"
+                        hx-get="{{ url_for('buchung_bp.detail', buchung_id=buchung.id) }}"
+                        hx-target="#buchung-detail-{{ buchung.id }}"
+                        hx-swap="outerHTML">Abbrechen</button>
+            </div>
+        </form>
+    </div>
+</div>

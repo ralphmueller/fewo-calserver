@@ -1,0 +1,82 @@
+{% from "_macros.html" import render_field %}
+
+<div class="card">
+    <div class="card-header">
+        <strong>Neue Buchung für {{ besucher.vorname }} {{ besucher.name }}</strong>
+        {% if besucher.email %}
+        <span class="text-muted small ms-2">{{ besucher.email }}</span>
+        {% else %}
+        <span class="badge bg-warning text-dark ms-2">Keine E-Mail-Adresse</span>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        <form hx-post="{{ url_for('buchung_bp.neu_formular', besucher_id=besucher.id) }}"
+              hx-target="#buchung-panel"
+              hx-swap="innerHTML">
+            {{ form.hidden_tag() }}
+
+            <div class="row g-2">
+                <div class="col-md-4">
+                    {{ render_field("input", "mb-2", "", form.anreise, "") }}
+                </div>
+                <div class="col-md-4">
+                    {{ render_field("input", "mb-2", "", form.abreise, "") }}
+                </div>
+                <div class="col-md-4">
+                    {{ render_field("input", "mb-2", "", form.apartment_id, "") }}
+                </div>
+            </div>
+
+            <div class="row g-2">
+                <div class="col-md-4">
+                    {{ render_field("input", "mb-2", "", form.portal_id, "") }}
+                </div>
+                <div class="col-md-4">
+                    {{ render_field("input", "mb-2", "", form.preis_nacht, "") }}
+                </div>
+                <div class="col-md-4">
+                    {{ render_field("input", "mb-2", "", form.vorauszahlung, "") }}
+                </div>
+            </div>
+
+            <div class="row g-2">
+                <div class="col-md-3">
+                    {{ render_field("input", "mb-2", "", form.zusatzkosten, "") }}
+                </div>
+                <div class="col-md-3">
+                    {{ render_field("input", "mb-2", "", form.rabatt, "") }}
+                </div>
+                <div class="col-md-3">
+                    {{ render_field("input", "mb-2", "", form.kurtaxe_vz, "") }}
+                </div>
+                <div class="col-md-3">
+                    {{ render_field("input", "mb-2", "", form.kurtaxe_hz, "") }}
+                </div>
+            </div>
+
+            <div class="row g-2">
+                <div class="col-md-3">
+                    {{ render_field("input", "mb-2", "", form.kurtaxe_kinder, "") }}
+                </div>
+                <div class="col-md-3">
+                    {{ render_field("input", "mb-2", "", form.kurtaxe_nz, "") }}
+                </div>
+                <div class="col-md-6">
+                    {{ render_field("input", "mb-2", "", form.notiz, "") }}
+                </div>
+            </div>
+
+            {% if form.errors %}
+            <div class="alert alert-danger mt-2">
+                {% for field, errs in form.errors.items() %}
+                    {% for e in errs %}<div>{{ field }}: {{ e }}</div>{% endfor %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="mt-2">
+                <button type="submit" class="btn btn-primary">Buchung speichern & E-Mail senden</button>
+            </div>
+        </form>
+    </div>
+</div>

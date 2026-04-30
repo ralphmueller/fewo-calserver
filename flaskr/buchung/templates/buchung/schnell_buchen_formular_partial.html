@@ -1,0 +1,82 @@
+<div class="card border-primary">
+    <div class="card-header d-flex justify-content-between">
+        <span>
+            <strong>{{ besucher.vorname }} {{ besucher.name }}</strong>
+            <span class="text-muted ms-2 small">{{ besucher.email }}</span>
+        </span>
+        <span class="text-muted small">{{ apartment.name }}, {{ anreise | euro_date }} – {{ abreise | euro_date }}, {{ nights }} Nächte</span>
+    </div>
+    <div class="card-body">
+        <form hx-post="{{ url_for('buchung_bp.schnell_buchen') }}"
+              hx-target="#buchung-panel"
+              hx-swap="innerHTML">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="user_id" value="{{ user_id }}">
+            <input type="hidden" name="besucher_id" value="{{ besucher.id }}">
+            <input type="hidden" name="apartment_id" value="{{ apartment.id }}">
+            <input type="hidden" name="anreise" value="{{ anreise }}">
+            <input type="hidden" name="abreise" value="{{ abreise }}">
+
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <label class="form-label mb-1 small">Preis/Nacht</label>
+                    <input type="number" step="0.01" name="preis_nacht"
+                           class="form-control form-control-sm"
+                           value="{{ preis_nacht }}">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label mb-1 small">Portal</label>
+                    <select name="portal_id" class="form-select form-select-sm">
+                        {% for pid, pname in portale %}
+                        <option value="{{ pid }}">{{ pname }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label mb-1 small">Vorauszahlung</label>
+                    <input type="number" step="0.01" name="vorauszahlung"
+                           class="form-control form-control-sm" value="0">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label mb-1 small">Rabatt %</label>
+                    <input type="number" step="0.1" name="rabatt"
+                           class="form-control form-control-sm" value="0">
+                </div>
+            </div>
+
+            <div class="row g-2 mt-1">
+                <div class="col-md-2">
+                    <label class="form-label mb-1 small">ab 14J</label>
+                    <input type="number" name="kurtaxe_vz"
+                           class="form-control form-control-sm" value="2" min="0">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label mb-1 small">Beruflich</label>
+                    <input type="number" name="kurtaxe_hz"
+                           class="form-control form-control-sm" value="0" min="0">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label mb-1 small">Kinder</label>
+                    <input type="number" name="kurtaxe_kinder"
+                           class="form-control form-control-sm" value="0" min="0">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label mb-1 small">Notiz</label>
+                    <input type="text" name="notiz"
+                           class="form-control form-control-sm" value="">
+                </div>
+            </div>
+
+            <input type="hidden" name="zusatzkosten" value="0">
+            <input type="hidden" name="kurtaxe_nz" value="0">
+            <input type="hidden" name="kurtaxe_korrekturwert" value="0">
+
+            <div class="mt-3 d-flex gap-2">
+                <button type="submit" name="typ" value="angebot"
+                        class="btn btn-outline-primary">Angebot erstellen</button>
+                <button type="submit" name="typ" value="gebucht"
+                        class="btn btn-success">Direkt buchen</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,25 @@
+{% if apartments %}
+<div class="mb-2">
+    <strong>{{ anreise | euro_date }} – {{ abreise | euro_date }}</strong>
+    <span class="text-muted ms-2">({{ nights }} Nächte)</span>
+    — freie Wohnungen:
+</div>
+<div class="d-flex gap-2 flex-wrap mb-3">
+    {% for apt in apartments %}
+    <button class="btn btn-outline-success"
+            hx-get="{{ url_for('buchung_bp.schnell_gast') }}?anreise={{ anreise }}&abreise={{ abreise }}&apartment_id={{ apt.id }}"
+            hx-target="#gast-panel"
+            hx-swap="innerHTML"
+            hx-on:click="document.querySelectorAll('#verfuegbar-panel .btn-success').forEach(b=>b.classList.replace('btn-success','btn-outline-success')); this.classList.replace('btn-outline-success','btn-success')">
+        {{ apt.name }}
+    </button>
+    {% endfor %}
+</div>
+
+<div id="gast-panel"></div>
+
+{% else %}
+<div class="alert alert-warning">
+    Keine Wohnungen für diesen Zeitraum verfügbar.
+</div>
+{% endif %}
