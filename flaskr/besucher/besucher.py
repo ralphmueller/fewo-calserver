@@ -86,6 +86,15 @@ def search():
     return render_template('besucher/list_partial.html', data=data)
 
 
+@besucher_bp.route('/detail/<int:besucher_id>')
+@login_required
+def detail(besucher_id):
+    besucher, buchungen = fetch_besucher_for_update(besucher_id)
+    return render_template('besucher/detail_partial.html',
+                           besucher=besucher,
+                           buchungen=buchungen)
+
+
 @besucher_bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():

@@ -9,7 +9,10 @@
         <tbody>
             {% for besucher in data %}
                 <tr style="cursor:pointer"
-                    onclick="window.location='{{ url_for('besucher_bp.update', besucher_id=besucher.id) }}'">
+                    hx-get="{{ url_for('besucher_bp.detail', besucher_id=besucher.id) }}"
+                    hx-target="#detail-panel"
+                    hx-swap="innerHTML"
+                    hx-on:click="document.querySelectorAll('#results tr.table-active').forEach(el=>el.classList.remove('table-active')); this.classList.add('table-active')">
                     <td>{{ besucher.anrede }}</td>
                     <td>{{ besucher.name }}, {{ besucher.vorname }}</td>
                     <td>{{ besucher.strasse }}</td>

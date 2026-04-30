@@ -1,0 +1,57 @@
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>{{ besucher.anrede }} {{ besucher.vorname }} {{ besucher.name }}</strong>
+        <div>
+            <a href="{{ url_for('besucher_bp.update', besucher_id=besucher.id) }}"
+               class="btn btn-sm btn-outline-secondary">Bearbeiten</a>
+            <a href="{{ url_for('buchung_bp.create_buchung', besucher_id=besucher.id) }}"
+               class="btn btn-sm btn-primary ms-1">Neue Buchung</a>
+            <a href="{{ url_for('buchung_bp.create_angebot', besucher_id=besucher.id) }}"
+               class="btn btn-sm btn-outline-primary ms-1">Neues Angebot</a>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <dl class="row mb-0">
+                    <dt class="col-5">Adresse</dt>
+                    <dd class="col-7">{{ besucher.strasse }}<br>{{ besucher.plz }} {{ besucher.stadt }}<br>{{ besucher.land }}</dd>
+                    <dt class="col-5">E-Mail</dt>
+                    <dd class="col-7"><a href="mailto:{{ besucher.email }}">{{ besucher.email }}</a></dd>
+                    <dt class="col-5">Telefon</dt>
+                    <dd class="col-7">{{ besucher.tel }}</dd>
+                    {% if besucher.vermerk %}
+                    <dt class="col-5">Vermerk</dt>
+                    <dd class="col-7">{{ besucher.vermerk }}</dd>
+                    {% endif %}
+                </dl>
+            </div>
+            <div class="col-md-8">
+                <h6 class="text-muted">Buchungen</h6>
+                {% if buchungen %}
+                <table class="table table-sm table-hover mb-0">
+                    <thead>
+                        <tr><th>Anreise</th><th>Abreise</th><th>Apartment</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for b in buchungen[:8] %}
+                        <tr style="cursor:pointer"
+                            onclick="window.location='{{ url_for('buchung_bp.anzeigen', buchung_id=b.id) }}'">
+                            <td>{{ b.anreise | euro_date }}</td>
+                            <td>{{ b.abreise | euro_date }}</td>
+                            <td>{{ b.apartment.name }}</td>
+                            <td>{{ b.status }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if buchungen|length > 8 %}
+                <p class="text-muted small mt-1">… und {{ buchungen|length - 8 }} weitere</p>
+                {% endif %}
+                {% else %}
+                <p class="text-muted">Keine Buchungen vorhanden.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
