@@ -10,6 +10,42 @@ Architektur- und Datenbankübersicht: siehe [ARCHITEKTUR.md](ARCHITEKTUR.md)
 
 # Änderungshistorie
 
+## Rev: 1.8 (02.05.2026)
+
+### HTMX-Modernisierung: Zweistufiger Buchungsflow
+
+Die Buchungsoberfläche wurde vollständig auf HTMX umgestellt —
+kein jQuery/RxJS mehr für Interaktionen, alle Seitenaktualisierungen
+per HTMX-Partial-Rendering.
+
+**Zweistufiger Buchungsflow** (Neue Buchung, Schnellbuchung, Angebot umwandeln):
+
+- Schritt 1: Buchungsdaten erfassen → **Weiter →**
+- Schritt 2: Zusammenfassung (Apartment, Daten, Miete, Kurtaxe, Summe, Offener Betrag) +
+  WYSIWYG-E-Mail-Editor (CKEditor) → **Speichern & Senden →**
+- **← Zurück** kehrt zu Schritt 1 zurück ohne Datenverlust
+
+**Neue Buchung aus Besucher-Detailkarte:**
+Buchungs- und Angebotsformular öffnet sich direkt unterhalb der Besucherkarte,
+kein Seitenwechsel.
+
+**Angebot umwandeln:**
+Direkt auf der Buchungsdetailseite inline — E-Mail-Editor erscheint auf der Seite,
+kein eigener Seitenwechsel mehr.
+
+**Besucherkarte — Buchungshistorie:**
+Stornierte und verworfene Buchungen werden ausgeblendet.
+Nur `angebot`, `gebucht` und `abgerechnet` sind sichtbar.
+
+**FlaskrSession entfernt:**
+Die DB-persistierte Session-Tabelle (`flaskrsession`) wird nicht mehr befüllt.
+Die Tabelle in der DB bleibt erhalten, das Modell und alle Routen wurden entfernt.
+
+**CKEditor** wird global über `/static/node_modules/ckeditor4/ckeditor.js`
+eingebunden. **HTMX 2.0.4** wird per CDN (unpkg.com) geladen.
+
+---
+
 ## Rev: 1.7 (29.04.2026)
 
 ### Feratel Gästemeldung automatisiert
