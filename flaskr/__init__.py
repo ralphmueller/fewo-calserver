@@ -103,5 +103,7 @@ def create_app(test_config=None):
         from .utils import custom_filters       # noqa: F401
         import flaskr.blueprints                # noqa: F401
         from .utils import error_handlers       # noqa: F401
+        from .cli import register_commands
+        register_commands(app)
 
     return app
