@@ -70,11 +70,6 @@ def create_app(test_config=None):
     app_context = app.app_context()
     app_context.push()
 
-    """
-    from flask_debugtoolbar import DebugToolbarExtension
-    _ = DebugToolbarExtension(app)
-    """
-
     @app.context_processor
     def inject_operator():
         import os

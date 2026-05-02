@@ -81,10 +81,14 @@ class FeratelSession:
         page = self._page
         page.goto(LOGIN_URL, wait_until='domcontentloaded', timeout=60_000)
         page.wait_for_timeout(3_000)
+        feratel_id = os.environ.get('FERATEL_ID', '')
+        feratel_pw = os.environ.get('FERATEL_PW', '')
+        if not feratel_id or not feratel_pw:
+            raise RuntimeError('FERATEL_ID und FERATEL_PW müssen in .env gesetzt sein')
         page.locator('#Username').click()
-        page.keyboard.type(os.environ['FERATEL_ID'], delay=80)
+        page.keyboard.type(feratel_id, delay=80)
         page.locator('#Password').click()
-        page.keyboard.type(os.environ['FERATEL_PW'], delay=80)
+        page.keyboard.type(feratel_pw, delay=80)
         page.keyboard.press('Enter')
         page.wait_for_timeout(7_000)
         if 'identity.deskline.net' in page.url:

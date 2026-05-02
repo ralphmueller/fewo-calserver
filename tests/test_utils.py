@@ -57,16 +57,15 @@ class TestDaysInMonthPure:
 
 
 class TestForecastYearList:
-    """Document the hardcoded year list bug: years stop at 2024."""
+    """Verify that the forecast year list is computed dynamically."""
 
-    def test_forecast_years_do_not_include_current_year(self):
-        """This test will fail once the hardcoded list is fixed to be dynamic."""
+    def test_forecast_years_include_current_year(self):
+        """Year list must end with the current year, not a hardcoded value."""
         import flaskr.utils.fewo_reporting as reporting
         import inspect
 
         source = inspect.getsource(reporting.calc_forecast_today)
-        # Hardcoded list is a known issue — this test documents it
-        assert '2024' in source, (
-            "Hardcoded year 2024 no longer present — "
-            "verify that calc_forecast_today now uses a dynamic year list"
+        assert 'datetime.date.today().year' in source, (
+            "calc_forecast_today must use datetime.date.today().year "
+            "for a dynamic year list — no hardcoded year like 2024"
         )

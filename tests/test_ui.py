@@ -165,18 +165,18 @@ class TestBesucherFindUI:
     def test_find_page_shows_search_input(self, page, live_server, ui_user):
         do_login(page, live_server)
         page.goto(f'{live_server}/besucher/find')
-        assert page.locator('#textInput').is_visible()
+        assert page.locator('input[name="q"]').is_visible()
 
     def test_find_page_shows_help_text(self, page, live_server, ui_user):
         do_login(page, live_server)
         page.goto(f'{live_server}/besucher/find')
-        assert page.locator('text=mindestens 3 Zeichen').is_visible()
+        assert page.locator('text=Mindestens 3 Zeichen').is_visible()
 
     def test_find_page_user_can_type_in_search(self, page, live_server, ui_user):
         do_login(page, live_server)
         page.goto(f'{live_server}/besucher/find')
-        page.locator('#textInput').fill('Müller')
-        assert page.locator('#textInput').input_value() == 'Müller'
+        page.locator('input[name="q"]').fill('Schmidt')
+        assert page.locator('input[name="q"]').input_value() == 'Schmidt'
 
 
 # ── Tests: Besucher anlegen (Formularfelder) ──────────────────────────────────

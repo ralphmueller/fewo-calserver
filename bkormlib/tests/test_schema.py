@@ -58,12 +58,12 @@ class TestStaticValuesBuchung:
 
 class TestFlaskrSession:
     def setup_method(self):
-        User.create(username='ralph', password='testpw', admin=True).save()
+        User.create(username='testuser', password='testpw', admin=True).save()
         for b in [
-            {'user_id': 1, 'anrede': 'Herr', 'name': 'Mueller',
-             'vorname': 'Ralph', 'email': 'r@example.com'},
-            {'user_id': 1, 'anrede': 'Frau', 'name': 'Iwai',
-             'vorname': 'Susan', 'email': 's@example.com'},
+            {'user_id': 1, 'anrede': 'Herr', 'name': 'Schmidt',
+             'vorname': 'Hans', 'email': 'hans@example.com'},
+            {'user_id': 1, 'anrede': 'Frau', 'name': 'Weber',
+             'vorname': 'Maria', 'email': 'maria@example.com'},
         ]:
             Besucher.create(**b).save()
 
@@ -71,7 +71,7 @@ class TestFlaskrSession:
         data = [{'user_id': 1, 'name': 'test'}]
         session = FlaskrSession.from_object(User.get_by_id(1), data)
         assert type(session) is FlaskrSession
-        assert session.user.username == 'ralph'
+        assert session.user.username == 'testuser'
 
     def test_save_and_restore_session(self):
         data = [{'user_id': 1, 'name': 'test'}]

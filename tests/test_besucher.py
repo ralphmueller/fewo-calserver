@@ -6,15 +6,15 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 
-def _make_besucher(id=1, name='Müller', vorname='Ralph'):
+def _make_besucher(id=1, name='Schmidt', vorname='Hans'):
     b = MagicMock()
     b.id = id
     b.name = name
     b.vorname = vorname
     b.anrede = 'Herr'
     b.strasse = 'Hauptstr. 1'
-    b.plz = '36129'
-    b.stadt = 'Gersfeld'
+    b.plz = '12345'
+    b.stadt = 'Musterstadt'
     b.land = 'DE'
     b.email = 'test@example.com'
     b.tel = '01234'
@@ -79,15 +79,15 @@ class TestBesucherSearchRoute:
         with patch('flaskr.besucher.besucher.Besucher', _search_mock([besucher])):
             response = logged_in_client.get('/besucher/search?q=M%C3%BCll*')
         assert response.status_code == 200
-        assert b'M\xc3\xbcller' in response.data  # Müller in UTF-8
+        assert b'Schmidt' in response.data
 
     def test_two_terms_searches_name_and_vorname_combined(self, logged_in_client):
         """Two space-separated terms → AND search: first=name, second=vorname."""
         besucher = _make_besucher()
         with patch('flaskr.besucher.besucher.Besucher', _search_mock([besucher])):
-            response = logged_in_client.get('/besucher/search?q=M%C3%BCll*+Ral*')
+            response = logged_in_client.get('/besucher/search?q=Schm*+Han*')
         assert response.status_code == 200
-        assert b'M\xc3\xbcller' in response.data
+        assert b'Schmidt' in response.data
 
     def test_no_results_shows_empty_message(self, logged_in_client):
         """Empty result set → 'Keine Besucher gefunden' in response."""

@@ -657,22 +657,3 @@ class Migration(BaseModel):
         db_table = 'migration'
 
 
-'''
-
-TODO - rewrite or move
-
-def create_tables():
-    # Drop existing test database and create all tables
-    database = setDatabase()
-    MODELS = [User, Apartment, Besucher, Portal, Buchung, Email, FlaskSession]
-    if envir == 'unit_test':
-        with database:
-            database.drop_tables(MODELS)
-            database.create_tables(MODELS)
-    else:
-        print('Cannot delete / change production or test DB')
-
-
-if __name__ == '__main__':
-    sys.exit(create_tables())
-'''

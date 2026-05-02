@@ -122,8 +122,7 @@ def create_besucher_from_form(form):
 
 
 def typecheck(a, b, c):
-    if type(a) is not type(b):
-        print('typecheck failed', c, type(a), type(b), a, b)
+    pass
 
 
 def update_besucher(form, besucher):

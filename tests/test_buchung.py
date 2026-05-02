@@ -24,8 +24,8 @@ def _make_buchung(id=1, status='gebucht'):
 
     besucher = MagicMock()
     besucher.id = 10
-    besucher.name = 'Müller'
-    besucher.vorname = 'Ralph'
+    besucher.name = 'Schmidt'
+    besucher.vorname = 'Hans'
     besucher.email = 'test@example.com'
     besucher.language = 'de'
 
@@ -67,10 +67,10 @@ def _make_buchung(id=1, status='gebucht'):
 def _make_besucher(id=10):
     b = MagicMock()
     b.id = id
-    b.name = 'Müller'
-    b.vorname = 'Ralph'
+    b.name = 'Schmidt'
+    b.vorname = 'Hans'
     b.email = 'test@example.com'
-    b.stadt = 'Gersfeld'
+    b.stadt = 'Musterstadt'
     b.language = 'de'
     return b
 
@@ -125,7 +125,7 @@ class TestBuchungDetail:
             MockBuchung.get_by_id.return_value = buchung
             r = logged_in_client.get('/buchung/1/detail')
         assert r.status_code == 200
-        assert b'M\xc3\xbcller' in r.data
+        assert b'Schmidt' in r.data
         assert b'F1' in r.data
 
     def test_shows_bearbeiten_for_gebucht(self, logged_in_client):
@@ -223,9 +223,9 @@ class TestNeueBuchung:
             MockBesucher.select.return_value = q
             MockBesucher.name = MagicMock()
             MockBesucher.vorname = MagicMock()
-            r = logged_in_client.get('/buchung/neu/suche?q=müller')
+            r = logged_in_client.get('/buchung/neu/suche?q=schm*')
         assert r.status_code == 200
-        assert b'M\xc3\xbcller' in r.data
+        assert b'Schmidt' in r.data
         assert b'hx-get' in r.data  # Zeilen haben HTMX-Attribute
 
     def test_formular_requires_login(self, client):
@@ -238,7 +238,7 @@ class TestNeueBuchung:
             MockBesucher.get_by_id.return_value = besucher
             r = logged_in_client.get('/buchung/neu/formular/10')
         assert r.status_code == 200
-        assert b'M\xc3\xbcller' in r.data
+        assert b'Schmidt' in r.data
         assert b'Weiter' in r.data
 
 
@@ -323,9 +323,9 @@ class TestSchnellGastSuche:
             MockBesucher.vorname = MagicMock()
             r = logged_in_client.get(
                 '/buchung/schnell/gast_suche'
-                '?q=m%C3%BCller&anreise=2026-05-01&abreise=2026-05-08&apartment_id=1')
+                '?q=schm*&anreise=2026-05-01&abreise=2026-05-08&apartment_id=1')
         assert r.status_code == 200
-        assert b'M\xc3\xbcller' in r.data
+        assert b'Schmidt' in r.data
 
     def test_two_part_query(self, logged_in_client):
         besucher = _make_besucher()
@@ -360,7 +360,7 @@ class TestSchnellBuchenFormular:
                 '/buchung/schnell/buchen_formular'
                 '?anreise=2026-05-01&abreise=2026-05-08&apartment_id=1&besucher_id=10')
         assert r.status_code == 200
-        assert b'M\xc3\xbcller' in r.data
+        assert b'Schmidt' in r.data
         assert b'Direkt buchen' in r.data
         assert b'Angebot erstellen' in r.data
 
@@ -392,14 +392,14 @@ class TestSchnellNeuerGast:
                     'abreise': '2026-05-08',
                     'apartment_id': '1',
                     'anrede': 'Fam',
-                    'name': 'Müller',
-                    'vorname': 'Ralph',
+                    'name': 'Schmidt',
+                    'vorname': 'Hans',
                     'email': 'test@example.com',
                     'land': 'DE',
                 })
         assert r.status_code == 200
         besucher.save.assert_called_once()
-        assert b'M\xc3\xbcller' in r.data
+        assert b'Schmidt' in r.data
 
 
 _SCHNELL_BUCHEN_DATA = {
