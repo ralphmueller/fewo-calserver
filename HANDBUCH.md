@@ -244,6 +244,29 @@ Monatsansicht aller Apartments. Belegungen farblich nach Status:
 
 ---
 
+## Administration (CLI)
+
+Diese Befehle werden im Terminal im App-Verzeichnis ausgeführt.
+
+### Datenbank-Tabellen anlegen
+
+    pipenv run flask --app flaskr init-db
+
+Legt alle Tabellen an. Bestehende Tabellen und Daten werden nicht verändert
+(`safe=True`). Kann nach einem Update wiederholt werden, um neue Tabellen
+nachzuziehen.
+
+### Benutzer anlegen
+
+    pipenv run flask --app flaskr create-admin --username NAME
+
+Das Passwort wird interaktiv abgefragt (zweimal). Standardmäßig erhält der
+neue Benutzer Admin-Rechte. Ohne Admin: `--no-admin`.
+
+Passwort eines bestehenden Benutzers ändern: Menü → **Admin → Passwort ändern**.
+
+---
+
 ## Suchwildcard-Referenz
 
 Gilt für alle Suchfelder in der App:

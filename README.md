@@ -261,9 +261,9 @@ Im Testbetrieb nur mit Buchungen auf eigene Namen arbeiten.
 
 ### MySQL-Benutzer und Datenbank anlegen
 
-    CREATE DATABASE testrechnungen CHARACTER SET utf8mb4;
+    CREATE DATABASE fewo CHARACTER SET utf8mb4;
     CREATE USER 'fewouser'@'localhost' IDENTIFIED BY 'passwort';
-    GRANT ALL PRIVILEGES ON testrechnungen.* TO 'fewouser'@'localhost';
+    GRANT ALL PRIVILEGES ON fewo.* TO 'fewouser'@'localhost';
     FLUSH PRIVILEGES;
 
 **Hinweis MariaDB:** Falls Authentifizierungsprobleme auftreten:
@@ -271,31 +271,20 @@ Im Testbetrieb nur mit Buchungen auf eigene Namen arbeiten.
     ALTER USER 'fewouser'@'localhost'
       IDENTIFIED VIA mysql_native_password USING PASSWORD('passwort');
 
-### Neue Tabellen für Warenwirtschaft erstellen
+### Tabellen anlegen
 
-    CREATE TABLE ware (
-        id          INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-        bezeichnung VARCHAR(255) NOT NULL,
-        preis       DECIMAL(10,2) NOT NULL,
-        mwst_satz   INT NOT NULL DEFAULT 19,
-        menge_lager INT NOT NULL DEFAULT 0,
-        mindestbestand INT NOT NULL DEFAULT 0,
-        lieferant   VARCHAR(255),
-        active      TINYINT(1) NOT NULL DEFAULT 1
-    ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+    pipenv run flask --app flaskr init-db
 
-    CREATE TABLE verkauf (
-        id                   INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-        buchung_id           INT NOT NULL,
-        ware_id              INT NOT NULL,
-        menge                INT NOT NULL,
-        preis_zum_zeitpunkt  DECIMAL(10,2) NOT NULL,
-        mwst_zum_zeitpunkt   INT NOT NULL,
-        zeitpunkt            DATETIME NOT NULL
-    ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+Legt alle Tabellen an (`safe=True` — bestehende Daten bleiben erhalten).
+Bei einer Neuinstallation können so auch neue Tabellen nach einem Update
+ohne Datenverlust nachgezogen werden.
 
-**Hinweis:** Die App verwendet MyISAM — keine Foreign-Key-Constraints in der DB.
-Die referenzielle Integrität wird auf Anwendungsebene sichergestellt.
+### Ersten Admin anlegen
+
+    pipenv run flask --app flaskr create-admin --username admin
+
+Das Passwort wird interaktiv abgefragt (zweimal zur Bestätigung).
+Für einen normalen Benutzer ohne Admin-Rechte: `--no-admin`.
 
 ### Produktionsdaten lokal importieren (optional)
 
@@ -303,9 +292,10 @@ Die referenzielle Integrität wird auf Anwendungsebene sichergestellt.
     mysqldump -u user -p fewo > fewo_dump.sql
 
     # Lokal importieren
-    mysql -u fewouser -p testrechnungen < fewo_dump.sql
+    mysql -u fewouser -p fewo < fewo_dump.sql
 
-    # Danach ware- und verkauf-Tabellen anlegen (s.o., falls nicht im Dump)
+    # Anschließend fehlende Tabellen nachrüsten (idempotent):
+    pipenv run flask --app flaskr init-db
 
 ## 6. Playwright installieren (nur wenn Feratel-Automation genutzt wird)
 
