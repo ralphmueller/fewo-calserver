@@ -7,6 +7,7 @@ Minor updates all along the way
 '''
 
 import calendar
+import os
 from datetime import datetime, date, time
 from playhouse.db_url import connect
 from peewee import (
@@ -630,27 +631,17 @@ class Email(BaseModel):
 
 
 class StaticValuesBuchung():
-    """
-        give me some interesting data
-
-        12/2022 Changes KT 2023:
-        - 2,10€ older 14y -> ktsatz_vz
-        - 0,50€ professionals -> ktsatz_hx
-
-        01/2022 Changes - withdraw from collecting worker tax (ktsatz_wz)
-    """
     @classmethod
     def ktsatz_vz(cls):
-        return 2.1
+        return float(os.environ.get('KURTAXE_SATZ_VZ', '2.1'))
 
-    # changed to 50c Jan 15, 2024 to reflect chages rules of Stadt
     @classmethod
     def ktsatz_hz(cls):
-        return 0.5
+        return float(os.environ.get('KURTAXE_SATZ_HZ', '0.5'))
 
     @classmethod
     def mwstsatz(cls):
-        return 7
+        return int(os.environ.get('MWST_SATZ', '7'))
 
     @classmethod
     def today(cls):

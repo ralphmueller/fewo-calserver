@@ -44,20 +44,17 @@ def _submit_meldeschein_mock(buchung_id: int) -> dict:
     except Exception as e:
         return {'success': False, 'error': str(e)}
 
+import json
+
 BASE_URL = 'https://webclient4.deskline.net/RHO/de'
 LOGIN_URL = f'{BASE_URL}/login'
-ACCOMMODATION_ID = '016e207a-14b4-4e91-a82b-a021713c1e9d'
+ACCOMMODATION_ID = os.environ.get('FERATEL_ACCOMMODATION_ID', '')
 
-APARTMENT_MAP = {
-    'F1': 'Ferien-in-Gersfeld Fliegerstraße',
-    'F2': 'Ferien-in-Gersfeld Fliegerstraße',
-    'F4': 'Ferien-in-Gersfeld Fliegerstraße',
-    'F5': 'Ferien-in-Gersfeld Fliegerstraße',
-    'G1': 'Ferien-in-Gersfeld Gartenstraße',
-    'G2': 'Ferien-in-Gersfeld Gartenstraße',
-    'M1': 'Ferien-in-Gersfeld Martensstraße',
-    'M2': 'Ferien-in-Gersfeld Martensstraße',
-}
+_apartment_map_raw = os.environ.get('FERATEL_APARTMENT_MAP', '{}')
+try:
+    APARTMENT_MAP = json.loads(_apartment_map_raw)
+except json.JSONDecodeError:
+    APARTMENT_MAP = {}
 
 
 def _fmt_date(d) -> str:

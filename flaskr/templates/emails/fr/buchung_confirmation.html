@@ -21,20 +21,20 @@
     du {{buchung.get_anreise() |euro_date_short}} au {{buchung.get_abreise() |euro_date_short}}. 
 </p>
 <p>
-	Le linge de lit, les serviettes et l'accès à Internet sont fournis gratuitement. En utilisant l'accès 
-	Internet mis à disposition (SSID : Ferien-in-Gersfeld-Gast), vous vous engagez à n'utiliser cet accès 
-	que dans le cadre des réglementations en vigueur et, en particulier, à ne pas l'utiliser pour le 
-	téléchargement illégal de contenus. 
+	Le linge de lit, les serviettes et l'accès à Internet sont fournis gratuitement. En utilisant l'accès
+	Internet mis à disposition (SSID : {{ operator.wlan_ssid }}), vous vous engagez à n'utiliser cet accès
+	que dans le cadre des réglementations en vigueur et, en particulier, à ne pas l'utiliser pour le
+	téléchargement illégal de contenus.
 </p>
 
 <p>
-	<strong>Données visiteurs</strong>: Nous sommes tenus de communiquer les données de tous nos visiteurs de la ville de Gersfeld. 
+	<strong>Données visiteurs</strong>: Nous sommes tenus de communiquer les données de tous nos visiteurs de la ville de {{ operator.gemeinde }}.
 	Veuillez nous fournir le nom, le prénom, l'adresse et la date de naissance de tous les visiteurs avant leur arrivée.
 </p>
 <p>
-	<strong>Arrivée</strong> : Nous sommes prêts à vous accueillir entre 15h00 et 18h00 le jour de votre arrivée. Vous recevrez 
-	les clés de l'appartement lorsque vous aurez payé le loyer dû et l'éventuelle taxe de séjour à votre arrivée. Vous pouvez 
-	effectuer le paiement et récupérer les clés auprès de notre gérante, Mme Bianka Moeller, au 4 An der Gärtnerei, Gersfeld. 
+	<strong>Arrivée</strong> : Nous sommes prêts à vous accueillir entre 15h00 et 18h00 le jour de votre arrivée. Vous recevrez
+	les clés de l'appartement lorsque vous aurez payé le loyer dû et l'éventuelle taxe de séjour à votre arrivée. Vous pouvez
+	effectuer le paiement et récupérer les clés auprès de {{ operator.schluessel }}.
 </p>
 <p>
 	<strong>Départ</strong> : Le départ doit avoir lieu au plus tard à 10h00. Nous vous demandons de laisser l'appartement propre. 
@@ -46,16 +46,15 @@
 </p>
 
 <p>Informations sur le paiement :<br>
-	Ralph Müller<br>
-	Sparkasse Bensheim<br>
-	IBAN/BIC: DE12 50950068 0001621572/HELADEF1BEN<br>
-	PayPal: ralph.mueller.de@gmail.com
+	{{ operator.inhaber }}<br>
+	IBAN/BIC: {{ operator.iban }}/{{ operator.bic }}<br>
+	{% if operator.paypal %}PayPal: {{ operator.paypal }}{% endif %}
 </p>
 
 <p>
-	<strong>Conditions d'annulation</strong> : Les réservations confirmées peuvent être annulées sans 
-	frais jusqu'à 7 jours avant l'arrivée. En cas d'annulation au cours de la semaine précédant la date 
-	d'arrivée, nous facturerons des frais équivalant à 50 % du prix de la location.
+	<strong>Conditions d'annulation</strong> : Les réservations confirmées peuvent être annulées sans
+	frais jusqu'à {{ operator.storno_frist }} jours avant l'arrivée. En cas d'annulation au cours de la semaine précédant la date
+	d'arrivée, nous facturerons des frais équivalant à {{ operator.storno_gebuehr }} % du prix de la location.
 </p>
 
 <p>Si vous avez des questions ou besoin d'informations supplémentaires, n'hésitez pas à nous contacter 
@@ -112,13 +111,13 @@
 <p>Notes sur la taxe de séjour :</p>
 <ul>
 	<li>
-		Depuis le 1er janvier 2023, la taxe de séjour s'élève à 2,10€ / nuit pour les visiteurs ayant atteint l'âge de 14 ans. Les personnes plus jeunes 
+		La taxe de séjour s'élève à {{ operator.kurtaxe_satz_vz }}€ / nuit pour les visiteurs ayant atteint l'âge de 14 ans. Les personnes plus jeunes
 		ne paient pas de taxe de séjour.
-	</li>	
+	</li>
 	<li>
-		Les personnes visitant Gersfeld pour des raisons professionnelles (y compris 
+		Les personnes visitant {{ operator.gemeinde }} pour des raisons professionnelles (y compris
 		l'enseignement supérieur) sont exemptées de la taxe de séjour.
-	</li>		
+	</li>
 </ul>
 
 

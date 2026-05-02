@@ -21,18 +21,18 @@
     vom {{buchung.get_anreise() |euro_date_short}} - {{buchung.get_abreise() |euro_date_short}}. 
 </p>
 <p>
-	Bettwäsche, Handtücher und Internetnutzung werden kostenfrei gestellt. Durch die Nutzung des offenen Internet Zugangs 
-	(SSID: Ferien-in-Gersfeld-Gast) verpflichten Sie sich, diesen Zugang nur im Rahmen der gesetzlichen Bestimmungen und insbesondere 
-	nicht für den illegalen Upload und Download von Inhalten zu verwenden. 
+	Bettwäsche, Handtücher und Internetnutzung werden kostenfrei gestellt. Durch die Nutzung des offenen Internet Zugangs
+	(SSID: {{ operator.wlan_ssid }}) verpflichten Sie sich, diesen Zugang nur im Rahmen der gesetzlichen Bestimmungen und insbesondere
+	nicht für den illegalen Upload und Download von Inhalten zu verwenden.
 </p>
 
 <p>
-	<strong>Besucherdaten</strong>: Wir sind verpflichtet, die Daten aller unserer Besucher an die Stadt Gersfeld zu melden. 
+	<strong>Besucherdaten</strong>: Wir sind verpflichtet, die Daten aller unserer Besucher an die Stadt {{ operator.gemeinde }} zu melden.
 	Bitte teilen Sie uns vor Anreise Namen, Vornamen, Adresse und Geburtsdatum aller anreisenden Personen mit.
 </p>
 <p>
-	<strong>Anreise</strong>: Die Wohnung kann zwischen 15:00 und 18:00 am Anreisetag bezogen werden. Den Schlüssel 
-	erhalten Sie gegen Bezahlung des offenen Mietpreises inklusive Kurtaxe bei Frau Möller, An der Gärtnerei 4. 
+	<strong>Anreise</strong>: Die Wohnung kann zwischen 15:00 und 18:00 am Anreisetag bezogen werden. Den Schlüssel
+	erhalten Sie gegen Bezahlung des offenen Mietpreises inklusive Kurtaxe bei {{ operator.schluessel }}.
 </p>
 <p>
 	<strong>Abreise</strong>: Die Abreise soll spätestens bis 10:00 Uhr erfolgen. Wir bitten Sie, die Wohnung sauber zu hinterlassen. 
@@ -45,15 +45,14 @@
 </p>
 
 <p>Unsere Bankdaten:<br>
-	Ralph Müller<br>
-	Sparkasse Bensheim<br>
-	IBAN/BIC: DE12 50950068 0001621572/HELADEF1BEN<br>
-	PayPal: ralph.mueller.de@gmail.com
+	{{ operator.inhaber }}<br>
+	IBAN/BIC: {{ operator.iban }}/{{ operator.bic }}<br>
+	{% if operator.paypal %}PayPal: {{ operator.paypal }}{% endif %}
 </p>
 
 <p>
-	<strong>Stornierungsbedingungen</strong>: Sollten Sie den Urlaub bei uns nicht antreten können, ist eine Stornierung bis 7 Tage 
-	vor dem Anreisetermin kostenfrei. Danach berechnen wir eine Gebühr von 50% des Mietpreises.
+	<strong>Stornierungsbedingungen</strong>: Sollten Sie den Urlaub bei uns nicht antreten können, ist eine Stornierung bis {{ operator.storno_frist }} Tage
+	vor dem Anreisetermin kostenfrei. Danach berechnen wir eine Gebühr von {{ operator.storno_gebuehr }}% des Mietpreises.
 </p>
 
 <p>Für weitere Fragen stehen wir Ihnen gerne telefonisch oder per Email zur Verfügung.</p>
@@ -108,14 +107,16 @@
 <p>Erläuterungen zur Tabelle:</p>
 <ul>
 	<li>
-		Die Kurtaxe beträgt seit dem 1. Januar 2023 2,10€ / Nacht für Besucher, die das 14. Lebensjahr beendet haben. Jüngere Personen 
-		zahlen keine Kurtaxe. 
-	</li>	
+		Die Kurtaxe beträgt {{ operator.kurtaxe_satz_vz }}€ / Nacht für Besucher, die das 14. Lebensjahr beendet haben. Jüngere Personen
+		zahlen keine Kurtaxe.
+	</li>
+	{% if operator.kurtaxe_link %}
 	<li>
-		Die aktuelle Kurtaxordnug der Stadt Gersfeld können Sie über 
-		<a target="_blank" href="https://www.gersfeld.de/satzungen-gebuehren.html?file=files/gersfeld/downloads/rathaus/verwaltung-satzungen/Kur%20-%20u.%20Tourismusbeitragssatzung%20-Beschluss%20StaVo-%2021.07.22.%20und%2015.12.2022.pdf">diesen Link</a> 
+		Die aktuelle Kurtaxordnung der Stadt {{ operator.gemeinde }} können Sie über
+		<a target="_blank" href="{{ operator.kurtaxe_link }}">diesen Link</a>
 		beziehen.
-	</li>		
+	</li>
+	{% endif %}
 </ul>
 
 {% endblock %}

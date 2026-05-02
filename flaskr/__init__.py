@@ -75,6 +75,34 @@ def create_app(test_config=None):
     _ = DebugToolbarExtension(app)
     """
 
+    @app.context_processor
+    def inject_operator():
+        import os
+        kv = float(os.environ.get('KURTAXE_SATZ_VZ', '2.1'))
+        kh = float(os.environ.get('KURTAXE_SATZ_HZ', '0.5'))
+        return {'operator': {
+            'name':           os.environ.get('OPERATOR_NAME', ''),
+            'inhaber':        os.environ.get('OPERATOR_INHABER', ''),
+            'strasse':        os.environ.get('OPERATOR_STRASSE', ''),
+            'plz_ort':        os.environ.get('OPERATOR_PLZ_ORT', ''),
+            'gemeinde':       os.environ.get('OPERATOR_GEMEINDE', ''),
+            'tel':            os.environ.get('OPERATOR_TEL', ''),
+            'tel_intl':       os.environ.get('OPERATOR_TEL_INTL', ''),
+            'email':          os.environ.get('OPERATOR_EMAIL', ''),
+            'website':        os.environ.get('OPERATOR_WEBSITE', ''),
+            'iban':           os.environ.get('OPERATOR_IBAN', ''),
+            'bic':            os.environ.get('OPERATOR_BIC', ''),
+            'ust_id':         os.environ.get('OPERATOR_UST_ID', ''),
+            'paypal':         os.environ.get('OPERATOR_PAYPAL', ''),
+            'schluessel':     os.environ.get('OPERATOR_SCHLUESSEL', ''),
+            'wlan_ssid':      os.environ.get('OPERATOR_WLAN_SSID', ''),
+            'kurtaxe_link':   os.environ.get('OPERATOR_KURTAXE_LINK', ''),
+            'storno_frist':   os.environ.get('OPERATOR_STORNO_FRIST', '7'),
+            'storno_gebuehr': os.environ.get('OPERATOR_STORNO_GEBUEHR', '50'),
+            'kurtaxe_satz_vz': f'{kv:.2f}'.replace('.', ','),
+            'kurtaxe_satz_hz': f'{kh:.2f}'.replace('.', ','),
+        }}
+
     with app.app_context():
         from .utils import assets               # noqa: F401
         from .utils import custom_filters       # noqa: F401

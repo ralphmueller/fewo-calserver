@@ -32,7 +32,7 @@
 			</div>
 			<div class="header-text">
 				<h1>Rechnung</h1>
-				<p>Ferien-in-Gersfeld</p>
+				<p>{{ operator.name }}</p>
 			</div>
 		</div> <!-- header -->
 		<div id="address-date">
@@ -48,7 +48,7 @@
 			<!-- Datum, Rechnungs-Nr. -->
 
 			<div class="date-block">
-				<p>Gersfeld, den {{ buchung.rechnungsdatum | euro_date_short }}<br>
+				<p>{{ operator.gemeinde }}, den {{ buchung.rechnungsdatum | euro_date_short }}<br>
 				Rechnung Nr. {{ buchung.rechnungs_nummer }}</p>
 			</div>  <!-- date -->	
 		</div>	<!-- address-date -->
@@ -146,28 +146,30 @@
 			<p>Berechnung der Kurtaxe:</p> 
 			<ul>
 				<li>
-					Die Kurtaxe beträgt seit dem 1. Januar 2023 2,10€ / Nacht für Besucher, die das 14. Lebensjahr beendet haben. Jüngere Personen 
-					zahlen keine Kurtaxe. 
-				</li>	
+					Die Kurtaxe beträgt {{ operator.kurtaxe_satz_vz }}€ / Nacht für Besucher, die das 14. Lebensjahr beendet haben. Jüngere Personen
+					zahlen keine Kurtaxe.
+				</li>
+				{% if operator.kurtaxe_link %}
 				<li>
-					Die aktuelle Kurtaxordnung können Sie über die Webseite 
-					der Stadt Gersfeld einsehen.
-				</li>	
+					Die aktuelle Kurtaxordnung können Sie über die
+					<a href="{{ operator.kurtaxe_link }}">Webseite der Stadt {{ operator.gemeinde }}</a> einsehen.
+				</li>
+				{% endif %}	
 			</ul>
 		</div> <!-- kurtaxe-text -->
 		<div id="mfg">
 			<p>Mit freundlichen Grüßen</p>
-			<p>Ralph Müller<br>
-				Ferien-In-Gersfeld
+			<p>{{ operator.inhaber }}<br>
+				{{ operator.name }}
 			 </p>
 		</div> <!-- mfg -->
 		<div id="footer">
-			<p>Ferienwohnungen Ferien-in-Gersfeld<br>
-				Gartenstraße 4a, 36129 Gersfeld<br>
-				&#x260E; &nbsp; <strong>0700 789 33344</strong> (freecall) / International: +49 177 449 0460<br>
-				&#x1F4E7; &nbsp; info@ferien-in-gersfeld.de, ferien-in-gersfeld.de<br>
-				IBAN/BIC: DE12 50950068 0001621572/HELADEF1BEN<br>
-				USt-ID: DE 25 219 6052
+			<p>{{ operator.name }}<br>
+				{{ operator.strasse }}, {{ operator.plz_ort }}<br>
+				&#x260E; &nbsp; <strong>{{ operator.tel }}</strong>{% if operator.tel_intl %} / International: {{ operator.tel_intl }}{% endif %}<br>
+				&#x1F4E7; &nbsp; {{ operator.email }}, {{ operator.website }}<br>
+				IBAN/BIC: {{ operator.iban }}/{{ operator.bic }}<br>
+				{% if operator.ust_id %}USt-ID: {{ operator.ust_id }}{% endif %}
 			</p>
 		</div> <!-- footer -->	
 		<div id="weiter-button">

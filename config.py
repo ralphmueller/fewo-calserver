@@ -44,20 +44,17 @@ class Config:
 
     if ENV == 'development':
         TESTING = True
-        EMAILS_TEAM = ['ralph.mueller.de@gmail.com']
-        INFO_EMAIL = ['ralph.mueller.de@gmail.com']
+        EMAILS_TEAM = [e.strip() for e in environ.get('EMAILS_TEAM', '').split(',') if e.strip()]
+        INFO_EMAIL = [e.strip() for e in environ.get('INFO_EMAIL', '').split(',') if e.strip()]
     if ENV == 'staging':
         TESTING = True
-        SERVER_NAME = 'garten4a.dyndns-remote.com'
-        EMAILS_TEAM = ['ralph.mueller.de@gmail.com']
-        INFO_EMAIL = ['ralph.mueller.de@gmail.com']
-        SERVER_NAME = 'garten4a.dyndns-remote.com:8082'
+        SERVER_NAME = environ.get('SERVER_NAME', None)
+        EMAILS_TEAM = [e.strip() for e in environ.get('EMAILS_TEAM', '').split(',') if e.strip()]
+        INFO_EMAIL = [e.strip() for e in environ.get('INFO_EMAIL', '').split(',') if e.strip()]
     if ENV == 'production':
         TESTING = False
-        EMAILS_TEAM = [
-            'ralph.mueller.de@gmail.com',
-            'susan.iwai@gmail.com']
-        INFO_EMAIL = ['info@ferien-in-gersfeld.de']
+        EMAILS_TEAM = [e.strip() for e in environ.get('EMAILS_TEAM', '').split(',') if e.strip()]
+        INFO_EMAIL = [e.strip() for e in environ.get('INFO_EMAIL', '').split(',') if e.strip()]
 
 
 def get_db(cls=Config):
