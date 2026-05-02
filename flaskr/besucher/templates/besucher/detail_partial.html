@@ -6,10 +6,16 @@
                     hx-get="{{ url_for('besucher_bp.edit', besucher_id=besucher.id) }}"
                     hx-target="#detail-panel"
                     hx-swap="innerHTML">Bearbeiten</button>
-            <a href="{{ url_for('buchung_bp.neu') }}"
-               class="btn btn-sm btn-primary ms-1">Neue Buchung</a>
-            <a href="{{ url_for('buchung_bp.schnell') }}"
-               class="btn btn-sm btn-outline-primary ms-1">Neues Angebot</a>
+            <button class="btn btn-sm btn-primary ms-1"
+                    hx-get="{{ url_for('buchung_bp.neu_formular', besucher_id=besucher.id) }}"
+                    hx-vals='{"typ": "gebucht", "hx_target": "#neu-buchung-panel"}'
+                    hx-target="#neu-buchung-panel"
+                    hx-swap="innerHTML">Neue Buchung</button>
+            <button class="btn btn-sm btn-outline-primary ms-1"
+                    hx-get="{{ url_for('buchung_bp.neu_formular', besucher_id=besucher.id) }}"
+                    hx-vals='{"typ": "angebot", "hx_target": "#neu-buchung-panel"}'
+                    hx-target="#neu-buchung-panel"
+                    hx-swap="innerHTML">Neues Angebot</button>
         </div>
     </div>
     <div class="card-body">
@@ -30,13 +36,14 @@
             </div>
             <div class="col-md-8">
                 <h6 class="text-muted">Buchungen</h6>
-                {% if buchungen %}
+                {% set sichtbar = buchungen | rejectattr('status', 'equalto', 'storno') | rejectattr('status', 'equalto', 'verworfen') | list %}
+                {% if sichtbar %}
                 <table class="table table-sm table-hover mb-0">
                     <thead>
                         <tr><th>Anreise</th><th>Abreise</th><th>Apartment</th><th>Status</th></tr>
                     </thead>
                     <tbody>
-                        {% for b in buchungen[:8] %}
+                        {% for b in sichtbar[:8] %}
                         <tr style="cursor:pointer"
                             onclick="window.location='{{ url_for('buchung_bp.anzeigen', buchung_id=b.id) }}'">
                             <td>{{ b.anreise | euro_date }}</td>
@@ -47,8 +54,8 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                {% if buchungen|length > 8 %}
-                <p class="text-muted small mt-1">… und {{ buchungen|length - 8 }} weitere</p>
+                {% if sichtbar|length > 8 %}
+                <p class="text-muted small mt-1">… und {{ sichtbar|length - 8 }} weitere</p>
                 {% endif %}
                 {% else %}
                 <p class="text-muted">Keine Buchungen vorhanden.</p>
@@ -57,3 +64,4 @@
         </div>
     </div>
 </div>
+<div id="neu-buchung-panel" class="mt-3"></div>

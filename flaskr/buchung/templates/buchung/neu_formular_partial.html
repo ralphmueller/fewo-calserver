@@ -2,7 +2,7 @@
 
 <div class="card">
     <div class="card-header">
-        <strong>Neue Buchung für {{ besucher.vorname }} {{ besucher.name }}</strong>
+        <strong>{{ 'Neues Angebot' if typ == 'angebot' else 'Neue Buchung' }} für {{ besucher.vorname }} {{ besucher.name }}</strong>
         {% if besucher.email %}
         <span class="text-muted small ms-2">{{ besucher.email }}</span>
         {% else %}
@@ -10,10 +10,13 @@
         {% endif %}
     </div>
     <div class="card-body">
-        <form hx-post="{{ url_for('buchung_bp.neu_formular', besucher_id=besucher.id) }}"
-              hx-target="#buchung-panel"
+        <form id="buchung-form-{{ besucher.id }}"
+              hx-post="{{ url_for('buchung_bp.neu_vorschau', besucher_id=besucher.id) }}"
+              hx-target="{{ hx_target }}"
               hx-swap="innerHTML">
             {{ form.hidden_tag() }}
+            <input type="hidden" name="typ" value="{{ typ }}">
+            <input type="hidden" name="hx_target" value="{{ hx_target }}">
 
             <div class="row g-2">
                 <div class="col-md-4">
@@ -75,7 +78,7 @@
             {% endif %}
 
             <div class="mt-2">
-                <button type="submit" class="btn btn-primary">Buchung speichern & E-Mail senden</button>
+                <button type="submit" class="btn btn-primary">Weiter →</button>
             </div>
         </form>
     </div>

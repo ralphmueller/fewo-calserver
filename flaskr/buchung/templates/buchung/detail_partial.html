@@ -11,9 +11,21 @@
                     hx-target="#buchung-detail-{{ buchung.id }}"
                     hx-swap="outerHTML">Bearbeiten</button>
             {% endif %}
+            {% if buchung.status == 'angebot' %}
+            <button class="btn btn-sm btn-success"
+                    hx-get="{{ url_for('buchung_bp.convert_angebot', buchung_id=buchung.id) }}"
+                    hx-target="#convert-panel"
+                    hx-swap="innerHTML">Umwandeln in Buchung</button>
+            <a href="{{ url_for('buchung_bp.drop_angebot', buchung_id=buchung.id) }}"
+               class="btn btn-sm btn-outline-danger"
+               onclick="return confirm('Angebot wirklich verwerfen?')">Verwerfen</a>
+            {% endif %}
             {% if buchung.status == 'gebucht' %}
             <a href="{{ url_for('buchung_bp.abrechnen', buchung_id=buchung.id) }}"
                class="btn btn-sm btn-success">Abrechnen</a>
+            <a href="{{ url_for('buchung_bp.storno', buchung_id=buchung.id) }}"
+               class="btn btn-sm btn-outline-danger"
+               onclick="return confirm('Buchung wirklich stornieren?')">Storno</a>
             {% endif %}
         </div>
     </div>

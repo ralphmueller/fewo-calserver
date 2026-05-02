@@ -8,9 +8,12 @@ from flask import render_template as _real_render_template
 
 
 def _render_skip_emails(template_name, **kwargs):
-    """Pass-through für render_template; Email-Templates werden nicht gerendert."""
-    if template_name.startswith('emails/'):
-        return ''
+    """Pass-through für render_template; Email- und Vorschau-Templates werden übersprungen."""
+    if template_name.startswith('emails/') or template_name in (
+        'buchung/neu_email_partial.html',
+        'buchung/convert_angebot_partial.html',
+    ):
+        return '<div class="skipped"></div>'
     return _real_render_template(template_name, **kwargs)
 
 
@@ -236,7 +239,7 @@ class TestNeueBuchung:
             r = logged_in_client.get('/buchung/neu/formular/10')
         assert r.status_code == 200
         assert b'M\xc3\xbcller' in r.data
-        assert b'Buchung speichern' in r.data
+        assert b'Weiter' in r.data
 
 
 def _make_apartment(id=1, name='F1'):
@@ -419,58 +422,109 @@ _SCHNELL_BUCHEN_DATA = {
 }
 
 
-class TestSchnellBuchen:
+_NEU_SPEICHERN_DATA = {
+    **_SCHNELL_BUCHEN_DATA,
+    'email_text': '<p>Test Email</p>',
+}
+
+
+class TestSchnellVorschau:
     def test_requires_login(self, client):
-        r = client.post('/buchung/schnell/buchen',
+        r = client.post('/buchung/schnell/vorschau',
                         data={**_SCHNELL_BUCHEN_DATA, 'typ': 'gebucht'},
+                        follow_redirects=False)
+        assert r.status_code == 302
+
+    def test_gebucht_zeigt_email_vorschau(self, logged_in_client):
+        buchung = _make_buchung()
+        besucher = _make_besucher()
+        with patch('flaskr.buchung.buchung.Buchung') as MockBuchung, \
+             patch('flaskr.buchung.buchung.Besucher') as MockBesucher, \
+             patch('flaskr.buchung.buchung.Apartment') as MockApartment, \
+             patch('flaskr.buchung.buchung.render_template', side_effect=_render_skip_emails):
+            MockBuchung.return_value = buchung
+            MockBesucher.get_by_id.return_value = besucher
+            MockApartment.get_by_id.return_value = buchung.apartment
+            r = logged_in_client.post(
+                '/buchung/schnell/vorschau',
+                data={**_SCHNELL_BUCHEN_DATA, 'typ': 'gebucht'})
+        assert r.status_code == 200
+        buchung.recalc.assert_called_once_with('gebucht')
+
+    def test_angebot_zeigt_email_vorschau(self, logged_in_client):
+        buchung = _make_buchung(status='angebot')
+        besucher = _make_besucher()
+        with patch('flaskr.buchung.buchung.Buchung') as MockBuchung, \
+             patch('flaskr.buchung.buchung.Besucher') as MockBesucher, \
+             patch('flaskr.buchung.buchung.Apartment') as MockApartment, \
+             patch('flaskr.buchung.buchung.render_template', side_effect=_render_skip_emails):
+            MockBuchung.return_value = buchung
+            MockBesucher.get_by_id.return_value = besucher
+            MockApartment.get_by_id.return_value = buchung.apartment
+            r = logged_in_client.post(
+                '/buchung/schnell/vorschau',
+                data={**_SCHNELL_BUCHEN_DATA, 'typ': 'angebot'})
+        assert r.status_code == 200
+        buchung.recalc.assert_called_once_with('angebot')
+
+    def test_kein_speichern_kein_email(self, logged_in_client):
+        buchung = _make_buchung()
+        besucher = _make_besucher()
+        with patch('flaskr.buchung.buchung.Buchung') as MockBuchung, \
+             patch('flaskr.buchung.buchung.Besucher') as MockBesucher, \
+             patch('flaskr.buchung.buchung.Apartment') as MockApartment, \
+             patch('flaskr.buchung.buchung.send_confirmation_emails') as mock_mail, \
+             patch('flaskr.buchung.buchung.render_template', side_effect=_render_skip_emails):
+            MockBuchung.return_value = buchung
+            MockBesucher.get_by_id.return_value = besucher
+            MockApartment.get_by_id.return_value = buchung.apartment
+            logged_in_client.post(
+                '/buchung/schnell/vorschau',
+                data={**_SCHNELL_BUCHEN_DATA, 'typ': 'gebucht'})
+        buchung.save.assert_not_called()
+        mock_mail.assert_not_called()
+
+
+class TestNeuSpeichern:
+    def test_requires_login(self, client):
+        r = client.post('/buchung/neu/speichern/10',
+                        data={**_NEU_SPEICHERN_DATA, 'typ': 'gebucht'},
                         follow_redirects=False)
         assert r.status_code == 302
 
     def test_gebucht_speichert_und_sendet_bestaetigung(self, logged_in_client):
         buchung = _make_buchung()
-        besucher = _make_besucher()
         with patch('flaskr.buchung.buchung.Buchung') as MockBuchung, \
-             patch('flaskr.buchung.buchung.Besucher') as MockBesucher, \
-             patch('flaskr.buchung.buchung.send_confirmation_emails') as mock_mail, \
-             patch('flaskr.buchung.buchung.render_template', side_effect=_render_skip_emails):
+             patch('flaskr.buchung.buchung.send_confirmation_emails') as mock_mail:
             MockBuchung.return_value = buchung
-            MockBesucher.get_by_id.return_value = besucher
             r = logged_in_client.post(
-                '/buchung/schnell/buchen',
-                data={**_SCHNELL_BUCHEN_DATA, 'typ': 'gebucht'})
+                '/buchung/neu/speichern/10',
+                data={**_NEU_SPEICHERN_DATA, 'typ': 'gebucht'})
         assert r.status_code == 204
-        assert '/buchung/' in r.headers.get('HX-Redirect', '')
+        assert 'HX-Redirect' in r.headers
         buchung.recalc.assert_called_once_with('gebucht')
         buchung.save.assert_called_once()
         mock_mail.assert_called_once()
 
     def test_angebot_sendet_angebot_email(self, logged_in_client):
         buchung = _make_buchung(status='angebot')
-        besucher = _make_besucher()
         with patch('flaskr.buchung.buchung.Buchung') as MockBuchung, \
-             patch('flaskr.buchung.buchung.Besucher') as MockBesucher, \
-             patch('flaskr.buchung.buchung.send_angebot_emails') as mock_mail, \
-             patch('flaskr.buchung.buchung.render_template', side_effect=_render_skip_emails):
+             patch('flaskr.buchung.buchung.send_angebot_emails') as mock_mail:
             MockBuchung.return_value = buchung
-            MockBesucher.get_by_id.return_value = besucher
             r = logged_in_client.post(
-                '/buchung/schnell/buchen',
-                data={**_SCHNELL_BUCHEN_DATA, 'typ': 'angebot'})
+                '/buchung/neu/speichern/10',
+                data={**_NEU_SPEICHERN_DATA, 'typ': 'angebot'})
         assert r.status_code == 204
         buchung.recalc.assert_called_once_with('angebot')
         mock_mail.assert_called_once()
 
-    def test_hx_redirect_zeigt_auf_buchungsliste(self, logged_in_client):
+    def test_hx_redirect_zeigt_auf_buchung(self, logged_in_client):
         buchung = _make_buchung()
-        besucher = _make_besucher()
         with patch('flaskr.buchung.buchung.Buchung') as MockBuchung, \
-             patch('flaskr.buchung.buchung.Besucher') as MockBesucher, \
-             patch('flaskr.buchung.buchung.send_confirmation_emails'), \
-             patch('flaskr.buchung.buchung.render_template', side_effect=_render_skip_emails):
+             patch('flaskr.buchung.buchung.send_confirmation_emails'):
             MockBuchung.return_value = buchung
-            MockBesucher.get_by_id.return_value = besucher
             r = logged_in_client.post(
-                '/buchung/schnell/buchen',
-                data={**_SCHNELL_BUCHEN_DATA, 'typ': 'gebucht'})
+                '/buchung/neu/speichern/10',
+                data={**_NEU_SPEICHERN_DATA, 'typ': 'gebucht'})
         assert 'HX-Redirect' in r.headers
-        assert r.headers['HX-Redirect'].endswith('/buchung/')
+        assert '/buchung/anzeigen/' in r.headers['HX-Redirect']

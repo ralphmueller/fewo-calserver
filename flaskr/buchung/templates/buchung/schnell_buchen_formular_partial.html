@@ -7,7 +7,7 @@
         <span class="text-muted small">{{ apartment.name }}, {{ anreise | euro_date }} – {{ abreise | euro_date }}, {{ nights }} Nächte</span>
     </div>
     <div class="card-body">
-        <form hx-post="{{ url_for('buchung_bp.schnell_buchen') }}"
+        <form hx-post="{{ url_for('buchung_bp.schnell_vorschau') }}"
               hx-target="#buchung-panel"
               hx-swap="innerHTML">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">

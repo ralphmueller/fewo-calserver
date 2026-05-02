@@ -1,0 +1,91 @@
+{% set nights = (buchung.abreise - buchung.anreise).days %}
+<div class="card">
+    <div class="card-header">
+        <strong>Schritt 2: Email für {{ 'Angebot' if typ == 'angebot' else 'Buchung' }} — {{ besucher.vorname }} {{ besucher.name }}</strong>
+    </div>
+    <div class="card-body">
+
+        <div class="card bg-light mb-3">
+            <div class="card-body py-2">
+                <div class="row g-0 small">
+                    <div class="col-md-4">
+                        <table class="table table-sm table-borderless mb-0">
+                            <tbody>
+                                <tr><td class="py-0 text-muted pe-3">Apartment</td><td class="py-0">{{ buchung.apartment.name }}</td></tr>
+                                <tr><td class="py-0 text-muted pe-3">Anreise</td><td class="py-0">{{ buchung.anreise | euro_date_short }}</td></tr>
+                                <tr><td class="py-0 text-muted pe-3">Abreise</td><td class="py-0">{{ buchung.abreise | euro_date_short }}</td></tr>
+                                <tr><td class="py-0 text-muted pe-3">Nächte</td><td class="py-0">{{ nights }}</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-4 ps-3">
+                        <table class="table table-sm table-borderless mb-0">
+                            <tbody>
+                                <tr><td class="py-0 text-muted pe-3">Preis/Nacht</td><td class="py-0">{{ buchung.preis_nacht | euro_currency }}</td></tr>
+                                {% if buchung.rabatt %}<tr><td class="py-0 text-muted pe-3">Rabatt</td><td class="py-0">{{ buchung.rabatt }} %</td></tr>{% endif %}
+                                <tr><td class="py-0 text-muted pe-3">Miete</td><td class="py-0">{{ buchung.miete | euro_currency }}</td></tr>
+                                <tr><td class="py-0 text-muted pe-3">Kurtaxe</td><td class="py-0">{{ buchung.kurtaxe | euro_currency }}</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-4 ps-3 border-start">
+                        <table class="table table-sm table-borderless mb-0">
+                            <tbody>
+                                <tr><td class="py-0 text-muted pe-3">Summe</td><td class="py-0"><strong>{{ buchung.summe | euro_currency }}</strong></td></tr>
+                                <tr><td class="py-0 text-muted pe-3">Vorauszahlung</td><td class="py-0">{{ buchung.vorauszahlung | euro_currency }}</td></tr>
+                                <tr class="{% if buchung.offener_betrag > 0 %}text-danger{% endif %}">
+                                    <td class="py-0 pe-3">Offen</td>
+                                    <td class="py-0">{{ buchung.offener_betrag | euro_currency }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form hx-post="{{ url_for('buchung_bp.neu_speichern', besucher_id=besucher.id) }}"
+              hx-target="{{ hx_target }}"
+              hx-swap="innerHTML"
+              hx-on::before-request="var inst=CKEDITOR.instances['email_text_{{ besucher.id }}']; if(inst) inst.updateElement();">
+            <input type="hidden" name="typ" value="{{ typ }}">
+            <input type="hidden" name="hx_target" value="{{ hx_target }}">
+            <input type="hidden" name="user_id" value="{{ buchung.user_id }}">
+            <input type="hidden" name="besucher_id" value="{{ besucher.id }}">
+            <input type="hidden" name="apartment_id" value="{{ buchung.apartment_id }}">
+            <input type="hidden" name="portal_id" value="{{ buchung.portal_id }}">
+            <input type="hidden" name="anreise" value="{{ buchung.anreise }}">
+            <input type="hidden" name="abreise" value="{{ buchung.abreise }}">
+            <input type="hidden" name="preis_nacht" value="{{ buchung.preis_nacht }}">
+            <input type="hidden" name="zusatzkosten" value="{{ buchung.zusatzkosten }}">
+            <input type="hidden" name="rabatt" value="{{ buchung.rabatt }}">
+            <input type="hidden" name="vorauszahlung" value="{{ buchung.vorauszahlung }}">
+            <input type="hidden" name="kurtaxe_vz" value="{{ buchung.kurtaxe_vz }}">
+            <input type="hidden" name="kurtaxe_hz" value="{{ buchung.kurtaxe_hz }}">
+            <input type="hidden" name="kurtaxe_kinder" value="{{ buchung.kurtaxe_kinder }}">
+            <input type="hidden" name="kurtaxe_nz" value="{{ buchung.kurtaxe_nz }}">
+            <input type="hidden" name="kurtaxe_korrekturwert" value="{{ buchung.kurtaxe_korrekturwert }}">
+            <input type="hidden" name="notiz" value="{{ buchung.notiz | e }}">
+
+            <textarea id="email_text_{{ besucher.id }}" name="email_text"
+                      class="form-control" rows="20">{{ email_text }}</textarea>
+
+            <div class="mt-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Speichern &amp; Senden →</button>
+                <button type="button" class="btn btn-outline-secondary"
+                        hx-get="{{ zurueck_url }}"
+                        hx-target="{{ hx_target }}"
+                        hx-swap="innerHTML">← Zurück</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    (function() {
+        var edId = 'email_text_{{ besucher.id }}';
+        if (CKEDITOR.instances[edId]) {
+            CKEDITOR.instances[edId].destroy();
+        }
+        CKEDITOR.replace(edId);
+    })();
+</script>

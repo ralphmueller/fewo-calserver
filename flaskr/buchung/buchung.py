@@ -72,6 +72,37 @@ buchung_bp = Blueprint(
 )
 
 
+class _EmailDummy:
+    """Platzhalter-Buchung für Email-Vorschau, bevor Buchungsdaten eingetragen sind."""
+    def __init__(self, besucher):
+        from types import SimpleNamespace
+        self.besucher = besucher
+        self.apartment = SimpleNamespace(name='[Wohnung]', beschreibung='')
+        self.anreise = datetime.date.today()
+        self.abreise = datetime.date.today() + datetime.timedelta(days=7)
+        self.preis_nacht = 0.0
+        self.miete = 0.0
+        self.kurtaxe = 0.0
+        self.summe = 0.0
+        self.vorauszahlung = 0.0
+        self.kurtaxe_vz = 2
+        self.kurtaxe_kinder = 0
+        self.kurtaxe_nz = 0
+        self.rabatt = 0.0
+
+    def get_anreise(self): return self.anreise
+    def get_abreise(self): return self.abreise
+    def get_preis_nacht(self): return self.preis_nacht
+    def get_zusatzkosten(self): return 0.0
+    def get_rabatt(self): return self.rabatt
+    def get_miete(self): return self.miete
+    def get_kurtaxe_vz(self): return self.kurtaxe_vz
+    def get_kurtaxe_kinder(self): return self.kurtaxe_kinder
+    def get_kurtaxe_nz(self): return self.kurtaxe_nz
+    def get_kurtaxe(self): return self.kurtaxe
+    def get_summe(self): return self.summe
+
+
 def _build_buchung_query(status_list, year, month_str, apartment_filter='', name_filter=''):
     start_month = months.index(month_str) + 1
     last_day = monthrange(year, start_month)[1]
@@ -316,12 +347,12 @@ def schnell_neuer_gast():
                            anreise=anreise, abreise=abreise, apartment_id=apartment_id)
 
 
-@buchung_bp.route('/schnell/buchen', methods=['POST'])
+@buchung_bp.route('/schnell/vorschau', methods=['POST'])
 @login_required
-def schnell_buchen():
+def schnell_vorschau():
     typ = request.form.get('typ', 'gebucht')
     buchung = Buchung()
-    buchung.user_id = int(request.form.get('user_id'))
+    buchung.user_id = int(request.form.get('user_id', 0))
     buchung.besucher_id = int(request.form.get('besucher_id'))
     buchung.apartment_id = int(request.form.get('apartment_id'))
     buchung.portal_id = int(request.form.get('portal_id'))
@@ -337,22 +368,28 @@ def schnell_buchen():
     buchung.kurtaxe_nz = int(request.form.get('kurtaxe_nz', 0))
     buchung.kurtaxe_korrekturwert = float(request.form.get('kurtaxe_korrekturwert', 0))
     buchung.notiz = request.form.get('notiz', '')
+    buchung.besucher = Besucher.get_by_id(buchung.besucher_id)
+    buchung.apartment = Apartment.get_by_id(buchung.apartment_id)
     buchung.recalc(typ)
-    buchung.save()
-    besucher = Besucher.get_by_id(buchung.besucher_id)
-    if typ == 'gebucht':
+
+    if typ == 'angebot':
+        days = (buchung.abreise - buchung.anreise).days
         email_text = render_template(
-            'emails/{}/buchung_confirmation.html'.format(besucher.language.lower()),
-            buchung=buchung)
-        send_confirmation_emails(buchung, email_text)
+            'emails/{}/angebot.html'.format(buchung.besucher.language.lower()),
+            buchung=buchung, days=days)
     else:
         email_text = render_template(
-            'emails/{}/angebot.html'.format(besucher.language.lower()),
-            days=(buchung.abreise - buchung.anreise).days, buchung=buchung)
-        send_angebot_emails(buchung, email_text)
-    resp = make_response('', 204)
-    resp.headers['HX-Redirect'] = url_for('buchung_bp.index')
-    return resp
+            'emails/{}/buchung_confirmation.html'.format(buchung.besucher.language.lower()),
+            buchung=buchung)
+
+    zurueck_url = url_for('buchung_bp.schnell_buchen_formular',
+                          anreise=buchung.anreise, abreise=buchung.abreise,
+                          apartment_id=buchung.apartment_id,
+                          besucher_id=buchung.besucher_id)
+    return render_template('buchung/neu_email_partial.html',
+                           buchung=buchung, besucher=buchung.besucher,
+                           email_text=email_text, typ=typ,
+                           hx_target='#buchung-panel', zurueck_url=zurueck_url)
 
 
 _STATUS_TRANSITIONS = {
@@ -375,7 +412,16 @@ def update_status(buchung_id):
 @buchung_bp.route('/neu')
 @login_required
 def neu():
+    besucher_id = request.args.get('besucher_id', type=int)
+    form = None
+    besucher = None
+    if besucher_id:
+        besucher = Besucher.get_by_id(besucher_id)
+        form = BuchungForm()
+        form.user_id.data = session.get('user_id')
+        form.besucher_id.data = besucher_id
     return render_template('buchung/neu.html', title='Neue Buchung',
+                           form=form, besucher=besucher,
                            run_mode=current_app.config['ENV'])
 
 
@@ -397,45 +443,141 @@ def neu_suche():
     return render_template('buchung/gast_auswahl_partial.html', data=data)
 
 
-@buchung_bp.route('/neu/formular/<int:besucher_id>', methods=['GET', 'POST'])
+@buchung_bp.route('/neu/email_vorschau/<int:besucher_id>')
+@login_required
+def neu_email_vorschau(besucher_id):
+    from types import SimpleNamespace
+    besucher = Besucher.get_by_id(besucher_id)
+    typ = request.args.get('typ', 'gebucht')
+    try:
+        buchung = Buchung()
+        buchung.besucher_id = besucher_id
+        buchung.besucher = besucher
+        buchung.apartment_id = int(request.args.get('apartment_id') or 0)
+        buchung.apartment = Apartment.get_by_id(buchung.apartment_id)
+        buchung.anreise = datetime.date.fromisoformat(request.args.get('anreise', ''))
+        buchung.abreise = datetime.date.fromisoformat(request.args.get('abreise', ''))
+        buchung.preis_nacht = float(request.args.get('preis_nacht') or 0)
+        buchung.zusatzkosten = float(request.args.get('zusatzkosten') or 0)
+        buchung.rabatt = float(request.args.get('rabatt') or 0)
+        buchung.kurtaxe_vz = int(request.args.get('kurtaxe_vz') or 2)
+        buchung.kurtaxe_hz = int(request.args.get('kurtaxe_hz') or 0)
+        buchung.kurtaxe_kinder = int(request.args.get('kurtaxe_kinder') or 0)
+        buchung.kurtaxe_nz = int(request.args.get('kurtaxe_nz') or 0)
+        buchung.kurtaxe_korrekturwert = float(request.args.get('kurtaxe_korrekturwert') or 0)
+        buchung.vorauszahlung = 0.0
+        buchung.portal = SimpleNamespace(kommission_prozent=0)
+        buchung.recalc(typ)
+        if typ == 'angebot':
+            days = (buchung.abreise - buchung.anreise).days
+            return render_template(
+                'emails/{}/angebot.html'.format(besucher.language.lower()),
+                buchung=buchung, days=days)
+        else:
+            return render_template(
+                'emails/{}/buchung_confirmation.html'.format(besucher.language.lower()),
+                buchung=buchung)
+    except Exception:
+        return ''
+
+
+@buchung_bp.route('/neu/formular/<int:besucher_id>')
 @login_required
 def neu_formular(besucher_id):
     besucher = Besucher.get_by_id(besucher_id)
+    typ = request.args.get('typ', 'gebucht')
+    hx_target = request.args.get('hx_target', '#buchung-panel')
     form = BuchungForm()
-    if request.method == 'GET':
-        form.user_id.data = session.get('user_id')
-        form.besucher_id.data = besucher_id
+    form.user_id.data = session.get('user_id')
+    form.besucher_id.data = besucher_id
+    return render_template('buchung/neu_formular_partial.html',
+                           form=form, besucher=besucher,
+                           typ=typ, hx_target=hx_target)
 
-    if form.validate_on_submit():
-        buchung = Buchung()
-        buchung.user_id = int(form.user_id.data)
-        buchung.besucher_id = int(form.besucher_id.data)
-        buchung.apartment_id = int(form.apartment_id.data)
-        buchung.portal_id = int(form.portal_id.data)
-        buchung.anreise = form.anreise.data
-        buchung.abreise = form.abreise.data
-        buchung.preis_nacht = form.preis_nacht.data
-        buchung.zusatzkosten = form.zusatzkosten.data
-        buchung.rabatt = form.rabatt.data
-        buchung.vorauszahlung = form.vorauszahlung.data
-        buchung.kurtaxe_vz = form.kurtaxe_vz.data
-        buchung.kurtaxe_hz = form.kurtaxe_hz.data
-        buchung.kurtaxe_kinder = form.kurtaxe_kinder.data
-        buchung.kurtaxe_nz = form.kurtaxe_nz.data
-        buchung.kurtaxe_korrekturwert = form.kurtaxe_korrekturwert.data
-        buchung.notiz = form.notiz.data
-        buchung.recalc('gebucht')
-        buchung.save()
+
+@buchung_bp.route('/neu/vorschau/<int:besucher_id>', methods=['POST'])
+@login_required
+def neu_vorschau(besucher_id):
+    besucher = Besucher.get_by_id(besucher_id)
+    typ = request.form.get('typ', 'gebucht')
+    hx_target = request.form.get('hx_target', '#buchung-panel')
+    form = BuchungForm()
+
+    if not form.validate_on_submit():
+        return render_template('buchung/neu_formular_partial.html',
+                               form=form, besucher=besucher,
+                               typ=typ, hx_target=hx_target)
+
+    buchung = Buchung()
+    buchung.user_id = int(form.user_id.data or 0)
+    buchung.besucher = besucher
+    buchung.besucher_id = besucher_id
+    buchung.apartment_id = int(form.apartment_id.data)
+    buchung.apartment = Apartment.get_by_id(buchung.apartment_id)
+    buchung.portal_id = int(form.portal_id.data)
+    buchung.anreise = form.anreise.data
+    buchung.abreise = form.abreise.data
+    buchung.preis_nacht = float(form.preis_nacht.data or 0)
+    buchung.zusatzkosten = float(form.zusatzkosten.data or 0)
+    buchung.rabatt = float(form.rabatt.data or 0)
+    buchung.vorauszahlung = float(form.vorauszahlung.data or 0)
+    buchung.kurtaxe_vz = int(form.kurtaxe_vz.data or 0)
+    buchung.kurtaxe_hz = int(form.kurtaxe_hz.data or 0)
+    buchung.kurtaxe_kinder = int(form.kurtaxe_kinder.data or 0)
+    buchung.kurtaxe_nz = int(form.kurtaxe_nz.data or 0)
+    buchung.kurtaxe_korrekturwert = float(form.kurtaxe_korrekturwert.data or 0)
+    buchung.notiz = form.notiz.data or ''
+    buchung.recalc(typ)
+
+    if typ == 'angebot':
+        days = (buchung.abreise - buchung.anreise).days
+        email_text = render_template(
+            'emails/{}/angebot.html'.format(besucher.language.lower()),
+            buchung=buchung, days=days)
+    else:
         email_text = render_template(
             'emails/{}/buchung_confirmation.html'.format(besucher.language.lower()),
             buchung=buchung)
-        send_confirmation_emails(buchung, email_text)
-        resp = make_response('', 204)
-        resp.headers['HX-Redirect'] = url_for('buchung_bp.index')
-        return resp
 
-    return render_template('buchung/neu_formular_partial.html',
-                           form=form, besucher=besucher)
+    zurueck_url = url_for('buchung_bp.neu_formular', besucher_id=besucher_id,
+                          typ=typ, hx_target=hx_target)
+    return render_template('buchung/neu_email_partial.html',
+                           buchung=buchung, besucher=besucher,
+                           email_text=email_text, typ=typ,
+                           hx_target=hx_target, zurueck_url=zurueck_url)
+
+
+@buchung_bp.route('/neu/speichern/<int:besucher_id>', methods=['POST'])
+@login_required
+def neu_speichern(besucher_id):
+    typ = request.form.get('typ', 'gebucht')
+    buchung = Buchung()
+    buchung.user_id = int(request.form.get('user_id'))
+    buchung.besucher_id = besucher_id
+    buchung.apartment_id = int(request.form.get('apartment_id'))
+    buchung.portal_id = int(request.form.get('portal_id'))
+    buchung.anreise = datetime.date.fromisoformat(request.form.get('anreise'))
+    buchung.abreise = datetime.date.fromisoformat(request.form.get('abreise'))
+    buchung.preis_nacht = float(request.form.get('preis_nacht', 0))
+    buchung.zusatzkosten = float(request.form.get('zusatzkosten', 0))
+    buchung.rabatt = float(request.form.get('rabatt', 0))
+    buchung.vorauszahlung = float(request.form.get('vorauszahlung', 0))
+    buchung.kurtaxe_vz = int(request.form.get('kurtaxe_vz', 2))
+    buchung.kurtaxe_hz = int(request.form.get('kurtaxe_hz', 0))
+    buchung.kurtaxe_kinder = int(request.form.get('kurtaxe_kinder', 0))
+    buchung.kurtaxe_nz = int(request.form.get('kurtaxe_nz', 0))
+    buchung.kurtaxe_korrekturwert = float(request.form.get('kurtaxe_korrekturwert', 0))
+    buchung.notiz = request.form.get('notiz', '')
+    buchung.recalc(typ)
+    buchung.save()
+    email_text = request.form.get('email_text', '')
+    if typ == 'angebot':
+        send_angebot_emails(buchung, email_text)
+    else:
+        send_confirmation_emails(buchung, email_text)
+    resp = make_response('', 204)
+    resp.headers['HX-Redirect'] = url_for('buchung_bp.anzeigen', buchung_id=buchung.id)
+    return resp
 
 
 
@@ -562,50 +704,23 @@ def rechnung(buchung_id):
 @buchung_bp.route('/convert_angebot/<int:buchung_id>', methods=('GET', 'POST'))
 @login_required
 def convert_angebot(buchung_id):
-    '''
-        Convert offer to booking
-        - prepare confirmation text
-        - send emails and finish booking
-    '''
     buchung = Buchung.get_by_id(buchung_id)
     besucher = buchung.besucher
-    form = Buchung2Form()
+
     if request.method == 'GET':
-        form.email_text.data = render_template(
-            'emails/{}/buchung_confirmation.html'
-            .format(besucher.language.lower()),
-            buchung=buchung
-        )
+        email_text = render_template(
+            'emails/{}/buchung_confirmation.html'.format(besucher.language.lower()),
+            buchung=buchung)
+        return render_template('buchung/convert_angebot_partial.html',
+                               buchung=buchung, email_text=email_text)
 
-    if form.validate_on_submit():
-        # save booking
-        buchung.status = 'gebucht'
-        buchung.save()
-        send_confirmation_emails(buchung, form.email_text.data)
-        # flash message
-        flash(
-            'Buchung {} Apt {} vom {} - {} für {}, {} gespeichert'.format(
-                buchung.id,
-                buchung.apartment.name,
-                format_date(buchung.anreise, format='short', locale='de_DE'),
-                format_date(buchung.abreise, format='short', locale='de_DE'),
-                buchung.besucher.name,
-                buchung.besucher.vorname
-            ))
-        return (
-            redirect(
-                url_for(
-                    'besucher_bp.update',
-                    besucher_id=besucher.id)))
-
-    return render_template(
-        'buchung/create_part2.html',
-        besucher=besucher,
-        buchung=buchung,
-        form=form,
-        title='Angebot umwandeln',
-        run_mode=current_app.config['ENV'],
-        template='form-template')
+    email_text = request.form.get('email_text', '')
+    buchung.status = 'gebucht'
+    buchung.save()
+    send_confirmation_emails(buchung, email_text)
+    resp = make_response('', 204)
+    resp.headers['HX-Redirect'] = url_for('buchung_bp.anzeigen', buchung_id=buchung.id)
+    return resp
 
 
 @buchung_bp.route('/drop_angebot/<int:buchung_id>', methods=('GET', 'POST'))

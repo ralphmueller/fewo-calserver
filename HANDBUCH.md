@@ -35,10 +35,25 @@ Mindestens 3 Zeichen eingeben.
 Klick auf eine Zeile in der Ergebnisliste öffnet direkt darunter eine Detailkarte mit:
 
 - Kontaktdaten (Adresse, E-Mail, Telefon, Vermerk)
-- Buchungshistorie (letzte 8 Buchungen, klickbar)
+- Buchungshistorie (letzte 8 aktive Buchungen, klickbar) — Storni und Verworfene werden ausgeblendet
 - Aktions-Buttons: **Bearbeiten**, **Neue Buchung**, **Neues Angebot**
 
 Kein Seitenwechsel — die Suche bleibt aktiv.
+
+### Neue Buchung / Neues Angebot aus der Detailkarte
+
+Über **Neue Buchung** oder **Neues Angebot** in der Besucher-Detailkarte öffnet sich
+ein zweistufiges Formular direkt unterhalb der Karte:
+
+**Schritt 1 — Buchungsdaten:**
+Anreise, Abreise, Apartment, Portal, Preis/Nacht, Kurtaxe-Personen, Vorauszahlung,
+Zusatzkosten, Rabatt, Notiz eingeben → **Weiter →**
+
+**Schritt 2 — E-Mail bearbeiten:**
+- Zusammenfassung (Apartment, Daten, Nächte, Miete, Kurtaxe, Summe, Offener Betrag)
+- Vorausgefüllter E-Mail-Text im WYSIWYG-Editor — individuell anpassbar
+- **Speichern & Senden →** — Buchung wird gespeichert, E-Mail an den Gast verschickt
+- **← Zurück** — zurück zu Schritt 1
 
 ### Besucher bearbeiten
 
@@ -109,10 +124,9 @@ Im Detailpanel → **Bearbeiten**. Das Formular öffnet sich inline.
 Menü → **Buchungen → Neue Buchung** (`/buchung/neu`)
 
 1. Name eintippen (ab 3 Zeichen) → Gästeliste erscheint
-2. Gast anklicken → Buchungsformular lädt rechts
-3. Felder ausfüllen → **Buchung speichern & E-Mail senden**
-
-Bestätigungs-E-Mail wird automatisch an den Gast verschickt.
+2. Gast anklicken → Buchungsformular (Schritt 1) lädt
+3. Felder ausfüllen → **Weiter →**
+4. E-Mail im WYSIWYG-Editor prüfen / anpassen → **Speichern & Senden →**
 
 ### Schnellbuchung
 
@@ -124,7 +138,27 @@ Optimiert für Telefonanfragen:
 2. Freie Wohnung auswählen
 3. Gast suchen (ab 2 Zeichen) **oder** „+ Neuen Gast anlegen" (Miniformular)
 4. Buchungsformular: Preis/Nacht (aus Preisliste vorausgefüllt), Portal, Personen, Vorauszahlung
-5. **Angebot erstellen** oder **Direkt buchen** → E-Mail wird automatisch verschickt
+5. **Angebot erstellen** oder **Direkt buchen** → E-Mail-Editor öffnet sich (Schritt 2)
+6. E-Mail prüfen / anpassen → **Speichern & Senden →**
+
+### Buchung anzeigen
+
+Klick auf eine Buchungszeile in der Liste oder auf eine Buchung in der Besucherkarte
+öffnet die Buchungsdetailseite (`/buchung/anzeigen/<id>`).
+
+Je nach Status stehen folgende Aktionen zur Verfügung:
+
+| Status | Aktionen |
+|---|---|
+| Angebot | **Bearbeiten**, **Umwandeln in Buchung**, **Verwerfen** |
+| Gebucht | **Bearbeiten**, **Abrechnen**, **Storno** |
+| Abgerechnet | **Feratel melden** |
+
+**Angebot umwandeln:**
+Klick auf **Umwandeln in Buchung** öffnet direkt auf der Seite den E-Mail-Editor
+mit vorausgefülltem Bestätigungstext. Nach **Bestätigung senden & Buchung speichern →**
+wird der Status auf „gebucht" gesetzt und die E-Mail verschickt.
+Mit **Abbrechen** wird das Panel wieder geschlossen.
 
 ---
 

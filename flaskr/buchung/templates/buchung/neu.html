@@ -24,7 +24,11 @@
     <!-- Rechte Spalte: Buchungsformular -->
     <div class="col-md-8">
         <div id="buchung-panel">
-            <p class="text-muted">← Gast auswählen, um Buchungsformular zu laden.</p>
+            {% if besucher and form %}
+                {% include 'buchung/neu_formular_partial.html' %}
+            {% else %}
+                <p class="text-muted">← Gast auswählen, um Buchungsformular zu laden.</p>
+            {% endif %}
         </div>
     </div>
 
