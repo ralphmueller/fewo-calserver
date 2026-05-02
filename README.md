@@ -10,9 +10,26 @@ Architektur- und Datenbankübersicht: siehe [ARCHITEKTUR.md](ARCHITEKTUR.md)
 
 # Änderungshistorie
 
+## Rev: 1.9 (02.05.2026)
+
+### Open-Source-Vorbereitung
+
+Alle betreiberspezifischen Werte aus dem Code entfernt und in `.env` ausgelagert:
+Firmenname, Adresse, IBAN, Telefon, E-Mail, WLAN-SSID, Kurtaxe-Sätze,
+Stornobedingungen, Feratel Accommodation-ID und Apartment-Mapping.
+
+Neuer Jinja2-Context-Processor stellt `operator.*`-Variablen in allen Templates bereit.
+`StaticValuesBuchung` liest Kurtaxe- und MwSt-Sätze jetzt aus env vars (mit Defaults).
+
+**Neue Dateien:**
+- `LICENSE` — MIT License
+- `.env.example` — vollständige Dokumentation aller `.env`-Variablen mit Platzhaltern
+
+---
+
 ## Rev: 1.8 (02.05.2026)
 
-### HTMX-Modernisierung: Zweistufiger Buchungsflow
+### HTMX-Modernisierung: Zweistufiger Buchungsflow und Warenverkauf inline
 
 Die Buchungsoberfläche wurde vollständig auf HTMX umgestellt —
 kein jQuery/RxJS mehr für Interaktionen, alle Seitenaktualisierungen
@@ -40,6 +57,11 @@ Nur `angebot`, `gebucht` und `abgerechnet` sind sichtbar.
 **FlaskrSession entfernt:**
 Die DB-persistierte Session-Tabelle (`flaskrsession`) wird nicht mehr befüllt.
 Die Tabelle in der DB bleibt erhalten, das Modell und alle Routen wurden entfernt.
+
+**Warenverkauf inline:**
+Abgerechnete Buchungen zeigen jetzt direkt in der Buchungsdetailansicht
+eine „Warenverkauf"-Karte — Artikel auswählen, Menge eingeben, Lager wird
+sofort aktualisiert, kein Seitenwechsel. Validierungsfehler erscheinen inline.
 
 **CKEditor** wird global über `/static/node_modules/ckeditor4/ckeditor.js`
 eingebunden. **HTMX 2.0.4** wird per CDN (unpkg.com) geladen.
@@ -195,12 +217,8 @@ Kurze Zusammenfassung der Änderungen ab 2023:
 
 ## 1. Repository klonen
 
-    git clone git@bitbucket.org:ralph_mueller/fewo-calserver.git
+    git clone https://github.com/USERNAME/fewo-calserver.git
     cd fewo-calserver
-
-SSH-URL prüfen:
-
-    git remote -v
 
 ## 2. Python-Abhängigkeiten installieren
 
@@ -217,34 +235,27 @@ aus dem Nachbar-Repo `../pythonpacks` installiert (Pipfile-Pfad).
 
 ## 4. .env Datei anlegen
 
-Datei `.env` im Projektverzeichnis anlegen (nicht ins Repo einchecken):
+    cp .env.example .env
 
-    # development oder production
-    ENV=development
+Anschließend `.env` mit den eigenen Werten befüllen. Die Datei enthält
+alle verfügbaren Variablen mit Kommentaren. Pflichtfelder:
 
-    # Datenbankverbindung (Entwicklung)
-    DEVELOPMENT_DATABASE=mysql+pymysql://user:password@localhost/testrechnungen
+| Variable | Beschreibung |
+|---|---|
+| `ENV` | `development` oder `production` |
+| `DEVELOPMENT_DATABASE` / `PRODUCTION_DATABASE` | MySQL-Verbindungsstring |
+| `SECRET_KEY` | Langer Zufallsstring für Flask-Sessions |
+| `EMAIL_*` | SMTP-Zugangsdaten |
+| `OPERATOR_NAME` … `OPERATOR_IBAN` | Betreiber-Stammdaten für Rechnungen und E-Mails |
+| `KURTAXE_SATZ_VZ`, `KURTAXE_SATZ_HZ`, `MWST_SATZ` | Lokale Abgabensätze |
+| `FERATEL_ID`, `FERATEL_PW` | Feratel-Zugangsdaten (nur wenn Feratel genutzt wird) |
+| `FERATEL_ACCOMMODATION_ID` | UUID der Unterkunft im Feratel-System |
+| `FERATEL_APARTMENT_MAP` | JSON: Apartment-Code → Feratel-Einheitenname |
 
-    # Datenbankverbindung (Produktion)
-    PRODUCTION_DATABASE=mysql+pymysql://user:password@localhost/fewo
+**Entwicklung ohne Feratel:** `FERATEL_MOCK=true` setzen — kein Browser wird gestartet.
 
-    # Flask Secret Key (langen Zufallsstring verwenden)
-    SECRET_KEY=<geheimer-schlüssel>
-
-    # E-Mail-Konfiguration
-    EMAIL_ADDRESS=fewo@example.com
-    EMAIL_USER=fewo@example.com
-    EMAIL_PASSWORD=<passwort>
-    EMAIL_HOST=smtp.example.com
-
-    # Empfänger für interne Mails (Team-Benachrichtigungen)
-    EMAILS_TEAM=team@example.com
-    INFO_EMAIL=info@example.com
-
-**Hinweis Entwicklung:** Im `development`-Modus werden Team-Mails an die
-in `EMAILS_TEAM` konfigurierte Adresse umgeleitet. Gäste-E-Mails gehen
-aber an die echte Gästeadresse — daher im Testbetrieb nur mit
-Testbuchungen auf eigene Namen arbeiten.
+**Hinweis:** Gäste-E-Mails gehen immer an die echte Gästeadresse.
+Im Testbetrieb nur mit Buchungen auf eigene Namen arbeiten.
 
 ## 5. Datenbank einrichten
 
@@ -296,7 +307,15 @@ Die referenzielle Integrität wird auf Anwendungsebene sichergestellt.
 
     # Danach ware- und verkauf-Tabellen anlegen (s.o., falls nicht im Dump)
 
-## 6. Tests ausführen
+## 6. Playwright installieren (nur wenn Feratel-Automation genutzt wird)
+
+    pipenv install playwright
+    pipenv run playwright install chromium
+
+Ohne Playwright kann die App normal genutzt werden — der Feratel-Button
+ist dann deaktiviert. `FERATEL_MOCK=true` in `.env` umgeht Playwright vollständig.
+
+## 7. Tests ausführen
 
     # bkormlib-Tests (ORM gegen SQLite in-memory)
     pipenv run pytest bkormlib/tests/
@@ -307,7 +326,7 @@ Die referenzielle Integrität wird auf Anwendungsebene sichergestellt.
     # Alle Tests
     pipenv run pytest
 
-## 7. Entwicklungsserver starten
+## 8. Entwicklungsserver starten
 
     pipenv run flask run
 
@@ -322,7 +341,7 @@ Alternativ mit uWSGI:
 ## uWSGI-Konfiguration (`flaskr.ini`)
 
     [uwsgi]
-    chdir = /home/rmueller/fewo-calserver
+    chdir = /home/BENUTZER/fewo-calserver
     module = wsgi
     callable = application
 
@@ -363,9 +382,9 @@ Alternativ mit uWSGI:
     After=syslog.target
 
     [Service]
-    User=rmueller
-    WorkingDirectory=/home/rmueller/fewo-calserver
-    ExecStart=/home/rmueller/.local/bin/pipenv run uwsgi --ini /home/rmueller/fewo-calserver/flaskr.ini
+    User=BENUTZER
+    WorkingDirectory=/home/BENUTZER/fewo-calserver
+    ExecStart=/home/BENUTZER/.local/bin/pipenv run uwsgi --ini /home/BENUTZER/fewo-calserver/flaskr.ini
     Restart=always
     KillSignal=SIGQUIT
     Type=idle
