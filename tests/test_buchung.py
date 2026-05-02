@@ -4,6 +4,14 @@ Tests für Buchungs-Routen: /buchung/...
 import pytest
 from unittest.mock import MagicMock, patch
 import datetime
+from flask import render_template as _real_render_template
+
+
+def _render_skip_emails(template_name, **kwargs):
+    """Pass-through für render_template; Email-Templates werden nicht gerendert."""
+    if template_name.startswith('emails/'):
+        return ''
+    return _real_render_template(template_name, **kwargs)
 
 
 def _make_buchung(id=1, status='gebucht'):
@@ -229,3 +237,240 @@ class TestNeueBuchung:
         assert r.status_code == 200
         assert b'M\xc3\xbcller' in r.data
         assert b'Buchung speichern' in r.data
+
+
+def _make_apartment(id=1, name='F1'):
+    apt = MagicMock()
+    apt.id = id
+    apt.name = name
+    apt.active = True
+    apt.check_availability.return_value = True
+    preisliste = MagicMock()
+    preisliste.preis_2p = 90.0
+    apt.get_preisliste_year.return_value = preisliste
+    return apt
+
+
+class TestSchnellbuchungPage:
+    def test_requires_login(self, client):
+        r = client.get('/buchung/schnell', follow_redirects=False)
+        assert r.status_code == 302
+        assert '/auth/login' in r.headers['Location']
+
+    def test_renders_page(self, logged_in_client):
+        r = logged_in_client.get('/buchung/schnell')
+        assert r.status_code == 200
+        assert b'Schnellbuchung' in r.data
+
+
+class TestSchnellVerfuegbar:
+    def test_requires_login(self, client):
+        r = client.get('/buchung/schnell/verfuegbar', follow_redirects=False)
+        assert r.status_code == 302
+
+    def test_invalid_date_returns_error(self, logged_in_client):
+        r = logged_in_client.get('/buchung/schnell/verfuegbar?anreise=kein-datum&abreise=kein-datum')
+        assert r.status_code == 200
+        assert b'alert-danger' in r.data
+
+    def test_abreise_before_anreise_returns_warning(self, logged_in_client):
+        r = logged_in_client.get('/buchung/schnell/verfuegbar?anreise=2026-05-10&abreise=2026-05-05')
+        assert r.status_code == 200
+        assert b'alert-warning' in r.data
+
+    def test_returns_available_apartments(self, logged_in_client):
+        apt = _make_apartment()
+        with patch('flaskr.buchung.buchung.Apartment') as MockApt:
+            MockApt.select.return_value.where.return_value = [apt]
+            r = logged_in_client.get(
+                '/buchung/schnell/verfuegbar?anreise=2026-05-01&abreise=2026-05-08')
+        assert r.status_code == 200
+        assert b'F1' in r.data
+
+    def test_unavailable_apartment_not_shown(self, logged_in_client):
+        apt = _make_apartment()
+        apt.check_availability.return_value = False
+        with patch('flaskr.buchung.buchung.Apartment') as MockApt:
+            MockApt.select.return_value.where.return_value = [apt]
+            r = logged_in_client.get(
+                '/buchung/schnell/verfuegbar?anreise=2026-05-01&abreise=2026-05-08')
+        assert r.status_code == 200
+        assert b'F1' not in r.data
+
+
+class TestSchnellGastSuche:
+    def test_requires_login(self, client):
+        r = client.get('/buchung/schnell/gast_suche', follow_redirects=False)
+        assert r.status_code == 302
+
+    def test_short_query_returns_empty(self, logged_in_client):
+        r = logged_in_client.get(
+            '/buchung/schnell/gast_suche?q=a&anreise=2026-05-01&abreise=2026-05-08&apartment_id=1')
+        assert r.status_code == 200
+        assert r.data == b''
+
+    def test_returns_results(self, logged_in_client):
+        besucher = _make_besucher()
+        q = MagicMock()
+        q.where.return_value = q
+        q.order_by.return_value = [besucher]
+        with patch('flaskr.buchung.buchung.Besucher') as MockBesucher:
+            MockBesucher.select.return_value = q
+            MockBesucher.name = MagicMock()
+            MockBesucher.vorname = MagicMock()
+            r = logged_in_client.get(
+                '/buchung/schnell/gast_suche'
+                '?q=m%C3%BCller&anreise=2026-05-01&abreise=2026-05-08&apartment_id=1')
+        assert r.status_code == 200
+        assert b'M\xc3\xbcller' in r.data
+
+    def test_two_part_query(self, logged_in_client):
+        besucher = _make_besucher()
+        q = MagicMock()
+        q.where.return_value = q
+        q.order_by.return_value = [besucher]
+        with patch('flaskr.buchung.buchung.Besucher') as MockBesucher:
+            MockBesucher.select.return_value = q
+            MockBesucher.name = MagicMock()
+            MockBesucher.vorname = MagicMock()
+            r = logged_in_client.get(
+                '/buchung/schnell/gast_suche'
+                '?q=m%C3%BCll+ral&anreise=2026-05-01&abreise=2026-05-08&apartment_id=1')
+        assert r.status_code == 200
+
+
+class TestSchnellBuchenFormular:
+    def test_requires_login(self, client):
+        r = client.get('/buchung/schnell/buchen_formular', follow_redirects=False)
+        assert r.status_code == 302
+
+    def test_renders_formular(self, logged_in_client):
+        apt = _make_apartment()
+        besucher = _make_besucher()
+        with patch('flaskr.buchung.buchung.Apartment') as MockApt, \
+             patch('flaskr.buchung.buchung.Besucher') as MockBesucher, \
+             patch('flaskr.buchung.buchung.Portal') as MockPortal:
+            MockApt.get_by_id.return_value = apt
+            MockBesucher.get_by_id.return_value = besucher
+            MockPortal.choices.return_value = [(1, 'Direkt')]
+            r = logged_in_client.get(
+                '/buchung/schnell/buchen_formular'
+                '?anreise=2026-05-01&abreise=2026-05-08&apartment_id=1&besucher_id=10')
+        assert r.status_code == 200
+        assert b'M\xc3\xbcller' in r.data
+        assert b'Direkt buchen' in r.data
+        assert b'Angebot erstellen' in r.data
+
+
+class TestSchnellNeuerGast:
+    def test_requires_login(self, client):
+        r = client.get('/buchung/schnell/neuer_gast', follow_redirects=False)
+        assert r.status_code == 302
+
+    def test_get_renders_form(self, logged_in_client):
+        r = logged_in_client.get(
+            '/buchung/schnell/neuer_gast?anreise=2026-05-01&abreise=2026-05-08&apartment_id=1')
+        assert r.status_code == 200
+        assert b'Anlegen' in r.data
+
+    def test_post_creates_besucher_and_shows_formular(self, logged_in_client):
+        besucher = _make_besucher()
+        apt = _make_apartment()
+        with patch('flaskr.buchung.buchung.Besucher') as MockBesucher, \
+             patch('flaskr.buchung.buchung.Apartment') as MockApt, \
+             patch('flaskr.buchung.buchung.Portal') as MockPortal:
+            MockBesucher.return_value = besucher
+            MockApt.get_by_id.return_value = apt
+            MockPortal.choices.return_value = [(1, 'Direkt')]
+            r = logged_in_client.post(
+                '/buchung/schnell/neuer_gast',
+                data={
+                    'anreise': '2026-05-01',
+                    'abreise': '2026-05-08',
+                    'apartment_id': '1',
+                    'anrede': 'Fam',
+                    'name': 'Müller',
+                    'vorname': 'Ralph',
+                    'email': 'test@example.com',
+                    'land': 'DE',
+                })
+        assert r.status_code == 200
+        besucher.save.assert_called_once()
+        assert b'M\xc3\xbcller' in r.data
+
+
+_SCHNELL_BUCHEN_DATA = {
+    'user_id': '1',
+    'besucher_id': '10',
+    'apartment_id': '1',
+    'portal_id': '1',
+    'anreise': '2026-05-01',
+    'abreise': '2026-05-08',
+    'preis_nacht': '100.00',
+    'zusatzkosten': '0',
+    'rabatt': '0',
+    'vorauszahlung': '200',
+    'kurtaxe_vz': '2',
+    'kurtaxe_hz': '0',
+    'kurtaxe_kinder': '0',
+    'kurtaxe_nz': '0',
+    'kurtaxe_korrekturwert': '0',
+    'notiz': '',
+}
+
+
+class TestSchnellBuchen:
+    def test_requires_login(self, client):
+        r = client.post('/buchung/schnell/buchen',
+                        data={**_SCHNELL_BUCHEN_DATA, 'typ': 'gebucht'},
+                        follow_redirects=False)
+        assert r.status_code == 302
+
+    def test_gebucht_speichert_und_sendet_bestaetigung(self, logged_in_client):
+        buchung = _make_buchung()
+        besucher = _make_besucher()
+        with patch('flaskr.buchung.buchung.Buchung') as MockBuchung, \
+             patch('flaskr.buchung.buchung.Besucher') as MockBesucher, \
+             patch('flaskr.buchung.buchung.send_confirmation_emails') as mock_mail, \
+             patch('flaskr.buchung.buchung.render_template', side_effect=_render_skip_emails):
+            MockBuchung.return_value = buchung
+            MockBesucher.get_by_id.return_value = besucher
+            r = logged_in_client.post(
+                '/buchung/schnell/buchen',
+                data={**_SCHNELL_BUCHEN_DATA, 'typ': 'gebucht'})
+        assert r.status_code == 204
+        assert '/buchung/' in r.headers.get('HX-Redirect', '')
+        buchung.recalc.assert_called_once_with('gebucht')
+        buchung.save.assert_called_once()
+        mock_mail.assert_called_once()
+
+    def test_angebot_sendet_angebot_email(self, logged_in_client):
+        buchung = _make_buchung(status='angebot')
+        besucher = _make_besucher()
+        with patch('flaskr.buchung.buchung.Buchung') as MockBuchung, \
+             patch('flaskr.buchung.buchung.Besucher') as MockBesucher, \
+             patch('flaskr.buchung.buchung.send_angebot_emails') as mock_mail, \
+             patch('flaskr.buchung.buchung.render_template', side_effect=_render_skip_emails):
+            MockBuchung.return_value = buchung
+            MockBesucher.get_by_id.return_value = besucher
+            r = logged_in_client.post(
+                '/buchung/schnell/buchen',
+                data={**_SCHNELL_BUCHEN_DATA, 'typ': 'angebot'})
+        assert r.status_code == 204
+        buchung.recalc.assert_called_once_with('angebot')
+        mock_mail.assert_called_once()
+
+    def test_hx_redirect_zeigt_auf_buchungsliste(self, logged_in_client):
+        buchung = _make_buchung()
+        besucher = _make_besucher()
+        with patch('flaskr.buchung.buchung.Buchung') as MockBuchung, \
+             patch('flaskr.buchung.buchung.Besucher') as MockBesucher, \
+             patch('flaskr.buchung.buchung.send_confirmation_emails'), \
+             patch('flaskr.buchung.buchung.render_template', side_effect=_render_skip_emails):
+            MockBuchung.return_value = buchung
+            MockBesucher.get_by_id.return_value = besucher
+            r = logged_in_client.post(
+                '/buchung/schnell/buchen',
+                data={**_SCHNELL_BUCHEN_DATA, 'typ': 'gebucht'})
+        assert 'HX-Redirect' in r.headers
+        assert r.headers['HX-Redirect'].endswith('/buchung/')
