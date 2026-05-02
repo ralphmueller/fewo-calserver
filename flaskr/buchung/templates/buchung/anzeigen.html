@@ -1,74 +1,28 @@
-<!-- 
-	partial für Buchung anzeign (Status == "abgerechnet")
--->
-
 {% extends "layout.html" %}
-{% from "_macros.html" import render_field %}
 
 {% block content %}
+<div class="container-fluid mt-3">
 
-    <div class="row">
-        <div class="col-12">
-            {% include 'besuchersnippet.html' %}
+    {% include 'buchung/detail_partial.html' %}
+
+    {% if buchung.status == 'abgerechnet' %}
+    <div class="card mt-3">
+        <div class="card-header">Feratel Meldeschein</div>
+        <div class="card-body d-flex align-items-center gap-3">
+            {% if buchung.meldeschein_nummer %}
+            <span class="text-success">Nr. {{ buchung.meldeschein_nummer }}</span>
+            {% endif %}
+            <form method="post"
+                  action="{{ url_for('buchung_bp.feratel_meldeschein', buchung_id=buchung.id) }}"
+                  onsubmit="this.querySelector('button').disabled=true; this.querySelector('button').textContent='Wird gemeldet…'">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-sm btn-primary">
+                    {% if buchung.meldeschein_nummer %}Erneut melden{% else %}An Feratel melden{% endif %}
+                </button>
+            </form>
         </div>
     </div>
+    {% endif %}
 
-    <div class="row">
-        {{render_field("label", "col-3", "Anreise", buchung.get_anreise() | euro_date, "")}}
-        {{render_field("label", "col-3", "Abreise", buchung.get_abreise() | euro_date, "")}}
-        {{render_field("label", "col-3", "Nächte", (buchung.abreise - buchung.anreise).days, "")}}
-    </div> <!-- row -->
-    <div class="row">
-        {{render_field("label", "col-3", "Apartment", buchung.apartment.name, "")}}
-        {{render_field("label", "col-3", "Portal", buchung.portal.name, "")}}   
-        {{render_field("label", "col-3", "Miete", buchung.get_miete() | euro_currency, "")}}   
-    </div> <!-- row -->
-    <div class="row">
-        {{render_field("label", "col-3", "Preis/Nacht", buchung.get_preis_nacht() | euro_currency, "")}}  
-        {{render_field("label", "col-3", "Zusatzkosten", buchung.zusatzkosten  | euro_currency , "")}}   
-        {{render_field("label", "col-3", "Kurtaxe", buchung.kurtaxe | euro_currency, "")}}   
-    </div> <!-- row -->      
-    <div class="row">
-        {{render_field("label", "col-3", "Rabatt", buchung.rabatt | rabatt, "")}}
-        {{render_field("label", "col-3", "Vorauszahlung", buchung.vorauszahlung | euro_currency, "")}}   
-        {{render_field("label", "col-3", "Summe", buchung.summe | euro_currency, "")}}   
-    </div> <!-- row -->       
-    <div class="row">
-        {{render_field("label", "col-3", "Personen ab 14J", buchung.kurtaxe_vz, "")}}
-        {{render_field("label", "col-3", "Beruflich", buchung.kurtaxe_hz, "")}}   
-        {{render_field("label", "col-3", "Restbetrag", (buchung.summe - buchung.vorauszahlung) | euro_currency, "")}}
-    </div> <!-- row -->    
-    <div class="row">
-        {{render_field("label", "col-3", "Kinder unter 14J", buchung.kurtaxe_kinder, "")}}
-        {{render_field("label", "col-3", "Kurtaxe befreit", buchung.kurtaxe_nz, "")}}   
-        {{render_field("label", "col-3", "Status", buchung.status, "")}}
-    </div> <!-- row -->                
-    <div class="row">
-        {{render_field("label", "col-9", "Notiz", buchung.notiz, "")}}
-    </div> <!-- row -->
-
-    <div class="row mt-3">
-        <div class="col-6">
-            <dl>
-                <dt>Feratel Meldeschein</dt>
-                <dd>
-                    {% if buchung.meldeschein_nummer %}
-                        <span class="text-success">Nr. {{ buchung.meldeschein_nummer }}</span>
-                        &nbsp;
-                    {% endif %}
-                    <form method="post"
-                          action="{{ url_for('buchung_bp.feratel_meldeschein', buchung_id=buchung.id) }}"
-                          style="display:inline"
-                          onsubmit="this.querySelector('button').disabled=true; this.querySelector('button').textContent='Wird gemeldet…'">
-                        {{ form.hidden_tag() if form is defined else '' }}
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" class="btn btn-sm btn-primary">
-                            {% if buchung.meldeschein_nummer %}Erneut melden{% else %}An Feratel melden{% endif %}
-                        </button>
-                    </form>
-                </dd>
-            </dl>
-        </div>
-    </div>
-
+</div>
 {% endblock %}

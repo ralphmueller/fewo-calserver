@@ -7,7 +7,6 @@ Minor updates all along the way
 '''
 
 import calendar
-import pickle
 from datetime import datetime, date, time
 from playhouse.db_url import connect
 from peewee import (
@@ -628,33 +627,6 @@ class Email(BaseModel):
     class Meta:
         db_table = 'email'
 
-
-class FlaskrSession(BaseModel):
-    """
-        store session data for flaskr app
-
-    """
-    user = ForeignKeyField(User, backref='user')
-    pickle_data = BlobField()
-    tscreated = DateTimeField(null=True)
-
-    class Meta:
-        ''' table name '''
-        db_table = 'flaskrsession'
-
-    @classmethod
-    def from_object(cls, user, data_dict):
-        ''' create session object and store in DB'''
-        session_object = cls()
-        session_object.user = user
-        session_object.pickle_data = pickle.dumps(data_dict)
-        session_object.obj_type = type(data_dict)
-        session_object.save()
-        return session_object
-
-    def as_object(self):
-        ''' return pickle to object '''
-        return pickle.loads(self.pickle_data)
 
 
 class StaticValuesBuchung():

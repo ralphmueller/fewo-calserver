@@ -165,10 +165,10 @@ def verkauf_create(buchung_id):
     ware = Ware.get_by_id(ware_id)
     if menge <= 0:
         flash('Menge muss größer als 0 sein.')
-        return redirect(url_for('buchung_bp.update', buchung_id=buchung_id))
+        return redirect(url_for('buchung_bp.anzeigen', buchung_id=buchung_id))
     if ware.menge_lager < menge:
         flash('Nicht genug auf Lager (verfügbar: {}).'.format(ware.menge_lager))
-        return redirect(url_for('buchung_bp.update', buchung_id=buchung_id))
+        return redirect(url_for('buchung_bp.anzeigen', buchung_id=buchung_id))
     Verkauf.create(
         buchung_id=buchung_id,
         ware=ware,
@@ -179,7 +179,7 @@ def verkauf_create(buchung_id):
     ware.menge_lager -= menge
     ware.save()
     flash('{}x {} verkauft.'.format(menge, ware.bezeichnung))
-    return redirect(url_for('buchung_bp.update', buchung_id=buchung_id))
+    return redirect(url_for('buchung_bp.anzeigen', buchung_id=buchung_id))
 
 
 @warenwirtschaft_bp.route('/verkauf/delete/<int:verkauf_id>', methods=('POST',))
@@ -192,4 +192,4 @@ def verkauf_delete(verkauf_id):
     ware.save()
     v.delete_instance()
     flash('Verkauf storniert.')
-    return redirect(url_for('buchung_bp.update', buchung_id=buchung_id))
+    return redirect(url_for('buchung_bp.anzeigen', buchung_id=buchung_id))

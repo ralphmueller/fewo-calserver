@@ -28,14 +28,13 @@ from bkormlib import (
     Buchung,
     Besucher,
     Apartment,
-    User,
-    FlaskrSession,
     StaticValuesBuchung,
     Ware,
     Portal)
 
 from .buchung_forms import (
     BuchungForm, Buchung2Form, MeldescheinForm, VorauszahlungForm)
+# Buchung2Form still used by convert_angebot
 
 from flaskr.auth.auth import login_required
 
@@ -439,172 +438,6 @@ def neu_formular(besucher_id):
                            form=form, besucher=besucher)
 
 
-@buchung_bp.route('/create/<int:besucher_id>', methods=('GET', 'POST'))
-@login_required
-def create_buchung(besucher_id):
-    '''
-        Create new booking, step 1
-        - gather booking data
-        at the end of this step:
-        - validate the information
-        - check availability of apartment via 'prüfen' button
-        - contiue to second step (create_buchung_finish)
-    '''
-    form = BuchungForm()
-    form.user_id.data = session.get('user_id')
-    form.besucher_id.data = besucher_id
-    besucher = Besucher.get(besucher_id)
-    if form.validate_on_submit():
-        form.besucher_id = besucher_id
-        session_data = form.data
-        session_object = FlaskrSession.from_object(
-            User.get(id=session['user_id']),
-            session_data
-        )
-        session['create_buchung'] = session_object.id
-        if besucher.email == "":
-            flash('Besucher hat keine Email Adresse', 'error')
-
-        return redirect(url_for('buchung_bp.create_buchung_finish'))
-
-    return render_template(
-        'buchung/create.html',
-        besucher=besucher,
-        form=form,
-        title='Buchung anlegen',
-        run_mode=current_app.config['ENV'],
-        template='form-template'
-    )
-
-
-@buchung_bp.route('/create_finish', methods=('GET', 'POST'))
-@login_required
-def create_buchung_finish():
-    '''
-        Finalize new booking
-        - check availability of apartment
-        - prepare confirmation text
-        - send emails and finish booking
-    '''
-
-    session_id = session['create_buchung']
-    buchung = Buchung(**FlaskrSession.get(id=session_id).as_object())
-    buchung.recalc(status='gebucht')
-    besucher = Besucher.get(buchung.besucher_id)
-    # prepare email_confirmation_email
-    form = Buchung2Form()
-    if request.method == 'GET':
-        form.email_text.data = render_template(
-            'emails/{}/buchung_confirmation.html'
-            .format(besucher.language.lower()),
-            buchung=buchung
-        )
-
-    if form.validate_on_submit():
-        # save booking
-        buchung.id = None
-        buchung.save()
-        # create email record
-        send_confirmation_emails(buchung, form.email_text.data)
-        # flash message
-        flash(
-            'Buchung {} Apt {} vom {} - {} für {}, {} gespeichert'.format(
-                buchung.id,
-                buchung.apartment.name,
-                format_date(buchung.anreise, format='short', locale='de_DE'),
-                format_date(buchung.abreise, format='short', locale='de_DE'),
-                buchung.besucher.name,
-                buchung.besucher.vorname
-            ))
-        return (
-            redirect(
-                url_for(
-                    'besucher_bp.update',
-                    besucher_id=besucher.id)))
-
-    return render_template(
-        'buchung/create_part2.html',
-        besucher=besucher,
-        buchung=buchung,
-        form=form,
-        title='Neue Buchung fertigstellen',
-        run_mode=current_app.config['ENV'],
-        template='form-template')
-
-
-@buchung_bp.route('/update_check/<int:buchung_id>')
-@login_required
-def update_check(buchung_id):
-    """
-        make decisions what to do:
-            - if the booking status is abgerechnet, re-route to
-              anzeigen
-            - if the booking status is gebucht, re-route to update
-    """
-    buchung = Buchung.get_by_id(buchung_id)
-    if buchung.status == 'gebucht':
-        return redirect(url_for('buchung_bp.update', buchung_id=buchung_id))
-    else:       # abgerechnet
-        return redirect(
-            url_for('buchung_bp.anzeigen', buchung_id=buchung_id))
-
-
-@buchung_bp.route('/update/<int:buchung_id>', methods=('GET', 'POST'))
-@login_required
-def update(buchung_id):
-
-    buchung = Buchung.get_by_id(buchung_id)
-    if buchung.status in ['abgerechnet', 'storno', 'verworfen']:
-        flash(
-            'Buchung {} mit Status {} kann nicht geändert werden!</br> \
-            Vorauszahlung siehe linke Seite!'
-            .format(buchung.id, buchung.status), 'error')
-        return redirect(url_for('home_bp.index'))
-
-    form = BuchungForm(obj=buchung)
-
-    if form.validate_on_submit():
-        buchung_alt = Buchung.get_by_id(buchung_id)     # save copy
-        dirty_fields = update_buchung(form, buchung)
-        if len(dirty_fields) > 0:                                # changes
-            send_update_emails(buchung, buchung_alt, dirty_fields)
-            # set flash
-            flash("Update für {}, {} gespeichert".format(
-                buchung.id, buchung.besucher.name
-                ))
-        else:
-            # set flash
-            flash("Keine Änderung für {}, {} gespeichert".format(
-                buchung.id, buchung.besucher.name
-                ))
-
-        return (
-            redirect(
-                url_for(
-                    'besucher_bp.update',
-                    besucher_id=buchung.besucher.id)))
-
-    # left side actions
-    actions = [
-        (
-            'Stornieren',
-            url_for('buchung_bp.storno', buchung_id=buchung.id)),
-        (
-            'Abrechnen',
-            url_for('buchung_bp.abrechnen', buchung_id=buchung.id))
-    ]
-    return render_template(
-        'buchung/update.html',
-        form=form,
-        buchung=buchung,
-        actions=actions,
-        title='Buchung ändern',
-        buchungen=buchung,
-        besucher=buchung.besucher,
-        waren_choices=Ware.choices(),
-        verkaeufe=list(buchung.verkaeufe),
-        run_mode=current_app.config['ENV']
-    )
 
 
 @buchung_bp.route('/storno/<int:buchung_id>')
@@ -675,62 +508,11 @@ def abrechnen(buchung_id):
 @buchung_bp.route('/anzeigen/<int:buchung_id>')
 @login_required
 def anzeigen(buchung_id):
-    """
-        get:
-            - show current details
-            - input form for meldeschein data
-        post:
-            - change buchung status to abgerechnet
-            - set meldeschein data
-            - reroute to printing invoice
-    """
     buchung = Buchung.get_by_id(buchung_id)
-
-    # left side actions
-    if buchung.status == 'gebucht':
-        actions = [
-            (
-                'Ändern',
-                url_for(
-                    'buchung_bp.update',
-                    buchung_id=buchung.id)),
-            (
-                'Rechnung',
-                url_for('buchung_bp.rechnung', buchung_id=buchung.id))
-        ]
-    elif buchung.status == 'angebot':  # convert offer -> booking, drop angebot
-        actions = [
-            (
-                'Umwandeln',
-                url_for(
-                    'buchung_bp.convert_angebot',
-                    buchung_id=buchung.id)),
-            (
-                'Verwerfen',
-                url_for(
-                    'buchung_bp.drop_angebot',
-                    buchung_id=buchung.id))
-        ]
-    elif buchung.status == 'abgerechnet':   # print or inptut prepayment
-        actions = [
-            (
-                'Drucken',
-                url_for(
-                    'buchung_bp.rechnung',
-                    buchung_id=buchung.id)),
-            (
-                'Vorauszahlung',
-                url_for(
-                    'buchung_bp.update_vorauszahlung',
-                    buchung_id=buchung.id))
-        ]
-
     return render_template(
         'buchung/anzeigen.html',
         buchung=buchung,
-        actions=actions,
         title='{} anzeigen'.format(buchung.status.capitalize()),
-        besucher=buchung.besucher,
         run_mode=current_app.config['ENV']
     )
 
@@ -775,104 +557,6 @@ def rechnung(buchung_id):
     )
 
 
-@buchung_bp.route('/create_angebot/<int:besucher_id>', methods=('GET', 'POST'))
-@login_required
-def create_angebot(besucher_id):
-    '''
-        Create new offer, step 1
-        - gather offer data
-        at the end of this step:
-        - validate the information
-        - check availability of apartment (flash if not)
-        - contiue to second step (create_buchung_finish)
-    '''
-    form = BuchungForm()
-    form.user_id.data = session.get('user_id')
-    form.besucher_id.data = besucher_id
-    besucher = Besucher.get(besucher_id)
-    if form.validate_on_submit():
-        form.besucher_id = besucher_id
-        session_data = form.data
-        session_object = FlaskrSession.from_object(
-            User.get(id=session['user_id']),
-            session_data
-        )
-        session['create_angebot'] = session_object.id
-        if besucher.email == "":
-            flash('Besucher hat keine Email Adresse', 'error')
-        if (
-            Apartment
-            .get_by_id(form.apartment_id.data)
-            .check_availability(form.anreise.data, form.abreise.data)
-        ):
-            flash('Apartment is verfügbar')
-        else:
-            # TODO: Liste der verfügbaren Aprtments
-            flash('Apartment ist nicht verfügbar!', 'error')
-
-        return redirect(url_for('buchung_bp.create_angebot_finish'))
-
-    return render_template(
-        'buchung/create.html',
-        besucher=besucher,
-        form=form,
-        title='Angebot anlegen',
-        run_mode=current_app.config['ENV'],
-        template='form-template'
-    )
-
-
-@buchung_bp.route('/create_angebot_finish', methods=('GET', 'POST'))
-@login_required
-def create_angebot_finish():
-    '''
-        Finalize new booking
-        - check availability of apartment
-        - prepare confirmation text
-        - send emails and finish booking
-    '''
-
-    session_id = session['create_angebot']
-    buchung = Buchung(**FlaskrSession.get(id=session_id).as_object())
-    buchung.recalc(status='angebot')
-    # prepare email_confirmation_email
-    form = Buchung2Form()
-    if request.method == 'GET':
-        form.email_text.data = render_template(
-            'emails/{buchung.besucher.language.lower()}/angebot.html',
-            days=(buchung.abreise - buchung.anreise).days,
-            buchung=buchung
-        )
-
-    if form.validate_on_submit():
-        # save booking
-        buchung.id = None
-        buchung.save()
-        send_angebot_emails(buchung, form.email_text.data)
-        # flash message
-        flash(
-            'Angebot {} Apt {} vom {} - {} für {}, {} gespeichert'.format(
-                buchung.id,
-                buchung.apartment.name,
-                format_date(buchung.anreise, format='short', locale='de_DE'),
-                format_date(buchung.abreise, format='short', locale='de_DE'),
-                buchung.besucher.name,
-                buchung.besucher.vorname
-            ))
-        return (
-            redirect(
-                url_for(
-                    'besucher_bp.update',
-                    besucher_id=buchung.besucher.id)))
-
-    return render_template(
-        'buchung/create_part2.html',
-        besucher=buchung.besucher,
-        buchung=buchung,
-        form=form,
-        title='Neues Angebot fertigstellen',
-        run_mode=current_app.config['ENV'],
-        template='form-template')
 
 
 @buchung_bp.route('/convert_angebot/<int:buchung_id>', methods=('GET', 'POST'))

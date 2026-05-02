@@ -6,9 +6,9 @@
                     hx-get="{{ url_for('besucher_bp.edit', besucher_id=besucher.id) }}"
                     hx-target="#detail-panel"
                     hx-swap="innerHTML">Bearbeiten</button>
-            <a href="{{ url_for('buchung_bp.create_buchung', besucher_id=besucher.id) }}"
+            <a href="{{ url_for('buchung_bp.neu') }}"
                class="btn btn-sm btn-primary ms-1">Neue Buchung</a>
-            <a href="{{ url_for('buchung_bp.create_angebot', besucher_id=besucher.id) }}"
+            <a href="{{ url_for('buchung_bp.schnell') }}"
                class="btn btn-sm btn-outline-primary ms-1">Neues Angebot</a>
         </div>
     </div>

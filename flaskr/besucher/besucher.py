@@ -158,12 +158,8 @@ def update(besucher_id):
 
     # left side actions
     actions = [
-        (
-            'Neue Buchung',
-            url_for('buchung_bp.create_buchung', besucher_id=besucher.id)),
-        (
-            'Neues Angebot',
-            url_for('buchung_bp.create_angebot', besucher_id=besucher.id))
+        ('Neue Buchung', url_for('buchung_bp.neu')),
+        ('Neues Angebot', url_for('buchung_bp.schnell')),
     ]
     return render_template(
         'besucher/update.html',
