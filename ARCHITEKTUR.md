@@ -259,3 +259,25 @@ neu_formular (GET) ──► neu_vorschau (POST) ──► neu_email_partial.htm
 
 Gilt analog für `schnell_vorschau` → `neu_speichern` (Schnellbuchung)
 und `convert_angebot` (Angebot umwandeln).
+
+**Warenverkauf-Panel (Inline-HTMX):**
+
+```
+anzeigen (GET) ──► waren_panel_partial.html  (eingebettet per {% include %})
+                        │
+         ┌──────────────┴──────────────┐
+         ▼                             ▼
+  verkauf_create (POST)         verkauf_delete (POST)
+  warenwirtschaft_bp            warenwirtschaft_bp
+         │                             │
+  Lager -=menge                 Lager +=menge
+         │                             │
+         └──────────────┬──────────────┘
+                        ▼
+              _waren_panel() Helper
+              → waren_panel_partial.html
+              hx-target="#waren-panel", swap innerHTML
+```
+
+- Validierungsfehler (Lager leer, Menge ≤ 0) erscheinen inline in der Karte
+- Kein Seitenwechsel, kein Flash-Message-Mechanismus

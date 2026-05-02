@@ -157,6 +157,21 @@ def statistik():
     )
 
 
+def _waren_panel(buchung_id, error=None):
+    buchung = Buchung.get_by_id(buchung_id)
+    verkaeufe = list(Verkauf.select(Verkauf, Ware).join(Ware).where(Verkauf.buchung == buchung))
+    waren = list(Ware.select().where(Ware.active == True).order_by(Ware.bezeichnung))
+    waren_summe = sum(v.menge * v.preis_zum_zeitpunkt for v in verkaeufe)
+    return render_template(
+        'buchung/waren_panel_partial.html',
+        buchung=buchung,
+        verkaeufe=verkaeufe,
+        waren=waren,
+        waren_summe=waren_summe,
+        error=error,
+    )
+
+
 @warenwirtschaft_bp.route('/verkauf/<int:buchung_id>', methods=('POST',))
 @login_required
 def verkauf_create(buchung_id):
@@ -164,11 +179,10 @@ def verkauf_create(buchung_id):
     menge = int(request.form['menge'])
     ware = Ware.get_by_id(ware_id)
     if menge <= 0:
-        flash('Menge muss größer als 0 sein.')
-        return redirect(url_for('buchung_bp.anzeigen', buchung_id=buchung_id))
+        return _waren_panel(buchung_id, error='Menge muss größer als 0 sein.')
     if ware.menge_lager < menge:
-        flash('Nicht genug auf Lager (verfügbar: {}).'.format(ware.menge_lager))
-        return redirect(url_for('buchung_bp.anzeigen', buchung_id=buchung_id))
+        return _waren_panel(buchung_id,
+                            error='Nicht genug auf Lager (verfügbar: {}).'.format(ware.menge_lager))
     Verkauf.create(
         buchung_id=buchung_id,
         ware=ware,
@@ -178,8 +192,7 @@ def verkauf_create(buchung_id):
     ).save()
     ware.menge_lager -= menge
     ware.save()
-    flash('{}x {} verkauft.'.format(menge, ware.bezeichnung))
-    return redirect(url_for('buchung_bp.anzeigen', buchung_id=buchung_id))
+    return _waren_panel(buchung_id)
 
 
 @warenwirtschaft_bp.route('/verkauf/delete/<int:verkauf_id>', methods=('POST',))
@@ -191,5 +204,4 @@ def verkauf_delete(verkauf_id):
     ware.menge_lager += v.menge
     ware.save()
     v.delete_instance()
-    flash('Verkauf storniert.')
-    return redirect(url_for('buchung_bp.anzeigen', buchung_id=buchung_id))
+    return _waren_panel(buchung_id)

@@ -152,13 +152,35 @@ Je nach Status stehen folgende Aktionen zur Verfügung:
 |---|---|
 | Angebot | **Bearbeiten**, **Umwandeln in Buchung**, **Verwerfen** |
 | Gebucht | **Bearbeiten**, **Abrechnen**, **Storno** |
-| Abgerechnet | **Feratel melden** |
+| Abgerechnet | **Rechnung drucken**, **Vorauszahlung erfassen**, **Warenverkauf**, **Feratel melden** |
 
 **Angebot umwandeln:**
 Klick auf **Umwandeln in Buchung** öffnet direkt auf der Seite den E-Mail-Editor
 mit vorausgefülltem Bestätigungstext. Nach **Bestätigung senden & Buchung speichern →**
 wird der Status auf „gebucht" gesetzt und die E-Mail verschickt.
 Mit **Abbrechen** wird das Panel wieder geschlossen.
+
+**Abgerechnet — Warenverkauf:**
+Unterhalb der Buchungsdetails erscheint die Karte **Warenverkauf**.
+Bereits erfasste Verkäufe werden tabellarisch angezeigt (Artikel, Menge, Preis, Gesamt).
+Jeder Eintrag kann per **Storno** rückgängig gemacht werden — der Lagerbestand wird dabei automatisch wiederhergestellt.
+Neuen Verkauf erfassen: Artikel aus dem Dropdown wählen, Menge eingeben, **Verkaufen** klicken.
+Lagerbestand und Gesamtsumme aktualisieren sich sofort, kein Seitenwechsel.
+
+**Rechnung drucken:**
+Klick auf **Rechnung drucken** öffnet die druckfertige Gesamtrechnung in einem neuen Tab.
+Die Rechnung enthält Miete, Kurtaxe, alle Warenverkäufe (inkl. MwSt.-Aufschlüsselung),
+Vorauszahlung und offenen Restbetrag.
+
+**Kompletter Buchungsablauf:**
+
+```
+Anfrage → Angebot erstellen → Angebot umwandeln (E-Mail) → Buchung
+    → Gast kommt an → Abrechnen (Meldeschein-Nr., Rechnungs-Nr.)
+    → Warenverkauf erfassen
+    → Rechnung drucken → Restbetrag kassieren
+    → An Feratel melden
+```
 
 ---
 
@@ -182,8 +204,11 @@ Menü → **Waren → Lieferung**. Zugang wird auf den aktuellen Bestand addiert
 
 ### Verkauf
 
-Aus der Buchungsdetailansicht (Tab „Waren"): Artikel und Menge wählen.
-Lager wird automatisch reduziert. Storno stellt Bestand wieder her.
+Verkäufe werden direkt in der **Buchungsdetailansicht** einer abgerechneten Buchung erfasst
+(Karte „Warenverkauf" — keine eigene Menüseite nötig).
+Artikel und Menge wählen → **Verkaufen**. Lagerbestand wird sofort reduziert.
+Storno in der Tabelle stellt den Bestand wieder her.
+Die Verkäufe erscheinen automatisch in der gedruckten Rechnung.
 
 ### Statistik
 

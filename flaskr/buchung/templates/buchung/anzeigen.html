@@ -8,6 +8,18 @@
     <div id="convert-panel"></div>
 
     {% if buchung.status == 'abgerechnet' %}
+
+    <div class="mt-3 d-flex gap-2">
+        <a href="{{ url_for('buchung_bp.rechnung', buchung_id=buchung.id) }}"
+           class="btn btn-sm btn-outline-primary" target="_blank">Rechnung drucken</a>
+        <a href="{{ url_for('buchung_bp.update_vorauszahlung', buchung_id=buchung.id) }}"
+           class="btn btn-sm btn-outline-secondary">Vorauszahlung erfassen</a>
+    </div>
+
+    <div id="waren-panel">
+        {% include 'buchung/waren_panel_partial.html' %}
+    </div>
+
     <div class="card mt-3">
         <div class="card-header">Feratel Meldeschein</div>
         <div class="card-body d-flex align-items-center gap-3">
@@ -24,6 +36,7 @@
             </form>
         </div>
     </div>
+
     {% endif %}
 
 </div>

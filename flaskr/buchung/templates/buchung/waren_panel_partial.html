@@ -1,0 +1,74 @@
+<div class="card mt-3">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Warenverkauf</strong>
+        {% if verkaeufe %}
+        <span class="text-muted small">Gesamt: {{ waren_summe | euro_currency }}</span>
+        {% endif %}
+    </div>
+    <div class="card-body">
+
+        {% if error %}
+        <div class="alert alert-warning py-1 small mb-3">{{ error }}</div>
+        {% endif %}
+
+        {% if verkaeufe %}
+        <table class="table table-sm mb-3">
+            <thead class="table-light">
+                <tr>
+                    <th>Artikel</th>
+                    <th class="text-center">Menge</th>
+                    <th class="text-end">Preis</th>
+                    <th class="text-end">Gesamt</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for v in verkaeufe %}
+                <tr>
+                    <td>{{ v.ware.bezeichnung }}</td>
+                    <td class="text-center">{{ v.menge }}</td>
+                    <td class="text-end">{{ v.preis_zum_zeitpunkt | euro_currency }}</td>
+                    <td class="text-end">{{ (v.menge * v.preis_zum_zeitpunkt) | euro_currency }}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-danger"
+                                hx-post="{{ url_for('warenwirtschaft_bp.verkauf_delete', verkauf_id=v.id) }}"
+                                hx-target="#waren-panel"
+                                hx-swap="innerHTML"
+                                hx-confirm="Verkauf stornieren?">Storno</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted small mb-3">Noch keine Waren verkauft.</p>
+        {% endif %}
+
+        {% if waren %}
+        <form hx-post="{{ url_for('warenwirtschaft_bp.verkauf_create', buchung_id=buchung.id) }}"
+              hx-target="#waren-panel"
+              hx-swap="innerHTML"
+              class="row g-2 align-items-end">
+            <div class="col-md-6">
+                <label class="form-label small mb-1">Artikel</label>
+                <select name="ware_id" class="form-select form-select-sm">
+                    {% for w in waren %}
+                    <option value="{{ w.id }}">{{ w.bezeichnung }} — {{ w.preis | euro_currency }} (Lager: {{ w.menge_lager }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small mb-1">Menge</label>
+                <input type="number" name="menge" value="1" min="1"
+                       class="form-control form-control-sm">
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-sm btn-success">Verkaufen</button>
+            </div>
+        </form>
+        {% else %}
+        <p class="text-muted small">Keine aktiven Artikel im Sortiment.</p>
+        {% endif %}
+
+    </div>
+</div>

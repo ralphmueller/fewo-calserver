@@ -30,6 +30,7 @@ from bkormlib import (
     Apartment,
     StaticValuesBuchung,
     Ware,
+    Verkauf,
     Portal)
 
 from .buchung_forms import (
@@ -651,9 +652,19 @@ def abrechnen(buchung_id):
 @login_required
 def anzeigen(buchung_id):
     buchung = Buchung.get_by_id(buchung_id)
+    verkaeufe = []
+    waren = []
+    waren_summe = 0
+    if buchung.status == 'abgerechnet':
+        verkaeufe = list(Verkauf.select(Verkauf, Ware).join(Ware).where(Verkauf.buchung == buchung))
+        waren = list(Ware.select().where(Ware.active == True).order_by(Ware.bezeichnung))
+        waren_summe = sum(v.menge * v.preis_zum_zeitpunkt for v in verkaeufe)
     return render_template(
         'buchung/anzeigen.html',
         buchung=buchung,
+        verkaeufe=verkaeufe,
+        waren=waren,
+        waren_summe=waren_summe,
         title='{} anzeigen'.format(buchung.status.capitalize()),
         run_mode=current_app.config['ENV']
     )
