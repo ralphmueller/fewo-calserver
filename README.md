@@ -15,7 +15,7 @@ Entwickelt für einen Betrieb mit mehreren Wohnungen — einsetzbar für jeden
 - **Rechnungen** — druckfertige Rechnung mit MwSt.-Ausweis und Kurtaxe-Abrechnung
 - **Warenwirtschaft** — Artikelstamm, Lagerbestand, Verkauf aus der Buchungsansicht
 - **Statistik & Forecast** — Einnahmen, Nächte, Kurtaxe nach Monat/Jahr/Wohnung
-- **Feratel-Meldung** — automatische Gästemeldung per Browser-Automation (Playwright)
+- **Feratel-Meldung** — automatische Gästemeldung per Browser-Automation (Playwright) ⚠️ Proof of Concept, noch nicht produktionsreif
 - **Kalender** — Monatsübersicht aller Belegungen
 
 Alle betreiberspezifischen Werte (Name, Adresse, IBAN, Kurtaxe-Sätze, Feratel-Zugänge)
