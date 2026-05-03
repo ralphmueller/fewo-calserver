@@ -371,6 +371,21 @@ def schnell_vorschau():
     buchung.notiz = request.form.get('notiz', '')
     buchung.besucher = Besucher.get_by_id(buchung.besucher_id)
     buchung.apartment = Apartment.get_by_id(buchung.apartment_id)
+
+    if not buchung.apartment.check_availability(buchung.anreise, buchung.abreise):
+        alternatives = [a for a in Apartment.select().where(Apartment.active)
+                        if a.check_availability(buchung.anreise, buchung.abreise)]
+        return render_template('buchung/conflict_partial.html',
+                               apartment=buchung.apartment,
+                               anreise=buchung.anreise, abreise=buchung.abreise,
+                               alternatives=alternatives,
+                               zurueck_url=url_for('buchung_bp.schnell_buchen_formular',
+                                                   anreise=buchung.anreise,
+                                                   abreise=buchung.abreise,
+                                                   apartment_id=buchung.apartment_id,
+                                                   besucher_id=buchung.besucher_id),
+                               hx_target='#buchung-panel')
+
     buchung.recalc(typ)
 
     if typ == 'angebot':
@@ -528,6 +543,19 @@ def neu_vorschau(besucher_id):
     buchung.kurtaxe_nz = int(form.kurtaxe_nz.data or 0)
     buchung.kurtaxe_korrekturwert = float(form.kurtaxe_korrekturwert.data or 0)
     buchung.notiz = form.notiz.data or ''
+
+    if not buchung.apartment.check_availability(buchung.anreise, buchung.abreise):
+        alternatives = [a for a in Apartment.select().where(Apartment.active)
+                        if a.check_availability(buchung.anreise, buchung.abreise)]
+        return render_template('buchung/conflict_partial.html',
+                               apartment=buchung.apartment,
+                               anreise=buchung.anreise, abreise=buchung.abreise,
+                               alternatives=alternatives,
+                               zurueck_url=url_for('buchung_bp.neu_formular',
+                                                   besucher_id=besucher_id,
+                                                   typ=typ, hx_target=hx_target),
+                               hx_target=hx_target)
+
     buchung.recalc(typ)
 
     if typ == 'angebot':
@@ -569,6 +597,20 @@ def neu_speichern(besucher_id):
     buchung.kurtaxe_nz = int(request.form.get('kurtaxe_nz', 0))
     buchung.kurtaxe_korrekturwert = float(request.form.get('kurtaxe_korrekturwert', 0))
     buchung.notiz = request.form.get('notiz', '')
+    apartment = Apartment.get_by_id(buchung.apartment_id)
+    if not apartment.check_availability(buchung.anreise, buchung.abreise):
+        alternatives = [a for a in Apartment.select().where(Apartment.active)
+                        if a.check_availability(buchung.anreise, buchung.abreise)]
+        hx_target = request.form.get('hx_target', '#buchung-panel')
+        return render_template('buchung/conflict_partial.html',
+                               apartment=apartment,
+                               anreise=buchung.anreise, abreise=buchung.abreise,
+                               alternatives=alternatives,
+                               zurueck_url=url_for('buchung_bp.neu_formular',
+                                                   besucher_id=besucher_id,
+                                                   typ=typ,
+                                                   hx_target=hx_target),
+                               hx_target=hx_target)
     buchung.recalc(typ)
     buchung.save()
     email_text = request.form.get('email_text', '')

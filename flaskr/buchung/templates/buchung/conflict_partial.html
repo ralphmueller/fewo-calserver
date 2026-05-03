@@ -1,0 +1,18 @@
+<div class="alert alert-danger">
+    <strong>Wohnung {{ apartment.name }} ist für den Zeitraum
+    {{ anreise | euro_date_short }} – {{ abreise | euro_date_short }} bereits belegt.</strong>
+    {% if alternatives %}
+    <div class="mt-2">
+        Freie Wohnungen für diesen Zeitraum:
+        {% for a in alternatives %}
+        <span class="badge bg-success ms-1 fs-6">{{ a.name }}</span>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="mt-2">Keine Wohnungen für diesen Zeitraum verfügbar.</div>
+    {% endif %}
+</div>
+<button class="btn btn-outline-secondary"
+        hx-get="{{ zurueck_url }}"
+        hx-target="{{ hx_target }}"
+        hx-swap="innerHTML">← Zurück</button>
