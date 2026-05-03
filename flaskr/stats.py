@@ -113,7 +113,7 @@ def rest_income_and_commission():
     res = {}
     res['datasets'] = calc_income_and_commission_for_years(YEARS)
     res['dataset_labels'] = ['Einnahmen', 'Kommission']
-    res['labels'] = YEARS     # this is for linking to single apartment income
+    res['labels'] = YEARS
     return json.dumps(res, default=str)
 
 
