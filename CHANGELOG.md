@@ -1,5 +1,14 @@
 # Changelog
 
+## Rev 2.0 (03.05.2026)
+
+### Open-Source-Release
+
+Erste öffentliche Version. Alle betreiberspezifischen Daten externalisiert,
+MIT-Lizenz, vollständige Installationsanleitung, CLI-Befehle für DB-Setup.
+
+---
+
 ## Rev 1.9 (02.05.2026)
 
 ### Open-Source-Vorbereitung
