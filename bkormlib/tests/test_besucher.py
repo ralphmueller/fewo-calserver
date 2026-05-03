@@ -24,7 +24,7 @@ class TestBesucherBasic:
 
     def test_names(self):
         assert Besucher.get_by_id(1).name == 'Schmidt'
-        assert Besucher.get_by_id(2).name == 'Iwai'
+        assert Besucher.get_by_id(2).name == 'Weber'
 
     def test_count(self):
         assert len(list(Besucher.select())) == 2

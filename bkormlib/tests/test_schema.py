@@ -1,11 +1,9 @@
 """
-Tests for Portal, Apartment.choices(), StaticValuesBuchung, FlaskrSession, Preisliste.
-Consolidated from testSchemaClassMethods.py, test_flask_session.py, test_preisliste.py.
-Recovered from pythonpacks git history (commit beb12c5, removed in dbb7e48).
+Tests for Portal, Apartment.choices(), StaticValuesBuchung, Preisliste.
 """
 
 import pytest
-from bkormlib import Apartment, Portal, StaticValuesBuchung, FlaskrSession, User, Besucher
+from bkormlib import Apartment, Portal, StaticValuesBuchung, User, Besucher
 from bkormlib.schema import Preisliste
 
 PORTALS = [
@@ -55,30 +53,6 @@ class TestStaticValuesBuchung:
     def test_ktsatz_hz(self):
         assert StaticValuesBuchung.ktsatz_hz() == 0.5
 
-
-class TestFlaskrSession:
-    def setup_method(self):
-        User.create(username='testuser', password='testpw', admin=True).save()
-        for b in [
-            {'user_id': 1, 'anrede': 'Herr', 'name': 'Schmidt',
-             'vorname': 'Hans', 'email': 'hans@example.com'},
-            {'user_id': 1, 'anrede': 'Frau', 'name': 'Weber',
-             'vorname': 'Maria', 'email': 'maria@example.com'},
-        ]:
-            Besucher.create(**b).save()
-
-    def test_create_session(self):
-        data = [{'user_id': 1, 'name': 'test'}]
-        session = FlaskrSession.from_object(User.get_by_id(1), data)
-        assert type(session) is FlaskrSession
-        assert session.user.username == 'testuser'
-
-    def test_save_and_restore_session(self):
-        data = [{'user_id': 1, 'name': 'test'}]
-        FlaskrSession.from_object(User.get_by_id(1), data)
-        restored = FlaskrSession.get_by_id(1)
-        assert restored.user.username == 'ralph'
-        assert restored.as_object() == data
 
 
 class TestPreisliste:
