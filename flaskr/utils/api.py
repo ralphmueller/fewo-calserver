@@ -19,7 +19,7 @@ mailer = Config.MAILER
 
 class SystemInfo():
 
-    version_tag = 'rev.1.4'
+    version_tag = 'rev.2.0'
 
     letter_types = [
         'angebot',
@@ -122,8 +122,7 @@ def create_besucher_from_form(form):
 
 
 def typecheck(a, b, c):
-    if type(a) is not type(b):
-        print('typecheck failed', c, type(a), type(b), a, b)
+    pass
 
 
 def update_besucher(form, besucher):

@@ -14,6 +14,7 @@ from flask import (
     render_template,
     flash,
     redirect,
+    request,
     url_for,
     current_app,
     session
@@ -28,6 +29,7 @@ from flaskr.utils.api import (
     create_besucher_from_form,
     update_besucher
 )
+from bkormlib import Besucher
 
 besucher_bp = Blueprint(
     'besucher_bp',
@@ -61,6 +63,55 @@ def find():
         'besucher/find.html',
         title="Finde Besucher",
         run_mode=current_app.config['ENV'])
+
+
+@besucher_bp.route('/search')
+@login_required
+def search():
+    q = request.args.get('q', '').strip()
+    if len(q) < 3:
+        return ''
+
+    parts = q.lower().split()
+    def pat(s):
+        return s.replace('*', '%')
+
+    if len(parts) >= 2:
+        where = (Besucher.name ** pat(parts[0])) & (Besucher.vorname ** pat(parts[1]))
+    else:
+        p = pat(parts[0])
+        where = (Besucher.name ** p) | (Besucher.vorname ** p)
+
+    data = Besucher.select().where(where).order_by(Besucher.name)
+    return render_template('besucher/list_partial.html', data=data)
+
+
+@besucher_bp.route('/detail/<int:besucher_id>')
+@login_required
+def detail(besucher_id):
+    besucher, buchungen = fetch_besucher_for_update(besucher_id)
+    return render_template('besucher/detail_partial.html',
+                           besucher=besucher,
+                           buchungen=buchungen)
+
+
+@besucher_bp.route('/edit/<int:besucher_id>', methods=('GET', 'POST'))
+@login_required
+def edit(besucher_id):
+    besucher, buchungen = fetch_besucher_for_update(besucher_id)
+    form = BesucherForm(obj=besucher)
+
+    if form.validate_on_submit():
+        update_besucher(form, besucher)
+        besucher, buchungen = fetch_besucher_for_update(besucher_id)
+        return render_template('besucher/detail_partial.html',
+                               besucher=besucher,
+                               buchungen=buchungen)
+
+    return render_template('besucher/edit_partial.html',
+                           form=form,
+                           besucher=besucher,
+                           error=None)
 
 
 @besucher_bp.route('/create', methods=('GET', 'POST'))
@@ -107,12 +158,8 @@ def update(besucher_id):
 
     # left side actions
     actions = [
-        (
-            'Neue Buchung',
-            url_for('buchung_bp.create_buchung', besucher_id=besucher.id)),
-        (
-            'Neues Angebot',
-            url_for('buchung_bp.create_angebot', besucher_id=besucher.id))
+        ('Neue Buchung', url_for('buchung_bp.neu')),
+        ('Neues Angebot', url_for('buchung_bp.schnell')),
     ]
     return render_template(
         'besucher/update.html',

@@ -164,3 +164,13 @@ class TestApartmentAvailability:
     def test_storno_booking_does_not_block(self):
         self._book(ANREISE, ABREISE, status='storno')
         assert Apartment.get_by_id(1).check_availability(ANREISE, ABREISE)
+
+    def test_back_to_back_new_arrives_on_existing_departure(self):
+        # Existing departs 2021-10-10 (= ANREISE), new arrives same day → free
+        self._book(datetime.date(2021, 10, 3), ANREISE)
+        assert Apartment.get_by_id(1).check_availability(ANREISE, ABREISE)
+
+    def test_back_to_back_new_departs_on_existing_arrival(self):
+        # New departs 2021-10-24 (= ABREISE), existing arrives same day → free
+        self._book(ABREISE, datetime.date(2021, 11, 7))
+        assert Apartment.get_by_id(1).check_availability(ANREISE, ABREISE)

@@ -12,7 +12,7 @@
 
 {% include 'emails/en/greeting.html' %}
 
-<p>Thank you for requesting an offer for a Ferien-in-Gersfeld vacation apartment.</p>
+<p>Thank you for requesting an offer for a {{ operator.name }} vacation apartment.</p>
 
 <p>
     The apartment {{buchung.apartment.name}}, {{buchung.apartment.beschreibung}} is available 
@@ -21,7 +21,7 @@
 
 <p> The price is as follows:<br>
     {{buchung.apartment.name}} ({{days}} Nights - {{buchung.preis_nacht | euro_currency }}/Night for {{buchung.kurtaxe_vz}} Persons) 
-    Total {{buchung.miete | euro_currency}}  plus Gersfeld city spa tax {{buchung.kurtaxe  | euro_currency }}. 
+    Total {{buchung.miete | euro_currency}}  plus {{ operator.gemeinde }} city spa tax {{buchung.kurtaxe  | euro_currency }}.
 </p>
 {% if buchung.get_rabatt() > 0 %}
     <p>
@@ -30,26 +30,23 @@
 {% endif %}
 <p>
     <strong>To accept this offer and confirm your booking, please reply to this email. We would be very pleased
-        to host you in Gersfeld!    
+        to host you!
     </strong>
 </p>
 
 <p>
     This price includes bed linens, towels, internet access, etc. You will find a well-equiped kitchen including 
     everyday small appliances and basic spices for cooking. A washing machine and dryer are available for use free 
-    of charge. There are no additional costs. You'll find a complete description of the apartment on our 
-    <a href="https://ferien-in-gersfeld.de/?q=en">website</a>.
+    of charge. There are no additional costs. You'll find a complete description of the apartment on our
+    <a href="{{ operator.website }}">website</a>.
 </p>
 <p>
-    Cancellation: confirmed bookings can be cancelled free of charge up to 7 days before arrival. For cancellations 
-    during the week prior to the arrival date we will charge a fee equivalent to 50% of the rental fee. 
+    Cancellation: confirmed bookings can be cancelled free of charge up to {{ operator.storno_frist }} days before arrival. For cancellations
+    during the week prior to the arrival date we will charge a fee equivalent to {{ operator.storno_gebuehr }}% of the rental fee.
 </p>
 <p>
-    If you have questions or need additional information, please feel free to contact us via email or 
-    telephone (0700 - 789 333 44). Or visit 
-    <a href="https://ferien-in-gersfeld.de/?q=en/FAQ">Frequently Asked Questions</a> on our website. 
-
-    <!-- NOT TRANSLATED - seems redundant Dort finden Sie auch ausführliche Beschreibungen der Ferienwohnungen. -->
+    If you have questions or need additional information, please feel free to contact us via email or
+    telephone ({{ operator.tel }}).
 </p> 
 
 {% include 'emails/en/mfg.html' %}

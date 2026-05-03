@@ -21,18 +21,18 @@
 </p>
 <p>
 	Bed linens, towels and internet access are provided free of charge. By using the internet access provided,
-	(SSID: Ferien-in-Gersfeld-Gast) you agree to use this access only within the bounds of regulations and in particular, 
-	not to use it for illegal upload and download of content. 
+	(SSID: {{ operator.wlan_ssid }}) you agree to use this access only within the bounds of regulations and in particular,
+	not to use it for illegal upload and download of content.
 </p>
 
 <p>
-	<strong>Visitor Data</strong>: We are obliged to report the data of all our visitors to the city of Gersfeld. 
+	<strong>Visitor Data</strong>: We are obliged to report the data of all our visitors to the city of {{ operator.gemeinde }}.
 	Please provide us with the last name, first name, address and date of birth of all overnight guests before arrival.
 </p>
 <p>
-	<strong>Arrival</strong>: We are ready to greet you between 15:00 and 18:00 on the day of arrival. You will receive 
-	the keys to the apartment when you pay the rent due and any Spa tax due upon arrival. You can make payment and 
-	pick up the keys from our manager, Mrs. Bianka Moeller at 4 An der Gärtnerei, Gersfeld. 
+	<strong>Arrival</strong>: We are ready to greet you between 15:00 and 18:00 on the day of arrival. You will receive
+	the keys to the apartment when you pay the rent due and any Spa tax due upon arrival. You can make payment and
+	pick up the keys from {{ operator.schluessel }}.
 </p>
 <p>
 	<strong>Departure</strong>: Departure should be no later than 10:00. We ask you to leave the apartment clean. 
@@ -44,15 +44,14 @@
 </p>
 
 <p>Payment information:<br>
-	Ralph Müller<br>
-	Sparkasse Bensheim<br>
-	IBAN/BIC: DE12 50950068 0001621572/HELADEF1BEN<br>
-	PayPal: ralph.mueller.de@gmail.com
+	{{ operator.inhaber }}<br>
+	IBAN/BIC: {{ operator.iban }}/{{ operator.bic }}<br>
+	{% if operator.paypal %}PayPal: {{ operator.paypal }}{% endif %}
 </p>
 
 <p>
-	<strong>Cancellation Terms</strong>: Confirmed bookings can be cancelled free of charge up to 7 days before arrival. For cancellations 
-    during the week prior to the arrival date we will charge a fee equivalent to 50% of the rental fee.
+	<strong>Cancellation Terms</strong>: Confirmed bookings can be cancelled free of charge up to {{ operator.storno_frist }} days before arrival. For cancellations
+	during the week prior to the arrival date we will charge a fee equivalent to {{ operator.storno_gebuehr }}% of the rental fee.
 </p>
 
 <p>If you have questions or need additional information, please feel free to contact us via email or 
@@ -108,11 +107,11 @@
 <p>Spa tax notes:</p>
 <ul>
 	<li>
-		The tourist tax since January 1, 2023 is 2,10€ / night for visitors who have finished the age of 14. Younger persons 
+		The tourist tax is {{ operator.kurtaxe_satz_vz }}€ / night for visitors who have finished the age of 14. Younger persons
 		do not pay tourist tax.
-	</li>	
+	</li>
 	<li>
-		Persons visiting Gersfeld for business reasons (including further education) are exempt from the Spa tax.
+		Persons visiting {{ operator.gemeinde }} for business reasons (including further education) are exempt from the Spa tax.
 	</li>		
 </ul>
 

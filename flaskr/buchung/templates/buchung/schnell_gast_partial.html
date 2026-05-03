@@ -1,0 +1,36 @@
+<div class="card">
+    <div class="card-header">
+        <strong>{{ apartment.name }}</strong> — Gast suchen oder neu anlegen
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-5">
+                <input type="text"
+                       name="q"
+                       class="form-control"
+                       placeholder="Name, z.B. Müll* oder Müll* Ral*"
+                       hx-get="{{ url_for('buchung_bp.schnell_gast_suche') }}"
+                       hx-trigger="keyup changed delay:300ms"
+                       hx-target="#gast-ergebnis"
+                       hx-swap="innerHTML"
+                       hx-vals='{"anreise": "{{ anreise }}", "abreise": "{{ abreise }}", "apartment_id": "{{ apartment.id }}"}'
+                       autocomplete="off">
+                <p class="text-muted small mt-1">Mind. 2 Zeichen. <code>*</code> als Wildcard.</p>
+                <div id="gast-ergebnis"></div>
+
+                <hr>
+                <button class="btn btn-sm btn-outline-secondary"
+                        hx-get="{{ url_for('buchung_bp.schnell_neuer_gast') }}?anreise={{ anreise }}&abreise={{ abreise }}&apartment_id={{ apartment.id }}"
+                        hx-target="#buchung-panel"
+                        hx-swap="innerHTML">
+                    + Neuen Gast anlegen
+                </button>
+            </div>
+            <div class="col-md-7">
+                <div id="buchung-panel">
+                    <p class="text-muted">← Gast auswählen oder neu anlegen.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,62 +1,12 @@
-<!-- 
-	partial für Liste Buchungen / rows
--->
-
-<div class="table-responsive">
-    {% if buchungen | length > 0 %}
-    <h4>Gebucht / Abgerechnet</h4>
-	<table class="table table-bordered table-condensed table-hover">
-		<thead>
-			<tr>
-				<th>Anreise</th><th>Abreise</th><th>Apartment</th><th>Miete</th><th>Kurtaxe</th><th>Summe</th><th>Vorauszahlung</th><th>Status</th>
-			</tr>
-		</thead>
-		<tbody>	
-	    {% for buchung in buchungen %}
-            {% if buchung.status in ['abgerechnet', 'gebucht'] %}
-                <tr id=" {{buchung.id}} " onclick=getBuchungDetails(`{{ buchung.id }}`)>
-                    <td>{{buchung.anreise | euro_date_short }}</td>
-                    <td>{{buchung.abreise | euro_date_short }}</td>
-                    <td>{{buchung.apartment.name}}</td>
-                    <td>{{buchung.miete | euro_currency }}</td>
-                    <td>{{buchung.kurtaxe | euro_currency }}</td>
-                    <td>{{buchung.summe | euro_currency }}</td>
-                    <td>{{buchung.vorauszahlung | euro_currency }}</td>
-                    <td>{{buchung.status}}</td>
-                </tr>
-            {% endif %}
-		 {% endfor %}
-		 </tbody>
-	</table>
-    {% else %}
-    <p>Keine Buchungen gefunden</p>
-    {% endif %}
-    {% if angebote | length > 0 %}
-    <h4>Angebot</h4>
-    <table class="table table-bordered table-condensed table-hover">
-		<thead>
-			<tr>
-				<th>Anreise</th><th>Abreise</th><th>Apartment</th><th>Miete</th><th>Kurtaxe</th><th>Summe</th><th>Vorauszahlung</th><th>Status</th>
-			</tr>
-		</thead>
-		<tbody>	
-	    {% for angebot in angebote %}
-            {% if angebot.status == 'angebot' %}
-                <tr id=" {{angebot.id}} " onclick=getBuchungDetails(`{{ angebot.id }}`)>
-                    <td>{{angebot.anreise | euro_date_short }}</td>
-                    <td>{{angebot.abreise | euro_date_short }}</td>
-                    <td>{{angebot.apartment.name}}</td>
-                    <td>{{angebot.miete | euro_currency }}</td>
-                    <td>{{angebot.kurtaxe | euro_currency }}</td>
-                    <td>{{angebot.summe | euro_currency }}</td>
-                    <td>{{angebot.vorauszahlung | euro_currency }}</td>
-                    <td>{{angebot.status}}</td>
-                </tr>
-            {% endif %}
-		 {% endfor %}
-		 </tbody>
-	</table>
-    {% else %}
-    <p>Keine Angebote gefunden</p>
-    {% endif %}
-</div>
+{% if buchungen | length > 0 %}
+<table class="table table-bordered table-condensed table-hover">
+    {% include 'includes/buchung-header.html' %}
+    <tbody>
+        {% for buchung in buchungen %}
+            {% include 'includes/buchung-tr.html' %}
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="text-center">Keine Buchungen gefunden</p>
+{% endif %}

@@ -1,45 +1,75 @@
 {% extends "layout.html" %}
 
-<!-- 
-	List all buchungen
--->
-
 {% block content %}
 
 <div class="row">
-	<div class="col-12">
+    <div class="col-12">
 
-		<ul class="flex-horizontal">
-			{% for y in years %}
-				{% if y == year %}
-					{% set highlight = 'highlight' %}
-				{% endif %}
-				<li class="nav-item {{highlight}}"><a class="nav-link" target="_self" href="{{url_for('buchung_bp.index', year=y, status=status)}}">{{y}}</a></li>
-			{% endfor %}
-		</ul>
-		<ul class="flex-horizontal">
-			{% for m in months %}
-				{% if m == month %}
-					{% set highlight = 'highlight' %}
-				{% endif %}
-				<li class="nav-item {{highlight}}"><a class="nav-link" target="_self" href="{{url_for('buchung_bp.index', year=year, month=m, status=status)}}">{{m}}</a></li>
-			{% endfor %}
-		</ul>
-		{% if buchungen | length > 0 %}
-			<table class="table table-bordered table-condensed table-hover">
-				{% include 'includes/buchung-header.html' %}
-				<tbody>	
-				{% for buchung in buchungen %}
-					{% if buchung.status in ['abgerechnet', 'gebucht', 'angebot'] %}
-						{% include 'includes/buchung-tr.html' %}
-					{% endif %}
-				{% endfor %}
-				</tbody>
-			</table>
-		{% else %}
-			<p class="text-center">Keine Buchungen gefunden</p>
-		{% endif %}
-	</div>
+        <form hx-get="{{ url_for('buchung_bp.search') }}"
+              hx-trigger="change"
+              hx-target="#buchung-list"
+              hx-swap="innerHTML">
+
+            <!-- Jahr -->
+            <div class="btn-group mb-2" role="group">
+                {% for y in years %}
+                <input type="radio" class="btn-check" name="year" id="year-{{y}}"
+                       value="{{y}}" autocomplete="off" {% if y == year %}checked{% endif %}>
+                <label class="btn btn-sm btn-outline-secondary" for="year-{{y}}">{{y}}</label>
+                {% endfor %}
+            </div>
+
+            <!-- Monat -->
+            <div class="btn-group mb-2 ms-2" role="group">
+                {% for m in months %}
+                <input type="radio" class="btn-check" name="month" id="month-{{m}}"
+                       value="{{m}}" autocomplete="off" {% if m == month %}checked{% endif %}>
+                <label class="btn btn-sm btn-outline-primary" for="month-{{m}}">{{m}}</label>
+                {% endfor %}
+            </div>
+
+            <!-- Namensfilter -->
+            <div class="mb-2 mt-1">
+                <input type="text"
+                       name="name_filter"
+                       value="{{ name_filter }}"
+                       class="form-control form-control-sm"
+                       style="max-width:260px"
+                       placeholder="Name, z.B. Müll* oder Müll* Ral*"
+                       hx-get="{{ url_for('buchung_bp.search') }}"
+                       hx-trigger="keyup changed delay:400ms"
+                       hx-target="#buchung-list"
+                       hx-swap="innerHTML"
+                       hx-include="closest form"
+                       autocomplete="off">
+            </div>
+
+            <!-- Status + Apartment -->
+            <div class="mb-2 mt-1 d-flex align-items-center gap-3 flex-wrap">
+                {% for val, label in [('gebucht','Gebucht'),('abgerechnet','Abgerechnet'),('angebot','Angebot')] %}
+                <div class="form-check form-check-inline mb-0">
+                    <input class="form-check-input" type="checkbox" name="status"
+                           value="{{val}}" id="st-{{val}}"
+                           {% if val in status_list %}checked{% endif %}>
+                    <label class="form-check-label" for="st-{{val}}">{{label}}</label>
+                </div>
+                {% endfor %}
+
+                <select name="apartment" class="form-select form-select-sm" style="width:auto">
+                    <option value="">Alle Wohnungen</option>
+                    {% for apt in apartments %}
+                    <option value="{{apt}}" {% if apt == apartment_filter %}selected{% endif %}>{{apt}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+        </form>
+
+        <div id="buchung-list">
+            {% include 'buchung/list_partial.html' %}
+        </div>
+
+    </div>
 </div>
 
 {% endblock %}

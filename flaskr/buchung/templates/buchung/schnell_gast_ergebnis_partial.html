@@ -1,0 +1,16 @@
+<table class="table table-sm table-hover mt-1">
+    <tbody>
+        {% for besucher in data %}
+        <tr style="cursor:pointer"
+            hx-get="{{ url_for('buchung_bp.schnell_buchen_formular') }}?anreise={{ anreise }}&abreise={{ abreise }}&apartment_id={{ apartment_id }}&besucher_id={{ besucher.id }}"
+            hx-target="#buchung-panel"
+            hx-swap="innerHTML"
+            hx-on:click="document.querySelectorAll('#gast-ergebnis tr.table-active').forEach(el=>el.classList.remove('table-active')); this.classList.add('table-active')">
+            <td>{{ besucher.name }}, {{ besucher.vorname }}</td>
+            <td class="text-muted">{{ besucher.stadt }}</td>
+        </tr>
+        {% else %}
+        <tr><td class="text-muted">Keine Treffer</td></tr>
+        {% endfor %}
+    </tbody>
+</table>

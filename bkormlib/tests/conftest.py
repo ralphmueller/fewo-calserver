@@ -10,13 +10,13 @@ from playhouse.db_url import connect
 from bkormlib.schema import (
     database_proxy,
     User, Besucher, Buchung, Apartment, Portal,
-    Preisliste, FlaskrSession, Email, UserLogging, Migration,
+    Preisliste, Email, UserLogging, Migration,
     Ware, Verkauf,
 )
 
 ALL_MODELS = [
     User, UserLogging, Portal, Apartment, Preisliste,
-    Besucher, Buchung, Email, FlaskrSession, Migration,
+    Besucher, Buchung, Email, Migration,
     Ware, Verkauf,
 ]
 

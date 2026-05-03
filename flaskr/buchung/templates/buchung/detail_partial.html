@@ -1,0 +1,92 @@
+<div id="buchung-detail-{{ buchung.id }}" class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>{{ buchung.besucher.vorname }} {{ buchung.besucher.name }}</strong>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge {% if buchung.status == 'gebucht' %}bg-primary{% elif buchung.status == 'abgerechnet' %}bg-success{% elif buchung.status == 'angebot' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                {{ buchung.status }}
+            </span>
+            {% if buchung.status in ['angebot', 'gebucht'] %}
+            <button class="btn btn-sm btn-outline-secondary"
+                    hx-get="{{ url_for('buchung_bp.edit_inline', buchung_id=buchung.id) }}"
+                    hx-target="#buchung-detail-{{ buchung.id }}"
+                    hx-swap="outerHTML">Bearbeiten</button>
+            {% endif %}
+            {% if buchung.status == 'angebot' %}
+            <button class="btn btn-sm btn-success"
+                    hx-get="{{ url_for('buchung_bp.convert_angebot', buchung_id=buchung.id) }}"
+                    hx-target="#convert-panel"
+                    hx-swap="innerHTML">Umwandeln in Buchung</button>
+            <a href="{{ url_for('buchung_bp.drop_angebot', buchung_id=buchung.id) }}"
+               class="btn btn-sm btn-outline-danger"
+               onclick="return confirm('Angebot wirklich verwerfen?')">Verwerfen</a>
+            {% endif %}
+            {% if buchung.status == 'gebucht' %}
+            <a href="{{ url_for('buchung_bp.abrechnen', buchung_id=buchung.id) }}"
+               class="btn btn-sm btn-success">Abrechnen</a>
+            <a href="{{ url_for('buchung_bp.storno', buchung_id=buchung.id) }}"
+               class="btn btn-sm btn-outline-danger"
+               onclick="return confirm('Buchung wirklich stornieren?')">Storno</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-danger mb-0 rounded-0">{{ error }}</div>
+    {% endif %}
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-5">
+                <dl class="row mb-0">
+                    <dt class="col-5">Anreise</dt>
+                    <dd class="col-7">{{ buchung.anreise | euro_date }}</dd>
+                    <dt class="col-5">Abreise</dt>
+                    <dd class="col-7">{{ buchung.abreise | euro_date }}</dd>
+                    <dt class="col-5">Nächte</dt>
+                    <dd class="col-7">{{ (buchung.abreise - buchung.anreise).days }}</dd>
+                    <dt class="col-5">Apartment</dt>
+                    <dd class="col-7">{{ buchung.apartment.name }}</dd>
+                    <dt class="col-5">Portal</dt>
+                    <dd class="col-7">{{ buchung.portal.name }}</dd>
+                    {% if buchung.notiz %}
+                    <dt class="col-5">Notiz</dt>
+                    <dd class="col-7 text-info">{{ buchung.notiz }}</dd>
+                    {% endif %}
+                    {% if buchung.meldeschein_nummer %}
+                    <dt class="col-5">Meldeschein</dt>
+                    <dd class="col-7 text-success">{{ buchung.meldeschein_nummer }}</dd>
+                    {% endif %}
+                    {% if buchung.rechnungs_nummer %}
+                    <dt class="col-5">Rechnung</dt>
+                    <dd class="col-7">{{ buchung.rechnungs_nummer }}</dd>
+                    {% endif %}
+                </dl>
+            </div>
+            <div class="col-md-4">
+                <dl class="row mb-0">
+                    <dt class="col-6">Miete</dt>
+                    <dd class="col-6 text-end">{{ buchung.miete | euro_currency }}</dd>
+                    <dt class="col-6">Kurtaxe</dt>
+                    <dd class="col-6 text-end">{{ buchung.kurtaxe | euro_currency }}</dd>
+                    <dt class="col-6">Summe</dt>
+                    <dd class="col-6 text-end"><strong>{{ buchung.summe | euro_currency }}</strong></dd>
+                    <dt class="col-6">Vorauszahlung</dt>
+                    <dd class="col-6 text-end">{{ buchung.vorauszahlung | euro_currency }}</dd>
+                    <dt class="col-6">Restbetrag</dt>
+                    <dd class="col-6 text-end {% if buchung.offener_betrag > 0 %}text-danger{% endif %}">
+                        {{ buchung.offener_betrag | euro_currency }}
+                    </dd>
+                </dl>
+            </div>
+            <div class="col-md-3">
+                <small class="text-muted">Kurtaxe-Belegung</small>
+                <dl class="row mb-0 small">
+                    <dt class="col-7">ab 14J</dt><dd class="col-5">{{ buchung.kurtaxe_vz }}</dd>
+                    <dt class="col-7">Beruflich</dt><dd class="col-5">{{ buchung.kurtaxe_hz }}</dd>
+                    <dt class="col-7">Kinder</dt><dd class="col-5">{{ buchung.kurtaxe_kinder }}</dd>
+                    <dt class="col-7">Befreit</dt><dd class="col-5">{{ buchung.kurtaxe_nz }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>

@@ -5,7 +5,7 @@
 {% include 'emails/fr/greeting.html' %}
 <p>
 	Nous avons le plaisir de vous confirmer la réception de votre prépaiement d'un montant de 
-     {{buchung.get_vorauszahlung() | euro_currency}} pour votre réservation auprès de Ferien-in-Gersfeld.
+     {{buchung.get_vorauszahlung() | euro_currency}} pour votre réservation auprès de {{ operator.name }}.
 
      Voici les détails de votre réservation :
 </p>

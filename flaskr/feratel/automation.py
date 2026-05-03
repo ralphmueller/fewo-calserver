@@ -44,20 +44,17 @@ def _submit_meldeschein_mock(buchung_id: int) -> dict:
     except Exception as e:
         return {'success': False, 'error': str(e)}
 
+import json
+
 BASE_URL = 'https://webclient4.deskline.net/RHO/de'
 LOGIN_URL = f'{BASE_URL}/login'
-ACCOMMODATION_ID = '016e207a-14b4-4e91-a82b-a021713c1e9d'
+ACCOMMODATION_ID = os.environ.get('FERATEL_ACCOMMODATION_ID', '')
 
-APARTMENT_MAP = {
-    'F1': 'Ferien-in-Gersfeld Fliegerstraße',
-    'F2': 'Ferien-in-Gersfeld Fliegerstraße',
-    'F4': 'Ferien-in-Gersfeld Fliegerstraße',
-    'F5': 'Ferien-in-Gersfeld Fliegerstraße',
-    'G1': 'Ferien-in-Gersfeld Gartenstraße',
-    'G2': 'Ferien-in-Gersfeld Gartenstraße',
-    'M1': 'Ferien-in-Gersfeld Martensstraße',
-    'M2': 'Ferien-in-Gersfeld Martensstraße',
-}
+_apartment_map_raw = os.environ.get('FERATEL_APARTMENT_MAP', '{}')
+try:
+    APARTMENT_MAP = json.loads(_apartment_map_raw)
+except json.JSONDecodeError:
+    APARTMENT_MAP = {}
 
 
 def _fmt_date(d) -> str:
@@ -84,10 +81,14 @@ class FeratelSession:
         page = self._page
         page.goto(LOGIN_URL, wait_until='domcontentloaded', timeout=60_000)
         page.wait_for_timeout(3_000)
+        feratel_id = os.environ.get('FERATEL_ID', '')
+        feratel_pw = os.environ.get('FERATEL_PW', '')
+        if not feratel_id or not feratel_pw:
+            raise RuntimeError('FERATEL_ID und FERATEL_PW müssen in .env gesetzt sein')
         page.locator('#Username').click()
-        page.keyboard.type(os.environ['FERATEL_ID'], delay=80)
+        page.keyboard.type(feratel_id, delay=80)
         page.locator('#Password').click()
-        page.keyboard.type(os.environ['FERATEL_PW'], delay=80)
+        page.keyboard.type(feratel_pw, delay=80)
         page.keyboard.press('Enter')
         page.wait_for_timeout(7_000)
         if 'identity.deskline.net' in page.url:

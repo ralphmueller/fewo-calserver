@@ -19,9 +19,12 @@ function th_label(label) {
 	return ('<th class="text-center">' + label + '</th>' );
 }
 
-// return a TD label (starting label for a row)
+// return a TD label (starting label for a row), linked only if url is provided
 function td_label(label, url) {
-	return ('<td><a href="' + url + label + '">' + label + '</a></td>' );
+	if (url) {
+		return ('<td><a href="' + url + label + '">' + label + '</a></td>' );
+	}
+	return ('<td>' + label + '</td>');
 }
 
 // build the entire table and return it

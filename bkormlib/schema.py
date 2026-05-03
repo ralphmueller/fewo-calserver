@@ -7,7 +7,7 @@ Minor updates all along the way
 '''
 
 import calendar
-import pickle
+import os
 from datetime import datetime, date, time
 from playhouse.db_url import connect
 from peewee import (
@@ -629,56 +629,19 @@ class Email(BaseModel):
         db_table = 'email'
 
 
-class FlaskrSession(BaseModel):
-    """
-        store session data for flaskr app
-
-    """
-    user = ForeignKeyField(User, backref='user')
-    pickle_data = BlobField()
-    tscreated = DateTimeField(null=True)
-
-    class Meta:
-        ''' table name '''
-        db_table = 'flaskrsession'
-
-    @classmethod
-    def from_object(cls, user, data_dict):
-        ''' create session object and store in DB'''
-        session_object = cls()
-        session_object.user = user
-        session_object.pickle_data = pickle.dumps(data_dict)
-        session_object.obj_type = type(data_dict)
-        session_object.save()
-        return session_object
-
-    def as_object(self):
-        ''' return pickle to object '''
-        return pickle.loads(self.pickle_data)
-
 
 class StaticValuesBuchung():
-    """
-        give me some interesting data
-
-        12/2022 Changes KT 2023:
-        - 2,10€ older 14y -> ktsatz_vz
-        - 0,50€ professionals -> ktsatz_hx
-
-        01/2022 Changes - withdraw from collecting worker tax (ktsatz_wz)
-    """
     @classmethod
     def ktsatz_vz(cls):
-        return 2.1
+        return float(os.environ.get('KURTAXE_SATZ_VZ', '2.1'))
 
-    # changed to 50c Jan 15, 2024 to reflect chages rules of Stadt
     @classmethod
     def ktsatz_hz(cls):
-        return 0.5
+        return float(os.environ.get('KURTAXE_SATZ_HZ', '0.5'))
 
     @classmethod
     def mwstsatz(cls):
-        return 7
+        return int(os.environ.get('MWST_SATZ', '7'))
 
     @classmethod
     def today(cls):
@@ -694,22 +657,3 @@ class Migration(BaseModel):
         db_table = 'migration'
 
 
-'''
-
-TODO - rewrite or move
-
-def create_tables():
-    # Drop existing test database and create all tables
-    database = setDatabase()
-    MODELS = [User, Apartment, Besucher, Portal, Buchung, Email, FlaskSession]
-    if envir == 'unit_test':
-        with database:
-            database.drop_tables(MODELS)
-            database.create_tables(MODELS)
-    else:
-        print('Cannot delete / change production or test DB')
-
-
-if __name__ == '__main__':
-    sys.exit(create_tables())
-'''

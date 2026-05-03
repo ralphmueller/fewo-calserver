@@ -14,6 +14,7 @@ import datetime
 from calendar import monthrange
 from flask import (
     Blueprint,
+    make_response,
     render_template,
     flash,
     redirect,
@@ -27,13 +28,14 @@ from bkormlib import (
     Buchung,
     Besucher,
     Apartment,
-    User,
-    FlaskrSession,
     StaticValuesBuchung,
-    Ware)
+    Ware,
+    Verkauf,
+    Portal)
 
 from .buchung_forms import (
     BuchungForm, Buchung2Form, MeldescheinForm, VorauszahlungForm)
+# Buchung2Form still used by convert_angebot
 
 from flaskr.auth.auth import login_required
 
@@ -71,36 +73,44 @@ buchung_bp = Blueprint(
 )
 
 
-@buchung_bp.route('/')
-@login_required
-def index():
-    # list all bookings that have status field as described in request args
-    # get only 'limit' bookings if set
-    request_params_status = request.args.get('status')
-    if request_params_status is not None:
-        where_list = request_params_status.split(',')
-    else:
-        where_list = [
-            'gebucht',
-            'abgerechnet'
-        ]
-    if request.args.get('year') is None:
-        year = datetime.date.today().year
-    else:
-        year = int(request.args.get('year'))
+class _EmailDummy:
+    """Platzhalter-Buchung für Email-Vorschau, bevor Buchungsdaten eingetragen sind."""
+    def __init__(self, besucher):
+        from types import SimpleNamespace
+        self.besucher = besucher
+        self.apartment = SimpleNamespace(name='[Wohnung]', beschreibung='')
+        self.anreise = datetime.date.today()
+        self.abreise = datetime.date.today() + datetime.timedelta(days=7)
+        self.preis_nacht = 0.0
+        self.miete = 0.0
+        self.kurtaxe = 0.0
+        self.summe = 0.0
+        self.vorauszahlung = 0.0
+        self.kurtaxe_vz = 2
+        self.kurtaxe_kinder = 0
+        self.kurtaxe_nz = 0
+        self.rabatt = 0.0
 
-    if request.args.get('month') is None:
-        month = months[datetime.date.today().month - 1]
-    else:
-        month = request.args.get('month')
+    def get_anreise(self): return self.anreise
+    def get_abreise(self): return self.abreise
+    def get_preis_nacht(self): return self.preis_nacht
+    def get_zusatzkosten(self): return 0.0
+    def get_rabatt(self): return self.rabatt
+    def get_miete(self): return self.miete
+    def get_kurtaxe_vz(self): return self.kurtaxe_vz
+    def get_kurtaxe_kinder(self): return self.kurtaxe_kinder
+    def get_kurtaxe_nz(self): return self.kurtaxe_nz
+    def get_kurtaxe(self): return self.kurtaxe
+    def get_summe(self): return self.summe
 
-    start_month = months.index(month) + 1
 
+def _build_buchung_query(status_list, year, month_str, apartment_filter='', name_filter=''):
+    start_month = months.index(month_str) + 1
     last_day = monthrange(year, start_month)[1]
 
-    if 'abgerechnet' in where_list:
+    if 'abgerechnet' in status_list:
         where_clause = (
-            (Buchung.status.in_(where_list)) &
+            (Buchung.status.in_(status_list)) &
             (Buchung.abreise.between(
                 datetime.date(year, start_month, 1),
                 datetime.date(year, start_month, last_day)
@@ -108,15 +118,30 @@ def index():
         orderby_clause = Buchung.abreise.desc()
     else:
         where_clause = (
-                (Buchung.status.in_(where_list)) &
-                (Buchung.anreise.between(
-                    datetime.date(year, start_month, 1),
-                    datetime.date(year, start_month, last_day)
-                ))
-            )
+            (Buchung.status.in_(status_list)) &
+            (Buchung.anreise.between(
+                datetime.date(year, start_month, 1),
+                datetime.date(year, start_month, last_day)
+            )))
         orderby_clause = Buchung.anreise.asc()
 
-    query = (
+    if apartment_filter:
+        where_clause = where_clause & (Apartment.name == apartment_filter)
+
+    q = name_filter.strip() if name_filter else ''
+    if len(q) >= 2:
+        parts = q.lower().split()
+        def pat(s):
+            return s.replace('*', '%') if '*' in s else s + '%'
+        if len(parts) >= 2:
+            where_clause = where_clause & (
+                (Besucher.name ** pat(parts[0])) & (Besucher.vorname ** pat(parts[1])))
+        else:
+            p = pat(parts[0])
+            where_clause = where_clause & (
+                (Besucher.name ** p) | (Besucher.vorname ** p))
+
+    return (
         Buchung
         .select()
         .join(Apartment)
@@ -126,187 +151,478 @@ def index():
         .order_by(orderby_clause)
     )
 
+
+@buchung_bp.route('/')
+@login_required
+def index():
+    today = datetime.date.today()
+    status_list = request.args.getlist('status') or \
+        (request.args.get('status', '').split(',') if request.args.get('status') else ['gebucht', 'abgerechnet'])
+    year = int(request.args.get('year', today.year))
+    month = request.args.get('month', months[today.month - 1])
+    apartment_filter = request.args.get('apartment', '')
+    name_filter = request.args.get('name_filter', '')
+    apartments = [a.name for a in Apartment.select().order_by(Apartment.name)]
+
+    buchungen = _build_buchung_query(status_list, year, month, apartment_filter, name_filter)
+
     return render_template(
         'buchung/index.html',
-        number_buchung=len(list(query)),
-        title='Buchungen (Status = {}, Anzahl = {})'.format(
-            request_params_status,
-            len(list(query))),
-        buchungen=query,
+        buchungen=buchungen,
         year=year,
         month=month,
-        status=request_params_status,
+        status_list=status_list,
+        apartment_filter=apartment_filter,
+        name_filter=name_filter,
+        apartments=apartments,
         years=SystemInfo.get_years(),
         months=months,
         run_mode=current_app.config['ENV'])
 
 
-@buchung_bp.route('/create/<int:besucher_id>', methods=('GET', 'POST'))
+@buchung_bp.route('/search')
 @login_required
-def create_buchung(besucher_id):
-    '''
-        Create new booking, step 1
-        - gather booking data
-        at the end of this step:
-        - validate the information
-        - check availability of apartment via 'prüfen' button
-        - contiue to second step (create_buchung_finish)
-    '''
+def search():
+    today = datetime.date.today()
+    status_list = request.args.getlist('status') or ['gebucht', 'abgerechnet']
+    year = int(request.args.get('year', today.year))
+    month = request.args.get('month', months[today.month - 1])
+    apartment_filter = request.args.get('apartment', '')
+    name_filter = request.args.get('name_filter', '')
+
+    buchungen = _build_buchung_query(status_list, year, month, apartment_filter, name_filter)
+
+    return render_template('buchung/list_partial.html', buchungen=buchungen)
+
+
+@buchung_bp.route('/<int:buchung_id>/detail')
+@login_required
+def detail(buchung_id):
+    buchung = Buchung.get_by_id(buchung_id)
+    return render_template('buchung/detail_partial.html', buchung=buchung)
+
+
+@buchung_bp.route('/<int:buchung_id>/detail_row')
+@login_required
+def detail_row(buchung_id):
+    buchung = Buchung.get_by_id(buchung_id)
+    return render_template('buchung/detail_row_partial.html', buchung=buchung)
+
+
+@buchung_bp.route('/<int:buchung_id>/edit_inline', methods=['GET', 'POST'])
+@login_required
+def edit_inline(buchung_id):
+    buchung = Buchung.get_by_id(buchung_id)
+    if buchung.status in ['abgerechnet', 'storno', 'verworfen']:
+        return render_template('buchung/detail_partial.html', buchung=buchung,
+                               error='Buchung mit Status "{}" kann nicht geändert werden.'.format(buchung.status))
+
+    form = BuchungForm(obj=buchung)
+    if form.validate_on_submit():
+        buchung_alt = Buchung.get_by_id(buchung_id)
+        dirty_fields = update_buchung(form, buchung)
+        if dirty_fields:
+            send_update_emails(buchung, buchung_alt, dirty_fields)
+        buchung = Buchung.get_by_id(buchung_id)
+        return render_template('buchung/detail_partial.html', buchung=buchung)
+
+    return render_template('buchung/edit_partial.html', form=form, buchung=buchung)
+
+
+@buchung_bp.route('/schnell')
+@login_required
+def schnell():
+    return render_template('buchung/schnell.html', title='Schnellbuchung',
+                           run_mode=current_app.config['ENV'])
+
+
+@buchung_bp.route('/schnell/verfuegbar')
+@login_required
+def schnell_verfuegbar():
+    anreise_str = request.args.get('anreise', '')
+    abreise_str = request.args.get('abreise', '')
+    try:
+        anreise = datetime.date.fromisoformat(anreise_str)
+        abreise = datetime.date.fromisoformat(abreise_str)
+    except ValueError:
+        return '<div class="alert alert-danger">Bitte gültige Daten eingeben.</div>'
+    if abreise <= anreise:
+        return '<div class="alert alert-warning">Abreise muss nach Anreise liegen.</div>'
+    nights = (abreise - anreise).days
+    apartments = [a for a in Apartment.select().where(Apartment.active)
+                  if a.check_availability(anreise, abreise)]
+    return render_template('buchung/schnell_verfuegbar_partial.html',
+                           apartments=apartments, anreise=anreise,
+                           abreise=abreise, nights=nights)
+
+
+@buchung_bp.route('/schnell/gast')
+@login_required
+def schnell_gast():
+    anreise = request.args.get('anreise', '')
+    abreise = request.args.get('abreise', '')
+    apartment_id = request.args.get('apartment_id', '')
+    apartment = Apartment.get_by_id(int(apartment_id))
+    return render_template('buchung/schnell_gast_partial.html',
+                           apartment=apartment, anreise=anreise, abreise=abreise)
+
+
+@buchung_bp.route('/schnell/gast_suche')
+@login_required
+def schnell_gast_suche():
+    q = request.args.get('q', '').strip()
+    anreise = request.args.get('anreise', '')
+    abreise = request.args.get('abreise', '')
+    apartment_id = request.args.get('apartment_id', '')
+    if len(q) < 2:
+        return ''
+    parts = q.lower().split()
+    def pat(s):
+        return s.replace('*', '%') if '*' in s else s + '%'
+    if len(parts) >= 2:
+        where = (Besucher.name ** pat(parts[0])) & (Besucher.vorname ** pat(parts[1]))
+    else:
+        p = pat(parts[0])
+        where = (Besucher.name ** p) | (Besucher.vorname ** p)
+    data = Besucher.select().where(where).order_by(Besucher.name)
+    return render_template('buchung/schnell_gast_ergebnis_partial.html',
+                           data=data, anreise=anreise, abreise=abreise,
+                           apartment_id=apartment_id)
+
+
+@buchung_bp.route('/schnell/buchen_formular')
+@login_required
+def schnell_buchen_formular():
+    anreise = datetime.date.fromisoformat(request.args.get('anreise'))
+    abreise = datetime.date.fromisoformat(request.args.get('abreise'))
+    apartment = Apartment.get_by_id(int(request.args.get('apartment_id')))
+    besucher = Besucher.get_by_id(int(request.args.get('besucher_id')))
+    nights = (abreise - anreise).days
+    try:
+        preisliste = apartment.get_preisliste_year(anreise.year)
+        preis_nacht = preisliste.preis_2p
+    except Exception:
+        preis_nacht = 0.0
+    portale = Portal.choices()
+    return render_template('buchung/schnell_buchen_formular_partial.html',
+                           apartment=apartment, besucher=besucher,
+                           anreise=anreise, abreise=abreise,
+                           nights=nights, preis_nacht=preis_nacht,
+                           portale=portale,
+                           user_id=session.get('user_id'))
+
+
+@buchung_bp.route('/schnell/neuer_gast', methods=['GET', 'POST'])
+@login_required
+def schnell_neuer_gast():
+    anreise = request.args.get('anreise') or request.form.get('anreise', '')
+    abreise = request.args.get('abreise') or request.form.get('abreise', '')
+    apartment_id = request.args.get('apartment_id') or request.form.get('apartment_id', '')
+    if request.method == 'POST':
+        besucher = Besucher()
+        besucher.user_id = session.get('user_id')
+        besucher.anrede = request.form.get('anrede', 'Fam')
+        besucher.name = request.form.get('name', '').strip()
+        besucher.vorname = request.form.get('vorname', '').strip()
+        besucher.email = request.form.get('email', '').strip()
+        besucher.land = request.form.get('land', 'DE').strip()
+        besucher.language = 'DE'
+        besucher.save()
+        apartment = Apartment.get_by_id(int(apartment_id))
+        anreise_d = datetime.date.fromisoformat(anreise)
+        abreise_d = datetime.date.fromisoformat(abreise)
+        nights = (abreise_d - anreise_d).days
+        try:
+            preisliste = apartment.get_preisliste_year(anreise_d.year)
+            preis_nacht = preisliste.preis_2p
+        except Exception:
+            preis_nacht = 0.0
+        portale = Portal.choices()
+        return render_template('buchung/schnell_buchen_formular_partial.html',
+                               apartment=apartment, besucher=besucher,
+                               anreise=anreise_d, abreise=abreise_d,
+                               nights=nights, preis_nacht=preis_nacht,
+                               portale=portale,
+                               user_id=session.get('user_id'))
+    return render_template('buchung/schnell_neuer_gast_partial.html',
+                           anreise=anreise, abreise=abreise, apartment_id=apartment_id)
+
+
+@buchung_bp.route('/schnell/vorschau', methods=['POST'])
+@login_required
+def schnell_vorschau():
+    typ = request.form.get('typ', 'gebucht')
+    buchung = Buchung()
+    buchung.user_id = int(request.form.get('user_id', 0))
+    buchung.besucher_id = int(request.form.get('besucher_id'))
+    buchung.apartment_id = int(request.form.get('apartment_id'))
+    buchung.portal_id = int(request.form.get('portal_id'))
+    buchung.anreise = datetime.date.fromisoformat(request.form.get('anreise'))
+    buchung.abreise = datetime.date.fromisoformat(request.form.get('abreise'))
+    buchung.preis_nacht = float(request.form.get('preis_nacht', 0))
+    buchung.zusatzkosten = float(request.form.get('zusatzkosten', 0))
+    buchung.rabatt = float(request.form.get('rabatt', 0))
+    buchung.vorauszahlung = float(request.form.get('vorauszahlung', 0))
+    buchung.kurtaxe_vz = int(request.form.get('kurtaxe_vz', 2))
+    buchung.kurtaxe_hz = int(request.form.get('kurtaxe_hz', 0))
+    buchung.kurtaxe_kinder = int(request.form.get('kurtaxe_kinder', 0))
+    buchung.kurtaxe_nz = int(request.form.get('kurtaxe_nz', 0))
+    buchung.kurtaxe_korrekturwert = float(request.form.get('kurtaxe_korrekturwert', 0))
+    buchung.notiz = request.form.get('notiz', '')
+    buchung.besucher = Besucher.get_by_id(buchung.besucher_id)
+    buchung.apartment = Apartment.get_by_id(buchung.apartment_id)
+
+    if not buchung.apartment.check_availability(buchung.anreise, buchung.abreise):
+        alternatives = [a for a in Apartment.select().where(Apartment.active)
+                        if a.check_availability(buchung.anreise, buchung.abreise)]
+        return render_template('buchung/conflict_partial.html',
+                               apartment=buchung.apartment,
+                               anreise=buchung.anreise, abreise=buchung.abreise,
+                               alternatives=alternatives,
+                               zurueck_url=url_for('buchung_bp.schnell_buchen_formular',
+                                                   anreise=buchung.anreise,
+                                                   abreise=buchung.abreise,
+                                                   apartment_id=buchung.apartment_id,
+                                                   besucher_id=buchung.besucher_id),
+                               hx_target='#buchung-panel')
+
+    buchung.recalc(typ)
+
+    if typ == 'angebot':
+        days = (buchung.abreise - buchung.anreise).days
+        email_text = render_template(
+            'emails/{}/angebot.html'.format(buchung.besucher.language.lower()),
+            buchung=buchung, days=days)
+    else:
+        email_text = render_template(
+            'emails/{}/buchung_confirmation.html'.format(buchung.besucher.language.lower()),
+            buchung=buchung)
+
+    zurueck_url = url_for('buchung_bp.schnell_buchen_formular',
+                          anreise=buchung.anreise, abreise=buchung.abreise,
+                          apartment_id=buchung.apartment_id,
+                          besucher_id=buchung.besucher_id)
+    return render_template('buchung/neu_email_partial.html',
+                           buchung=buchung, besucher=buchung.besucher,
+                           email_text=email_text, typ=typ,
+                           hx_target='#buchung-panel', zurueck_url=zurueck_url)
+
+
+_STATUS_TRANSITIONS = {
+    'angebot': ['gebucht', 'verworfen'],
+    'gebucht': ['storno'],
+}
+
+
+@buchung_bp.route('/<int:buchung_id>/status', methods=['POST'])
+@login_required
+def update_status(buchung_id):
+    buchung = Buchung.get_by_id(buchung_id)
+    new_status = request.form.get('status')
+    if new_status in _STATUS_TRANSITIONS.get(buchung.status, []):
+        buchung.recalc(new_status)
+        buchung.save()
+    return render_template('buchung/tr_partial.html', buchung=buchung)
+
+
+@buchung_bp.route('/neu')
+@login_required
+def neu():
+    besucher_id = request.args.get('besucher_id', type=int)
+    form = None
+    besucher = None
+    if besucher_id:
+        besucher = Besucher.get_by_id(besucher_id)
+        form = BuchungForm()
+        form.user_id.data = session.get('user_id')
+        form.besucher_id.data = besucher_id
+    return render_template('buchung/neu.html', title='Neue Buchung',
+                           form=form, besucher=besucher,
+                           run_mode=current_app.config['ENV'])
+
+
+@buchung_bp.route('/neu/suche')
+@login_required
+def neu_suche():
+    q = request.args.get('q', '').strip()
+    if len(q) < 3:
+        return ''
+    parts = q.lower().split()
+    def pat(s):
+        return s.replace('*', '%')
+    if len(parts) >= 2:
+        where = (Besucher.name ** pat(parts[0])) & (Besucher.vorname ** pat(parts[1]))
+    else:
+        p = pat(parts[0])
+        where = (Besucher.name ** p) | (Besucher.vorname ** p)
+    data = Besucher.select().where(where).order_by(Besucher.name)
+    return render_template('buchung/gast_auswahl_partial.html', data=data)
+
+
+@buchung_bp.route('/neu/email_vorschau/<int:besucher_id>')
+@login_required
+def neu_email_vorschau(besucher_id):
+    from types import SimpleNamespace
+    besucher = Besucher.get_by_id(besucher_id)
+    typ = request.args.get('typ', 'gebucht')
+    try:
+        buchung = Buchung()
+        buchung.besucher_id = besucher_id
+        buchung.besucher = besucher
+        buchung.apartment_id = int(request.args.get('apartment_id') or 0)
+        buchung.apartment = Apartment.get_by_id(buchung.apartment_id)
+        buchung.anreise = datetime.date.fromisoformat(request.args.get('anreise', ''))
+        buchung.abreise = datetime.date.fromisoformat(request.args.get('abreise', ''))
+        buchung.preis_nacht = float(request.args.get('preis_nacht') or 0)
+        buchung.zusatzkosten = float(request.args.get('zusatzkosten') or 0)
+        buchung.rabatt = float(request.args.get('rabatt') or 0)
+        buchung.kurtaxe_vz = int(request.args.get('kurtaxe_vz') or 2)
+        buchung.kurtaxe_hz = int(request.args.get('kurtaxe_hz') or 0)
+        buchung.kurtaxe_kinder = int(request.args.get('kurtaxe_kinder') or 0)
+        buchung.kurtaxe_nz = int(request.args.get('kurtaxe_nz') or 0)
+        buchung.kurtaxe_korrekturwert = float(request.args.get('kurtaxe_korrekturwert') or 0)
+        buchung.vorauszahlung = 0.0
+        buchung.portal = SimpleNamespace(kommission_prozent=0)
+        buchung.recalc(typ)
+        if typ == 'angebot':
+            days = (buchung.abreise - buchung.anreise).days
+            return render_template(
+                'emails/{}/angebot.html'.format(besucher.language.lower()),
+                buchung=buchung, days=days)
+        else:
+            return render_template(
+                'emails/{}/buchung_confirmation.html'.format(besucher.language.lower()),
+                buchung=buchung)
+    except Exception:
+        return ''
+
+
+@buchung_bp.route('/neu/formular/<int:besucher_id>')
+@login_required
+def neu_formular(besucher_id):
+    besucher = Besucher.get_by_id(besucher_id)
+    typ = request.args.get('typ', 'gebucht')
+    hx_target = request.args.get('hx_target', '#buchung-panel')
     form = BuchungForm()
     form.user_id.data = session.get('user_id')
     form.besucher_id.data = besucher_id
-    besucher = Besucher.get(besucher_id)
-    if form.validate_on_submit():
-        form.besucher_id = besucher_id
-        session_data = form.data
-        session_object = FlaskrSession.from_object(
-            User.get(id=session['user_id']),
-            session_data
-        )
-        session['create_buchung'] = session_object.id
-        if besucher.email == "":
-            flash('Besucher hat keine Email Adresse', 'error')
-
-        return redirect(url_for('buchung_bp.create_buchung_finish'))
-
-    return render_template(
-        'buchung/create.html',
-        besucher=besucher,
-        form=form,
-        title='Buchung anlegen',
-        run_mode=current_app.config['ENV'],
-        template='form-template'
-    )
+    return render_template('buchung/neu_formular_partial.html',
+                           form=form, besucher=besucher,
+                           typ=typ, hx_target=hx_target)
 
 
-@buchung_bp.route('/create_finish', methods=('GET', 'POST'))
+@buchung_bp.route('/neu/vorschau/<int:besucher_id>', methods=['POST'])
 @login_required
-def create_buchung_finish():
-    '''
-        Finalize new booking
-        - check availability of apartment
-        - prepare confirmation text
-        - send emails and finish booking
-    '''
+def neu_vorschau(besucher_id):
+    besucher = Besucher.get_by_id(besucher_id)
+    typ = request.form.get('typ', 'gebucht')
+    hx_target = request.form.get('hx_target', '#buchung-panel')
+    form = BuchungForm()
 
-    session_id = session['create_buchung']
-    buchung = Buchung(**FlaskrSession.get(id=session_id).as_object())
-    buchung.recalc(status='gebucht')
-    besucher = Besucher.get(buchung.besucher_id)
-    # prepare email_confirmation_email
-    form = Buchung2Form()
-    if request.method == 'GET':
-        form.email_text.data = render_template(
-            'emails/{}/buchung_confirmation.html'
-            .format(besucher.language.lower()),
-            buchung=buchung
-        )
+    if not form.validate_on_submit():
+        return render_template('buchung/neu_formular_partial.html',
+                               form=form, besucher=besucher,
+                               typ=typ, hx_target=hx_target)
 
-    if form.validate_on_submit():
-        # save booking
-        buchung.id = None
-        buchung.save()
-        # create email record
-        send_confirmation_emails(buchung, form.email_text.data)
-        # flash message
-        flash(
-            'Buchung {} Apt {} vom {} - {} für {}, {} gespeichert'.format(
-                buchung.id,
-                buchung.apartment.name,
-                format_date(buchung.anreise, format='short', locale='de_DE'),
-                format_date(buchung.abreise, format='short', locale='de_DE'),
-                buchung.besucher.name,
-                buchung.besucher.vorname
-            ))
-        return (
-            redirect(
-                url_for(
-                    'besucher_bp.update',
-                    besucher_id=besucher.id)))
+    buchung = Buchung()
+    buchung.user_id = int(form.user_id.data or 0)
+    buchung.besucher = besucher
+    buchung.besucher_id = besucher_id
+    buchung.apartment_id = int(form.apartment_id.data)
+    buchung.apartment = Apartment.get_by_id(buchung.apartment_id)
+    buchung.portal_id = int(form.portal_id.data)
+    buchung.anreise = form.anreise.data
+    buchung.abreise = form.abreise.data
+    buchung.preis_nacht = float(form.preis_nacht.data or 0)
+    buchung.zusatzkosten = float(form.zusatzkosten.data or 0)
+    buchung.rabatt = float(form.rabatt.data or 0)
+    buchung.vorauszahlung = float(form.vorauszahlung.data or 0)
+    buchung.kurtaxe_vz = int(form.kurtaxe_vz.data or 0)
+    buchung.kurtaxe_hz = int(form.kurtaxe_hz.data or 0)
+    buchung.kurtaxe_kinder = int(form.kurtaxe_kinder.data or 0)
+    buchung.kurtaxe_nz = int(form.kurtaxe_nz.data or 0)
+    buchung.kurtaxe_korrekturwert = float(form.kurtaxe_korrekturwert.data or 0)
+    buchung.notiz = form.notiz.data or ''
 
-    return render_template(
-        'buchung/create_part2.html',
-        besucher=besucher,
-        buchung=buchung,
-        form=form,
-        title='Neue Buchung fertigstellen',
-        run_mode=current_app.config['ENV'],
-        template='form-template')
+    if not buchung.apartment.check_availability(buchung.anreise, buchung.abreise):
+        alternatives = [a for a in Apartment.select().where(Apartment.active)
+                        if a.check_availability(buchung.anreise, buchung.abreise)]
+        return render_template('buchung/conflict_partial.html',
+                               apartment=buchung.apartment,
+                               anreise=buchung.anreise, abreise=buchung.abreise,
+                               alternatives=alternatives,
+                               zurueck_url=url_for('buchung_bp.neu_formular',
+                                                   besucher_id=besucher_id,
+                                                   typ=typ, hx_target=hx_target),
+                               hx_target=hx_target)
+
+    buchung.recalc(typ)
+
+    if typ == 'angebot':
+        days = (buchung.abreise - buchung.anreise).days
+        email_text = render_template(
+            'emails/{}/angebot.html'.format(besucher.language.lower()),
+            buchung=buchung, days=days)
+    else:
+        email_text = render_template(
+            'emails/{}/buchung_confirmation.html'.format(besucher.language.lower()),
+            buchung=buchung)
+
+    zurueck_url = url_for('buchung_bp.neu_formular', besucher_id=besucher_id,
+                          typ=typ, hx_target=hx_target)
+    return render_template('buchung/neu_email_partial.html',
+                           buchung=buchung, besucher=besucher,
+                           email_text=email_text, typ=typ,
+                           hx_target=hx_target, zurueck_url=zurueck_url)
 
 
-@buchung_bp.route('/update_check/<int:buchung_id>')
+@buchung_bp.route('/neu/speichern/<int:besucher_id>', methods=['POST'])
 @login_required
-def update_check(buchung_id):
-    """
-        make decisions what to do:
-            - if the booking status is abgerechnet, re-route to
-              anzeigen
-            - if the booking status is gebucht, re-route to update
-    """
-    buchung = Buchung.get_by_id(buchung_id)
-    if buchung.status == 'gebucht':
-        return redirect(url_for('buchung_bp.update', buchung_id=buchung_id))
-    else:       # abgerechnet
-        return redirect(
-            url_for('buchung_bp.anzeigen', buchung_id=buchung_id))
+def neu_speichern(besucher_id):
+    typ = request.form.get('typ', 'gebucht')
+    buchung = Buchung()
+    buchung.user_id = int(request.form.get('user_id'))
+    buchung.besucher_id = besucher_id
+    buchung.apartment_id = int(request.form.get('apartment_id'))
+    buchung.portal_id = int(request.form.get('portal_id'))
+    buchung.anreise = datetime.date.fromisoformat(request.form.get('anreise'))
+    buchung.abreise = datetime.date.fromisoformat(request.form.get('abreise'))
+    buchung.preis_nacht = float(request.form.get('preis_nacht', 0))
+    buchung.zusatzkosten = float(request.form.get('zusatzkosten', 0))
+    buchung.rabatt = float(request.form.get('rabatt', 0))
+    buchung.vorauszahlung = float(request.form.get('vorauszahlung', 0))
+    buchung.kurtaxe_vz = int(request.form.get('kurtaxe_vz', 2))
+    buchung.kurtaxe_hz = int(request.form.get('kurtaxe_hz', 0))
+    buchung.kurtaxe_kinder = int(request.form.get('kurtaxe_kinder', 0))
+    buchung.kurtaxe_nz = int(request.form.get('kurtaxe_nz', 0))
+    buchung.kurtaxe_korrekturwert = float(request.form.get('kurtaxe_korrekturwert', 0))
+    buchung.notiz = request.form.get('notiz', '')
+    apartment = Apartment.get_by_id(buchung.apartment_id)
+    if not apartment.check_availability(buchung.anreise, buchung.abreise):
+        alternatives = [a for a in Apartment.select().where(Apartment.active)
+                        if a.check_availability(buchung.anreise, buchung.abreise)]
+        hx_target = request.form.get('hx_target', '#buchung-panel')
+        return render_template('buchung/conflict_partial.html',
+                               apartment=apartment,
+                               anreise=buchung.anreise, abreise=buchung.abreise,
+                               alternatives=alternatives,
+                               zurueck_url=url_for('buchung_bp.neu_formular',
+                                                   besucher_id=besucher_id,
+                                                   typ=typ,
+                                                   hx_target=hx_target),
+                               hx_target=hx_target)
+    buchung.recalc(typ)
+    buchung.save()
+    email_text = request.form.get('email_text', '')
+    if typ == 'angebot':
+        send_angebot_emails(buchung, email_text)
+    else:
+        send_confirmation_emails(buchung, email_text)
+    resp = make_response('', 204)
+    resp.headers['HX-Redirect'] = url_for('buchung_bp.anzeigen', buchung_id=buchung.id)
+    return resp
 
 
-@buchung_bp.route('/update/<int:buchung_id>', methods=('GET', 'POST'))
-@login_required
-def update(buchung_id):
-
-    buchung = Buchung.get_by_id(buchung_id)
-    if buchung.status in ['abgerechnet', 'storno', 'verworfen']:
-        flash(
-            'Buchung {} mit Status {} kann nicht geändert werden!</br> \
-            Vorauszahlung siehe linke Seite!'
-            .format(buchung.id, buchung.status), 'error')
-        return redirect(url_for('home_bp.index'))
-
-    form = BuchungForm(obj=buchung)
-
-    if form.validate_on_submit():
-        buchung_alt = Buchung.get_by_id(buchung_id)     # save copy
-        dirty_fields = update_buchung(form, buchung)
-        if len(dirty_fields) > 0:                                # changes
-            send_update_emails(buchung, buchung_alt, dirty_fields)
-            # set flash
-            flash("Update für {}, {} gespeichert".format(
-                buchung.id, buchung.besucher.name
-                ))
-        else:
-            # set flash
-            flash("Keine Änderung für {}, {} gespeichert".format(
-                buchung.id, buchung.besucher.name
-                ))
-
-        return (
-            redirect(
-                url_for(
-                    'besucher_bp.update',
-                    besucher_id=buchung.besucher.id)))
-
-    # left side actions
-    actions = [
-        (
-            'Stornieren',
-            url_for('buchung_bp.storno', buchung_id=buchung.id)),
-        (
-            'Abrechnen',
-            url_for('buchung_bp.abrechnen', buchung_id=buchung.id))
-    ]
-    return render_template(
-        'buchung/update.html',
-        form=form,
-        buchung=buchung,
-        actions=actions,
-        title='Buchung ändern',
-        buchungen=buchung,
-        besucher=buchung.besucher,
-        waren_choices=Ware.choices(),
-        verkaeufe=list(buchung.verkaeufe),
-        run_mode=current_app.config['ENV']
-    )
 
 
 @buchung_bp.route('/storno/<int:buchung_id>')
@@ -377,62 +693,21 @@ def abrechnen(buchung_id):
 @buchung_bp.route('/anzeigen/<int:buchung_id>')
 @login_required
 def anzeigen(buchung_id):
-    """
-        get:
-            - show current details
-            - input form for meldeschein data
-        post:
-            - change buchung status to abgerechnet
-            - set meldeschein data
-            - reroute to printing invoice
-    """
     buchung = Buchung.get_by_id(buchung_id)
-
-    # left side actions
-    if buchung.status == 'gebucht':
-        actions = [
-            (
-                'Ändern',
-                url_for(
-                    'buchung_bp.update',
-                    buchung_id=buchung.id)),
-            (
-                'Rechnung',
-                url_for('buchung_bp.rechnung', buchung_id=buchung.id))
-        ]
-    elif buchung.status == 'angebot':  # convert offer -> booking, drop angebot
-        actions = [
-            (
-                'Umwandeln',
-                url_for(
-                    'buchung_bp.convert_angebot',
-                    buchung_id=buchung.id)),
-            (
-                'Verwerfen',
-                url_for(
-                    'buchung_bp.drop_angebot',
-                    buchung_id=buchung.id))
-        ]
-    elif buchung.status == 'abgerechnet':   # print or inptut prepayment
-        actions = [
-            (
-                'Drucken',
-                url_for(
-                    'buchung_bp.rechnung',
-                    buchung_id=buchung.id)),
-            (
-                'Vorauszahlung',
-                url_for(
-                    'buchung_bp.update_vorauszahlung',
-                    buchung_id=buchung.id))
-        ]
-
+    verkaeufe = []
+    waren = []
+    waren_summe = 0
+    if buchung.status == 'abgerechnet':
+        verkaeufe = list(Verkauf.select(Verkauf, Ware).join(Ware).where(Verkauf.buchung == buchung))
+        waren = list(Ware.select().where(Ware.active == True).order_by(Ware.bezeichnung))
+        waren_summe = sum(v.menge * v.preis_zum_zeitpunkt for v in verkaeufe)
     return render_template(
         'buchung/anzeigen.html',
         buchung=buchung,
-        actions=actions,
+        verkaeufe=verkaeufe,
+        waren=waren,
+        waren_summe=waren_summe,
         title='{} anzeigen'.format(buchung.status.capitalize()),
-        besucher=buchung.besucher,
         run_mode=current_app.config['ENV']
     )
 
@@ -477,153 +752,28 @@ def rechnung(buchung_id):
     )
 
 
-@buchung_bp.route('/create_angebot/<int:besucher_id>', methods=('GET', 'POST'))
-@login_required
-def create_angebot(besucher_id):
-    '''
-        Create new offer, step 1
-        - gather offer data
-        at the end of this step:
-        - validate the information
-        - check availability of apartment (flash if not)
-        - contiue to second step (create_buchung_finish)
-    '''
-    form = BuchungForm()
-    form.user_id.data = session.get('user_id')
-    form.besucher_id.data = besucher_id
-    besucher = Besucher.get(besucher_id)
-    if form.validate_on_submit():
-        form.besucher_id = besucher_id
-        session_data = form.data
-        session_object = FlaskrSession.from_object(
-            User.get(id=session['user_id']),
-            session_data
-        )
-        session['create_angebot'] = session_object.id
-        if besucher.email == "":
-            flash('Besucher hat keine Email Adresse', 'error')
-        if (
-            Apartment
-            .get_by_id(form.apartment_id.data)
-            .check_availability(form.anreise.data, form.abreise.data)
-        ):
-            flash('Apartment is verfügbar')
-        else:
-            # TODO: Liste der verfügbaren Aprtments
-            flash('Apartment ist nicht verfügbar!', 'error')
-
-        return redirect(url_for('buchung_bp.create_angebot_finish'))
-
-    return render_template(
-        'buchung/create.html',
-        besucher=besucher,
-        form=form,
-        title='Angebot anlegen',
-        run_mode=current_app.config['ENV'],
-        template='form-template'
-    )
-
-
-@buchung_bp.route('/create_angebot_finish', methods=('GET', 'POST'))
-@login_required
-def create_angebot_finish():
-    '''
-        Finalize new booking
-        - check availability of apartment
-        - prepare confirmation text
-        - send emails and finish booking
-    '''
-
-    session_id = session['create_angebot']
-    buchung = Buchung(**FlaskrSession.get(id=session_id).as_object())
-    buchung.recalc(status='angebot')
-    # prepare email_confirmation_email
-    form = Buchung2Form()
-    if request.method == 'GET':
-        form.email_text.data = render_template(
-            'emails/{buchung.besucher.language.lower()}/angebot.html',
-            days=(buchung.abreise - buchung.anreise).days,
-            buchung=buchung
-        )
-
-    if form.validate_on_submit():
-        # save booking
-        buchung.id = None
-        buchung.save()
-        send_angebot_emails(buchung, form.email_text.data)
-        # flash message
-        flash(
-            'Angebot {} Apt {} vom {} - {} für {}, {} gespeichert'.format(
-                buchung.id,
-                buchung.apartment.name,
-                format_date(buchung.anreise, format='short', locale='de_DE'),
-                format_date(buchung.abreise, format='short', locale='de_DE'),
-                buchung.besucher.name,
-                buchung.besucher.vorname
-            ))
-        return (
-            redirect(
-                url_for(
-                    'besucher_bp.update',
-                    besucher_id=buchung.besucher.id)))
-
-    return render_template(
-        'buchung/create_part2.html',
-        besucher=buchung.besucher,
-        buchung=buchung,
-        form=form,
-        title='Neues Angebot fertigstellen',
-        run_mode=current_app.config['ENV'],
-        template='form-template')
 
 
 @buchung_bp.route('/convert_angebot/<int:buchung_id>', methods=('GET', 'POST'))
 @login_required
 def convert_angebot(buchung_id):
-    '''
-        Convert offer to booking
-        - prepare confirmation text
-        - send emails and finish booking
-    '''
     buchung = Buchung.get_by_id(buchung_id)
     besucher = buchung.besucher
-    form = Buchung2Form()
+
     if request.method == 'GET':
-        form.email_text.data = render_template(
-            'emails/{}/buchung_confirmation.html'
-            .format(besucher.language.lower()),
-            buchung=buchung
-        )
+        email_text = render_template(
+            'emails/{}/buchung_confirmation.html'.format(besucher.language.lower()),
+            buchung=buchung)
+        return render_template('buchung/convert_angebot_partial.html',
+                               buchung=buchung, email_text=email_text)
 
-    if form.validate_on_submit():
-        # save booking
-        buchung.status = 'gebucht'
-        buchung.save()
-        send_confirmation_emails(buchung, form.email_text.data)
-        # flash message
-        flash(
-            'Buchung {} Apt {} vom {} - {} für {}, {} gespeichert'.format(
-                buchung.id,
-                buchung.apartment.name,
-                format_date(buchung.anreise, format='short', locale='de_DE'),
-                format_date(buchung.abreise, format='short', locale='de_DE'),
-                buchung.besucher.name,
-                buchung.besucher.vorname
-            ))
-        return (
-            redirect(
-                url_for(
-                    'besucher_bp.update',
-                    besucher_id=besucher.id)))
-
-    return render_template(
-        'buchung/create_part2.html',
-        besucher=besucher,
-        buchung=buchung,
-        form=form,
-        title='Angebot umwandeln',
-        run_mode=current_app.config['ENV'],
-        template='form-template')
+    email_text = request.form.get('email_text', '')
+    buchung.status = 'gebucht'
+    buchung.save()
+    send_confirmation_emails(buchung, email_text)
+    resp = make_response('', 204)
+    resp.headers['HX-Redirect'] = url_for('buchung_bp.anzeigen', buchung_id=buchung.id)
+    return resp
 
 
 @buchung_bp.route('/drop_angebot/<int:buchung_id>', methods=('GET', 'POST'))

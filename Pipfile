@@ -21,9 +21,11 @@ cssmin = "*"
 jsmin = "*"
 pythonpacks = {path = "../pythonpacks"}
 blinker = "*"
+playwright = "*"
 
 [dev-packages]
 flake8 = "*"
+pytest-playwright = "*"
 rope = "*"
 ipykernel = "*"
 autopep8 = "*"

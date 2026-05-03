@@ -4,7 +4,7 @@
 
 ```mermaid
 graph TB
-    Browser["Browser (Client)"]
+    Browser["Browser\n(Bootstrap 5 · HTMX 2 · CKEditor 4 · Chart.js)"]
     nginx["nginx\n(Reverse Proxy)"]
     uwsgi["uWSGI"]
 
@@ -181,6 +181,7 @@ erDiagram
 | `warenwirtschaft_bp` | `/warenwirtschaft` | Artikelstamm, Lieferungen, Statistik |
 | `stats bp` | `/stats` | Umsatzauswertungen |
 | `rest bp` | `/rest` | JSON-REST-Endpunkte |
+| `feratel_bp` | `/feratel` | Playwright-Automation Gästemeldung |
 | `json_routes bp` | `/json` | iCal / externe Feeds |
 | `info_bp` | `/info` | System-Info |
 
@@ -214,3 +215,69 @@ fewo-calserver/
 ├── Pipfile                 Python-Abhängigkeiten
 └── .env                    Secrets (nicht im Repo)
 ```
+
+---
+
+## Frontend-Architektur
+
+Die App verwendet ein **HTMX-basiertes Partial-Rendering-Modell**:
+Jede Benutzeraktion lädt nur den betroffenen HTML-Ausschnitt neu,
+kein vollständiger Seitenwechsel.
+
+| Technologie | Version | Zweck |
+|---|---|---|
+| HTMX | 2.0.4 | Deklarative AJAX-Requests, Partial-Rendering |
+| Bootstrap | 5.1.0 | CSS-Framework, Grid, Komponenten |
+| CKEditor 4 | 4.16.2 | WYSIWYG-Editor für E-Mail-Texte |
+| Chart.js | 3.5.1 | Diagramme (Statistik) |
+| jQuery | 3.6.0 | Hilfsbibliothek (Bootstrap-Datepicker) |
+
+**HTMX-Muster in dieser App:**
+
+- `hx-get` / `hx-post` auf Buttons und Formulare
+- `hx-target` + `hx-swap="innerHTML"` für Partial-Updates
+- `hx-vals` für zusätzliche Parameter (z. B. `typ`, `hx_target`)
+- `hx-on::before-request` zum Synchronisieren des CKEditor-Inhalts
+  vor dem Formular-Submit
+- CSRF-Token wird global per `htmx:configRequest`-Event als
+  `X-CSRFToken`-Header hinzugefügt (Layout-Template)
+- `HX-Redirect`-Response-Header für Navigation nach erfolgreicher Aktion
+
+**Zweistufiger Buchungsflow:**
+
+```
+neu_formular (GET) ──► neu_vorschau (POST) ──► neu_email_partial.html
+                            │                        │
+                    Validierung +               CKEditor + Summary
+                    recalc() (unsaved)               │
+                                              neu_speichern (POST)
+                                                     │
+                                              buchung.save()
+                                              send_*_emails()
+                                              HX-Redirect
+```
+
+Gilt analog für `schnell_vorschau` → `neu_speichern` (Schnellbuchung)
+und `convert_angebot` (Angebot umwandeln).
+
+**Warenverkauf-Panel (Inline-HTMX):**
+
+```
+anzeigen (GET) ──► waren_panel_partial.html  (eingebettet per {% include %})
+                        │
+         ┌──────────────┴──────────────┐
+         ▼                             ▼
+  verkauf_create (POST)         verkauf_delete (POST)
+  warenwirtschaft_bp            warenwirtschaft_bp
+         │                             │
+  Lager -=menge                 Lager +=menge
+         │                             │
+         └──────────────┬──────────────┘
+                        ▼
+              _waren_panel() Helper
+              → waren_panel_partial.html
+              hx-target="#waren-panel", swap innerHTML
+```
+
+- Validierungsfehler (Lager leer, Menge ≤ 0) erscheinen inline in der Karte
+- Kein Seitenwechsel, kein Flash-Message-Mechanismus

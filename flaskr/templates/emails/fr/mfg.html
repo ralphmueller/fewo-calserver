@@ -1,8 +1,8 @@
 
 <p>Bien à vous,</p>
-<p>L'équipe de Ferien-in-Gersfeld</p>
+<p>L'équipe de {{ operator.name }}</p>
 <p class="small">
-	&#x260E; <strong>0700 789 33344</strong> (appel gratuit) / International: +49 177 449 0460<br>
-	&#x1F4E7; <a href="mailto:info@ferien-in-gersfeld.de">info@ferien-in-gersfeld.de</a><br>
-	Accueil : <a href="https://ferien-in-gersfeld.de">https://ferien-in-gersfeld.de</a>
+	&#x260E; <strong>{{ operator.tel }}</strong>{% if operator.tel_intl %} / International: {{ operator.tel_intl }}{% endif %}<br>
+	&#x1F4E7; <a href="mailto:{{ operator.email }}">{{ operator.email }}</a><br>
+	Accueil : <a href="{{ operator.website }}">{{ operator.website }}</a>
 </p>

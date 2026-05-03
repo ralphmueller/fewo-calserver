@@ -15,7 +15,6 @@ Fixed bug on 3.1.0.2018: departure on first day of month doesn't account
 import datetime
 import calendar
 from peewee import fn
-# from playhouse.shortcuts import model_to_dict
 from bkormlib.schema import Buchung, Apartment
 
 
@@ -282,7 +281,7 @@ def calc_income_apartment(apt_name, year):
 def calc_forecast_today():
 
     dataset = []
-    years = [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
+    years = list(range(2017, datetime.date.today().year + 1))
     for year in years:
         today_in_year = datetime.date(
             year,
@@ -311,7 +310,7 @@ def calc_forecast_today():
 def calc_actuals_today():
 
     dataset = []
-    years = [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
+    years = list(range(2017, datetime.date.today().year + 1))
     for year in years:
         today_in_year = datetime.date(
             year,

@@ -8,7 +8,18 @@
     {% set notiz_class = ' ' %}    
 {% endif %}
 
-<tr id="{{buchung.id}}" class="{{notiz_class}}" data-toggle="tooltip" title="Notiz: {{buchung.notiz}}" onclick="getBuchungDetails(`{{ buchung.id }}`)">
+<tr id="{{buchung.id}}" class="{{notiz_class}}" style="cursor:pointer"
+    data-toggle="tooltip" title="Notiz: {{buchung.notiz}}"
+    hx-get="{{ url_for('buchung_bp.detail_row', buchung_id=buchung.id) }}"
+    hx-target="this"
+    hx-swap="afterend"
+    hx-on::before-request="
+        const ex = document.getElementById('detail-row-{{buchung.id}}');
+        if (ex) { ex.remove(); this.classList.remove('table-active'); event.preventDefault(); return; }
+        document.querySelectorAll('.buchung-detail-row').forEach(el => el.remove());
+        document.querySelectorAll('#buchung-list tr.table-active').forEach(el => el.classList.remove('table-active'));
+        this.classList.add('table-active');
+    ">
     <td class="col80">{{buchung.anreise | euro_date_short }}</td>
     <td class="col80">{{buchung.abreise | euro_date_short }}</td>
     <td class="col80">{{buchung.apartment.name}}</td>
@@ -18,5 +29,30 @@
     <td class="money">{{buchung.kurtaxe | euro_currency }}</td>
     <td class="money">{{buchung.summe | euro_currency }}</td>
     <td class="money">{{buchung.vorauszahlung | euro_currency }}</td>
-    <td class="col80">{{buchung.status}}</td>
+    <td class="col80" onclick="event.stopPropagation()">
+        {% if buchung.status == 'angebot' %}
+        <select class="form-select form-select-sm"
+                hx-post="{{ url_for('buchung_bp.update_status', buchung_id=buchung.id) }}"
+                hx-target="closest tr"
+                hx-swap="outerHTML"
+                hx-trigger="change"
+                name="status">
+            <option value="angebot" selected>Angebot</option>
+            <option value="gebucht">→ Gebucht</option>
+            <option value="verworfen">→ Verworfen</option>
+        </select>
+        {% elif buchung.status == 'gebucht' %}
+        <select class="form-select form-select-sm"
+                hx-post="{{ url_for('buchung_bp.update_status', buchung_id=buchung.id) }}"
+                hx-target="closest tr"
+                hx-swap="outerHTML"
+                hx-trigger="change"
+                name="status">
+            <option value="gebucht" selected>Gebucht</option>
+            <option value="storno">→ Storno</option>
+        </select>
+        {% else %}
+        {{buchung.status}}
+        {% endif %}
+    </td>
 </tr>
